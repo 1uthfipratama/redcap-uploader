@@ -182,6 +182,10 @@ def distribution(frame: pd.DataFrame, f: FieldInfo, lang: str = "en", settings: 
         out = category_counts(series, f, lang)
     total = out["n"].sum()
     out["percent"] = (100 * out["n"] / total).round(1) if total else 0.0
+    if "blank" in out:
+        answered = out.loc[~out["blank"], "n"].sum()
+        out["percent_answered"] = [None if b else (round(100 * n / answered, 1) if answered else 0.0)
+                                   for n, b in zip(out["n"], out["blank"])]
     out["small"] = (out["n"] > 0) & (out["n"] < small)
     return out
 
@@ -231,34 +235,68 @@ def missingness(frame: pd.DataFrame, fields: list[FieldInfo]) -> pd.DataFrame:
     return pd.DataFrame(rows).sort_values(["blank_pct", "unknown_pct"], ascending=False, ignore_index=True)
 
 
+def _group_order(frame: pd.DataFrame, by: FieldInfo) -> tuple[pd.Series, list[str]]:
+    groups = frame[by.name].where(~_blank(frame[by.name]), None)
+    present = {str(g) for g in groups.dropna()}
+    order = [c for c in by.choices if c in present] + sorted(present - set(by.choices))
+    return groups, order
+
+
 def group_comparison(frame: pd.DataFrame, f: FieldInfo, by: FieldInfo, lang: str = "en",
                      settings: dict | None = None) -> pd.DataFrame:
-    """A field across the groups of a categorical field. Numeric: n, mean, SD, median, quartiles per group.
-    Categorical: counts and row percentages. Groups under the small-group size are flagged."""
+    """A number field across the groups of an answer field: n, mean, SD, median and quartiles per group.
+    Groups under the small-group size are flagged."""
     settings = settings or load_settings()
     small = settings["small_group"]
-    groups = frame[by.name].where(~_blank(frame[by.name]), None)
-    order = [c for c in by.choices if c in set(groups.dropna().astype(str))]
-    order += sorted({str(g) for g in groups.dropna()} - set(order))
+    groups, order = _group_order(frame, by)
     rows = []
     for code in order:
         part = frame[groups.astype(str) == code]
-        row = {"group": by.choice_label(code, lang), "n": len(part), "small": 0 < len(part) < small}
-        if f.kind == "numeric":
-            x = _numbers(part[f.name][~part[f.name].astype(str).isin(f.unknown_codes)])
-            row.update(mean=_fmt(x.mean()) if len(x) else None,
-                       sd=_fmt(x.std(ddof=1)) if len(x) > 1 else None,
-                       q1=_fmt(x.quantile(0.25)) if len(x) else None,
-                       median=_fmt(x.median()) if len(x) else None,
-                       q3=_fmt(x.quantile(0.75)) if len(x) else None)
-        else:
-            counts = category_counts(part[f.name], f, lang)
-            for _, c in counts.iterrows():
-                label = c["label"] if not c["blank"] else "—"
-                row[label] = int(c["n"])
-                row[f"{label} %"] = round(100 * c["n"] / len(part), 1) if len(part) else 0.0
-        rows.append(row)
-    return pd.DataFrame(rows).fillna(0) if f.kind != "numeric" else pd.DataFrame(rows)
+        x = _numbers(part[f.name][~part[f.name].astype(str).isin(f.unknown_codes)])
+        rows.append({"group": by.choice_label(code, lang), "n": len(part), "small": 0 < len(part) < small,
+                     "mean": _fmt(x.mean()) if len(x) else None,
+                     "sd": _fmt(x.std(ddof=1)) if len(x) > 1 else None,
+                     "q1": _fmt(x.quantile(0.25)) if len(x) else None,
+                     "median": _fmt(x.median()) if len(x) else None,
+                     "q3": _fmt(x.quantile(0.75)) if len(x) else None})
+    return pd.DataFrame(rows)
+
+
+def answers_by_group(frame: pd.DataFrame, f: FieldInfo, by: FieldInfo, lang: str = "en",
+                     settings: dict | None = None) -> pd.DataFrame:
+    """An answer field across the groups of another: one row per (answer, group).
+
+    percent is the share of the group's answered records (blank answers are a row of their
+    own with no percent). Answers follow the form's order; "unknown" and blank are marked as
+    context. Groups under the small-group size are flagged."""
+    settings = settings or load_settings()
+    small = settings["small_group"]
+    groups, order = _group_order(frame, by)
+    rows = []
+    for g in order:
+        part = frame[groups.astype(str) == g]
+        counts = category_counts(part[f.name], f, lang)
+        answered = int(counts.loc[~counts["blank"], "n"].sum()) if len(counts) else 0
+        for c in counts.itertuples(index=False):
+            rows.append({"answer": c.label, "code": c.code, "context": bool(c.unknown or c.blank), "blank": bool(c.blank),
+                         "group": by.choice_label(g, lang), "group_code": g, "group_n": len(part),
+                         "n": int(c.n), "percent": None if c.blank else (round(100 * c.n / answered, 1) if answered else 0.0),
+                         "small_group": 0 < len(part) < small})
+    out = pd.DataFrame(rows)
+    if out.empty:
+        return out
+    answer_order = [c for c in f.choices if c in set(out["code"])]
+    answer_order += [c for c in dict.fromkeys(out["code"]) if c not in answer_order and c != ""]
+    answer_order += [""] if (out["code"] == "").any() else []
+    rank = {code: i for i, code in enumerate(answer_order)}
+    out["_a"] = out["code"].map(rank)
+    out["_g"] = out["group_code"].map({g: i for i, g in enumerate(order)})
+    return out.sort_values(["_a", "_g"], kind="stable").drop(columns=["_a", "_g"]).reset_index(drop=True)
+
+
+def ungrouped_count(frame: pd.DataFrame, by: FieldInfo) -> int:
+    """Records left out of a comparison because the grouping field is blank."""
+    return int(_blank(frame[by.name]).sum())
 
 
 def over_time(frame: pd.DataFrame, f: FieldInfo, settings: dict | None = None) -> pd.DataFrame:

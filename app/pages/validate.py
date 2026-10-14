@@ -68,7 +68,7 @@ class ValidatePage(StepPage):
         change_headers = [tr("ui.validate.h_field"), tr("ui.validate.h_in_file"), tr("ui.validate.h_becomes"),
                           tr("ui.validate.h_rows")]
         fill_table(self.changes, change_headers,
-                   [[c.field, c.spelling, f"{c.code} · {c.label}", c.count] for c in p.changes])
+                   [[c.field, c.spelling, f"{c.code} · {c.label}", c.count] for c in p.changes], stretch=(2,))
         self.changes_box.setVisible(bool(p.changes))
         self.changes_box.set_text(tr("ui.validate.changes", count=len(p.changes)))
         self.save.setVisible(bool(p.issues))

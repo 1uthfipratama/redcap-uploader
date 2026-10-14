@@ -99,11 +99,28 @@ def test_group_comparison_numeric(frame, fields):
     assert table["small"].all()
 
 
-def test_group_comparison_categorical(frame, fields):
-    table = explore.group_comparison(frame, fields["dm"], fields["sex"], "en").set_index("group")
-    assert table.loc["Male", "No"] == 1 and table.loc["Male", "Yes"] == 1
-    assert table.loc["Male", "—"] == 1
-    assert table.loc["Female", "Unknown"] == 1 and table.loc["Female", "Unknown %"] == 100.0
+def test_answers_by_group(frame, fields):
+    table = explore.answers_by_group(frame, fields["dm"], fields["sex"], "en")
+    male = table[table["group"] == "Male"].set_index("answer")
+    # Male rows: dm 0, 1 and blank -> answered 2: No 50%, Yes 50%, blank counted but no percent
+    assert (male.loc["No", "n"], male.loc["No", "percent"]) == (1, 50.0)
+    assert (male.loc["Yes", "n"], male.loc["Yes", "percent"]) == (1, 50.0)
+    blank = table[(table["group"] == "Male") & table["blank"]]
+    assert blank["n"].tolist() == [1] and blank["percent"].isna().all()
+    female = table[table["group"] == "Female"].set_index("answer")
+    assert (female.loc["Unknown", "percent"], bool(female.loc["Unknown", "context"])) == (100.0, True)
+    assert list(dict.fromkeys(table["answer"])) == ["Yes", "No", "Unknown", ""]  # the form's order, blank last
+    assert table["small_group"].all()
+
+
+def test_records_without_a_group_are_counted(frame, fields):
+    assert explore.ungrouped_count(frame, fields["sex"]) == 1
+
+
+def test_distribution_gives_share_of_answered(frame, fields):
+    counts = explore.distribution(frame, fields["sex"], "en").set_index("label")
+    assert counts.loc["Male", "percent_answered"] == 75.0  # 3 of 4 answered
+    assert pd.isna(counts.loc["", "percent_answered"])
 
 
 def test_records_per_month_include_empty_months(frame, fields):

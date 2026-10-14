@@ -163,8 +163,10 @@ def table_view(model: QAbstractTableModel) -> QTableView:
 
 
 def fill_table(table: QTableWidget, headers: list[str], rows: list[list[object]],
-               stretch: tuple[int, ...] = ()) -> None:
-    """Fill a read-only table. Columns in `stretch` share the spare width and wrap long text."""
+               stretch: tuple[int, ...] = (), fit_rows: int | None = None) -> None:
+    """Fill a read-only table. Numbers are right-aligned; columns fit their content, and
+    columns in `stretch` share any spare width and wrap. With fit_rows, the table is only
+    as tall as its rows (up to fit_rows, then it scrolls)."""
     table.clear()
     table.setColumnCount(len(headers))
     table.setHorizontalHeaderLabels(headers)
@@ -173,14 +175,26 @@ def fill_table(table: QTableWidget, headers: list[str], rows: list[list[object]]
         for c, value in enumerate(row):
             item = QTableWidgetItem("" if value is None else str(value))
             item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+            if isinstance(value, (int, float)) and not isinstance(value, bool):
+                item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
             table.setItem(r, c, item)
     header = table.horizontalHeader()
+    header.setDefaultAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+    header.setStretchLastSection(False)
     table.resizeColumnsToContents()
     for c in range(len(headers)):
-        header.setSectionResizeMode(c, QHeaderView.Stretch if c in stretch else QHeaderView.ResizeToContents)
-    if not stretch:
-        header.setSectionResizeMode(len(headers) - 1, QHeaderView.Stretch)
+        if c in stretch:
+            header.setSectionResizeMode(c, QHeaderView.Stretch)
+        else:
+            header.setSectionResizeMode(c, QHeaderView.ResizeToContents)
     table.resizeRowsToContents()
+    if fit_rows is not None:
+        shown = min(len(rows), fit_rows)
+        height = header.height() + sum(table.rowHeight(r) for r in range(shown)) + 2 * table.frameWidth() + 2
+        if len(rows) > fit_rows:
+            height += table.horizontalScrollBar().sizeHint().height()
+        table.setMinimumHeight(height)
+        table.setMaximumHeight(height)
 
 
 def new_table() -> QTableWidget:

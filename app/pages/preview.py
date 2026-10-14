@@ -85,7 +85,7 @@ class PreviewPage(StepPage):
             number = f"({col.number})" + (f" {col.sub_label}" if col.sub_label else "")
             rows.append([number, col.label, field or "—", self._role_text(spec.role, spec.keep)])
         headers = [self.tr(f"ui.preview.h_{k}") for k in ("number", "column", "field", "handling")]
-        fill_table(self.columns, headers, rows)
+        fill_table(self.columns, headers, rows, stretch=(1, 3))
         uploaded = sum(1 for r in rows if r[2] != "—")
         pseudonymised = roles["pseudonymise"] + roles["record_id"] + roles["patient_link"]
         self.counts.setText(self.tr("ui.preview.counts", total=len(rows), uploaded=uploaded,
@@ -102,7 +102,7 @@ class PreviewPage(StepPage):
             handling = (self.tr("ui.role.drop_identifier") if m.role == Role.identifier_drop.value
                         else self.tr("ui.role.upload") if m.field else self.tr("ui.role.ignore"))
             rows.append([m.source_label, m.field or "", match, handling])
-        fill_table(self.columns, headers, rows)
+        fill_table(self.columns, headers, rows, stretch=(0, 3))
         self._pickers = {}
         for r, m in enumerate(p.mapping.matches):
             if m.role == Role.identifier_drop.value:

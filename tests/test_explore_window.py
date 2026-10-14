@@ -61,7 +61,7 @@ def test_charts_and_tables_save(explore_window, tmp_path):
     explore_window.tabs.setCurrentIndex(2)
     png, csv = tmp_path / "age.png", tmp_path / "age.csv"
     tab.chart.save_png(str(png))
-    tab.table_frame.to_csv(csv, index=False)
+    tab.export.to_csv(csv, index=False)
     assert png.stat().st_size > 5_000 and png.read_bytes()[:4] == b"\x89PNG"
     assert csv.read_text(encoding="utf-8").splitlines()[0].startswith("From")
 
@@ -102,3 +102,23 @@ def test_ten_thousand_rows_open_with_summary_and_first_chart_quickly(qtbot, tmp_
     elapsed = time.perf_counter() - start
     assert win.pages[1].table.rowCount() == len(win.fields)
     assert elapsed < 3.0, elapsed
+
+
+def _ytick_text(chart):
+    return [t.get_text().replace("\n", " ") for t in chart.figure.axes[0].get_yticklabels()]
+
+
+def test_every_answer_is_drawn_in_comparisons_and_blank_stays_out_of_charts(explore_window):
+    win = explore_window
+    compare, distribution = win.pages[4], win.pages[2]
+    win.tabs.setCurrentIndex(4)
+    compare.field.setCurrentIndex(compare.field.findData("outcome"))
+    compare.by.setCurrentIndex(compare.by.findData("sex"))
+    answers = _ytick_text(compare.chart)
+    assert "Lost to follow-up" in answers and "Other" not in answers  # nothing is folded away
+    legend = [t.get_text() for t in compare.chart.figure.axes[0].get_legend().get_texts()]
+    assert legend == ["Male", "Female"]
+    win.tabs.setCurrentIndex(2)
+    distribution.field.setCurrentIndex(distribution.field.findData("smear_dx"))
+    assert "Blank" not in _ytick_text(distribution.chart)
+    assert "blank for this field" in distribution.footnote.text()
