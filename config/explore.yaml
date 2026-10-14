@@ -1,0 +1,7 @@
+# Explore screen settings. Descriptive summaries only: no tests, p-values or models.
+small_group: 5          # groups with fewer records than this are flagged (disclosure check)
+histogram_bins: 20
+top_values: 3           # most common values listed in the variable summary
+max_categories: 30      # Generic mode: text columns with more distinct values are treated as free text
+row_cap: 50000          # above this, distributions are computed on a seeded sample and the screen says so
+sample_seed: 1
