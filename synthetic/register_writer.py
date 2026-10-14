@@ -32,6 +32,7 @@ class TitleBlock:
     form_line: str = ""  # e.g. "TBC.03 SO FASYANKES"; defaults from the profile
     edition: str = ""
     include_case_count: bool = True
+    stated_case_count: int | None = None  # None = the real number of data rows
 
 
 @dataclass
@@ -130,7 +131,26 @@ def _title(profile: Profile, spec: RegisterSpec, cells, off: int, ncols: int) ->
         cells[(off + 5 + i, FIRST_COL + 2)] = value
     if t.include_case_count and profile.layout.case_count_label:
         cells[(off + 6, right - 5)] = profile.layout.case_count_label
-        cells[(off + 6, right)] = len(spec.rows)
+        cells[(off + 6, right)] = t.stated_case_count if t.stated_case_count is not None else len(spec.rows)
+
+
+def data_row_numbers(spec: RegisterSpec) -> list[int]:
+    """The 1-based spreadsheet row of each data row, after any inserted blank rows."""
+    rows, r = [], spec.extra_top_rows + FIRST_DATA_ROW
+    for i in range(len(spec.rows)):
+        rows.append(r + 1)
+        r += 1
+        if i in spec.blank_rows_after:
+            r += 1
+    return rows
+
+
+def summary_row_number(spec: RegisterSpec) -> int | None:
+    if not spec.summary_row:
+        return None
+    rows = data_row_numbers(spec)
+    last = rows[-1] if rows else spec.extra_top_rows + FIRST_DATA_ROW
+    return last + 1 + (1 if spec.rows and len(spec.rows) - 1 in spec.blank_rows_after else 0)
 
 
 def write_register(path: str | Path, profile: Profile, spec: RegisterSpec) -> Path:
