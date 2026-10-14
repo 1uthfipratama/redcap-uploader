@@ -119,15 +119,35 @@ def _read_xlsx(path: Path) -> Grid:
     return Grid(cells=cells, merged=merged, source_format="xlsx")
 
 
+CSV_DELIMITERS = (",", ";", "\t", "|")
+
+
+def guess_delimiter(text: str) -> str:
+    """The delimiter that splits the header row and stays consistent over the next rows.
+
+    Predictable on every Python version (csv.Sniffer's guesses differ between 3.12 and
+    3.13). Indonesian Excel often saves CSV with ";" because "," is the decimal mark.
+    """
+    lines = [line for line in text.splitlines()[:50] if line.strip()]
+    if not lines:
+        return ","
+    best, best_score = ",", (0.0, 0)
+    for delim in CSV_DELIMITERS:
+        fields = len(next(csv.reader([lines[0]], delimiter=delim)))
+        if fields < 2:
+            continue
+        rows = [len(r) for r in csv.reader(lines[1:21], delimiter=delim)]
+        consistent = sum(n == fields for n in rows) / len(rows) if rows else 1.0
+        score = (consistent, fields)
+        if score > best_score:
+            best, best_score = delim, score
+    return best
+
+
 def _read_csv(path: Path) -> Grid:
     raw = path.read_bytes()
     text = _decode(raw)
-    sample = text[:20000]
-    try:
-        dialect = csv.Sniffer().sniff(sample, delimiters=",;\t|")
-    except csv.Error:
-        dialect = csv.excel
-    rows = list(csv.reader(io.StringIO(text), dialect))
+    rows = list(csv.reader(io.StringIO(text), delimiter=guess_delimiter(text)))
     cells = [[v if v.strip() else None for v in row] for row in rows]
     return Grid(cells=cells, merged=[], source_format="csv")
 

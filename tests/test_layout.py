@@ -1,4 +1,6 @@
-from core.grid import read_grid
+import pytest
+
+from core.grid import guess_delimiter, read_grid
 from core.layout import detect_layout
 from core.mapping import check_layout, read_metadata, recognise
 from synthetic.register_writer import RegisterSpec, write_register
@@ -86,3 +88,16 @@ def test_csv_single_header(tmp_path):
     assert layout.kind == "single_header"
     assert [c.key for c in layout.columns] == ["record_id", "umur"]
     assert len(layout.data_rows) == 2 and len(layout.blank_rows) == 1
+
+
+@pytest.mark.parametrize("text, delim", [
+    ("Record ID;Umur\n1;30\n\n2;41\n", ";"),
+    ("Record ID,Umur,Nama Kota\n1,30,\"Jakarta, Timur\"\n2,41,Bogor\n", ","),
+    ("a\tb\tc\n1\t2\t3\n", "\t"),
+    ("a|b\n1|2\n", "|"),
+    ("berat;tinggi\n55,5;160\n61,2;158\n", ";"),  # decimal commas inside semicolon CSV
+    ("only one column\n1\n2\n", ","),
+    ("", ","),
+])
+def test_csv_delimiter_is_guessed_the_same_on_every_python(text, delim):
+    assert guess_delimiter(text) == delim
