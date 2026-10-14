@@ -1,0 +1,9 @@
+[project]
+name = "redcap-uploader"
+version = "0.1.0"
+description = "Desktop wizard that uploads SITB and other spreadsheet exports to REDCap"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
