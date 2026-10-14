@@ -2,7 +2,7 @@
 
 ## Status (2026-10-14)
 
-Phases 1a, 1b, 2 and 3 are built; 149 tests pass. Phase 3's last gate check is a person trial (below). Next is phase 4 (Explore screen).
+Phases 1 to 4 are built; 170 tests pass. Phase 3's last gate check is a person trial (below). Next is phase 5 (teaching panels).
 
 ## Done
 
@@ -92,9 +92,22 @@ Run it with `.venv/Scripts/python -m app`.
 1. **Person trial.** Someone who has never used REDCap tries the clean sample unaided. The target is under 5 minutes.
 2. **Logo and fonts (needs your OK).** The official RPRI logo goes in `app/assets/brand/logo.png`. The Rubik and DM Sans files (open licence) go in `app/assets/fonts/`. Until then, the header shows "RPRI" as text.
 
-## Next: phase 4
+### Phase 4 (Explore screen)
 
-The Explore screen: descriptive summaries and charts computed in `core/explore`. It opens from the Check step once there are no errors, and from Result.
+- **`core/explore.py`:** the numbers, all tested against values worked out by hand on a tiny table.
+  - Overview, variable summary, distributions, and missing data (blank and "Tidak diketahui" counted apart).
+  - Group comparison and records per month.
+  - Groups under 5 records are flagged.
+  - Identifier and pseudonym fields are never offered.
+- **`app/explore_window.py` and `app/charts.py`:** six tabs. Each has a chart, its table, and save buttons (PNG and CSV).
+  - The note "summaries, not analysis results" is always visible.
+  - Above `row_cap` (in `config/explore.yaml`), distributions use a seeded sample, and the screen says so.
+- **Where it opens:** from the Check step once there are no errors, and from Result.
+- **Speed:** a 10,000-row file shows its summary and first chart in under 3 seconds.
+
+## Next: phase 5
+
+The "What's happening?" panels: a plain-language note on every step and every Explore tab. Steps that call the API also show the actual request from the client's log, with the token masked.
 
 ## When the REDCap account arrives (phase 7, short version)
 

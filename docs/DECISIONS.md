@@ -70,3 +70,15 @@ Each entry says what was decided, why, and when to revisit it. Newest at the bot
 **Real mode checks the project before reading the file.** If the REDCap project lacks fields the form uploads, the app stops at Choose file. It names the missing fields and offers the data dictionary CSV to set the project up, instead of failing later with a server error on every batch.
 
 **An unreadable value is reported once.** A required date that cannot be read used to appear twice: as "not a date" and as "required but empty". Now only the first is shown.
+
+## 2026-10-14 · Phase 4
+
+**Explore opens in its own window.** That lets the wizard stay where it was, and matplotlib loads only when someone opens Explore, which keeps the app quick to start.
+
+**One chart look, checked for colour blindness.** Series 1 is the brand blue. Series 2 to 4 follow the reference order (orange, aqua, yellow). The set passes the colour-blindness validator: worst adjacent pair ΔE 9.1. Two of these colours are low-contrast on white, so every chart has its table beside it, and categorical shares show at most four named answers plus "other". "Unknown", "blank" and "other" are grey, because they are context, not data.
+
+**Histogram bins sit on round numbers** (widths of 1, 2, 2.5 or 5 times a power of ten). An age chart therefore reads 0–5, 5–10, and not 0–4.2.
+
+**The SD is the sample SD** (n−1). A group with one value has no SD rather than 0.
+
+**No hover tooltips in charts.** In a desktop app, the table next to each chart is the reliable way to read exact values. Tooltips can come later if users ask for them.
