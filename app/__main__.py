@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import os
 import sys
 from pathlib import Path
 
@@ -38,7 +39,18 @@ def build(lang: str | None = None) -> tuple[QApplication, MainWindow]:
     return app, window
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    argv = sys.argv[1:] if argv is None else argv
+    if "--smoke-test" in argv:
+        os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")  # no window needed; works on CI machines
+        from app.smoke import run
+
+        report = argv[argv.index("--smoke-report") + 1] if "--smoke-report" in argv else None
+        return run(report)
+    if "--quit-after-start" in argv:
+        from app.smoke import start_and_quit
+
+        return start_and_quit()
     app, window = build()
     setup_logging()
     window.show()
