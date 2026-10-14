@@ -174,8 +174,8 @@ def distribution(frame: pd.DataFrame, f: FieldInfo, lang: str = "en", settings: 
         x = _numbers(series[~series.astype(str).isin(f.unknown_codes)])
         if not len(x):
             return pd.DataFrame(columns=["bin_start", "bin_end", "n", "percent", "small"])
-        counts, edges = np.histogram(x, bins=settings["histogram_bins"])
-        out = pd.DataFrame({"bin_start": edges[:-1].round(1), "bin_end": edges[1:].round(1), "n": counts})
+        counts, edges = np.histogram(x, bins=nice_edges(x.min(), x.max(), settings["histogram_bins"]))
+        out = pd.DataFrame({"bin_start": edges[:-1].round(2), "bin_end": edges[1:].round(2), "n": counts})
     elif f.kind == "date":
         return over_time(frame, f, settings=settings)
     else:
@@ -184,6 +184,18 @@ def distribution(frame: pd.DataFrame, f: FieldInfo, lang: str = "en", settings: 
     out["percent"] = (100 * out["n"] / total).round(1) if total else 0.0
     out["small"] = (out["n"] > 0) & (out["n"] < small)
     return out
+
+
+def nice_edges(low: float, high: float, target_bins: int) -> np.ndarray:
+    """Bin edges on round numbers (widths of 1, 2, 2.5 or 5 times a power of ten), so bins read as 0-5, 5-10."""
+    if high <= low:
+        return np.array([low - 0.5, low + 0.5])
+    raw = (high - low) / target_bins
+    power = 10 ** np.floor(np.log10(raw))
+    width = next(m * power for m in (1, 2, 2.5, 5, 10) if m * power >= raw)
+    start = np.floor(low / width) * width
+    stop = np.floor(high / width) * width + width  # the last bin includes the maximum
+    return np.arange(start, stop + width / 2, width)
 
 
 def category_counts(series: pd.Series, f: FieldInfo, lang: str) -> pd.DataFrame:

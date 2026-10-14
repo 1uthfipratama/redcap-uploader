@@ -154,3 +154,13 @@ def test_generic_sheet_maps_by_name_and_reaches_the_check_step(qtbot, window, tm
     assert "NAMA-SINTETIS-0001" not in w.state.prepared.frame.to_string()
     next_step(qtbot, w)
     assert w.stack.currentIndex() == 3 and w.state.prepared.ready
+
+
+def test_explore_opens_from_the_check_step_only_when_ready(qtbot, window):
+    w = window
+    to_check_step(qtbot, w, "clean")
+    page = w.pages[3]
+    assert page.explore.isVisible()
+    page.explore.click()
+    assert w.explore_window is not None and w.explore_window.isVisible()
+    assert w.explore_window.pages[0].numbers["rows"].text() == "500"

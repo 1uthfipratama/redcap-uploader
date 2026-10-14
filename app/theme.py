@@ -22,6 +22,7 @@ class Brand:
     button_radius: int
     panel_radius: int
     logo: Path | None
+    chart: dict
 
 
 def load_brand(path: Path = BRAND_FILE) -> Brand:
@@ -44,6 +45,7 @@ def load_brand(path: Path = BRAND_FILE) -> Brand:
         button_radius=int(data["radius"]["button"]),
         panel_radius=int(data["radius"]["panel"]),
         logo=logo if logo and logo.exists() else None,
+        chart=data["chart"],
     )
 
 
@@ -103,5 +105,10 @@ def style_sheet(b: Brand) -> str:
     QProgressBar::chunk {{ background: {c['primary']}; border-radius: 4px; }}
     QToolButton#Disclosure {{ border: none; color: {c['primary']}; font-weight: 600; padding: 4px 0; }}
     #DropZone {{ border: 2px dashed {c['border']}; border-radius: {b.panel_radius}px; background: {c['canvas']}; }}
+    QTabWidget::pane {{ border: none; }}
+    QTabBar::tab {{ background: transparent; color: {c['muted']}; padding: 8px 14px; border: none;
+                    border-bottom: 2px solid transparent; font-family: "{b.heading_font}"; }}
+    QTabBar::tab:selected {{ color: {c['navy']}; border-bottom: 2px solid {c['primary']}; }}
+    QTabBar::tab:hover {{ color: {c['primary']}; }}
     #DropZone[hover="true"] {{ border-color: {c['primary']}; background: {c['primary_soft']}; }}
     """

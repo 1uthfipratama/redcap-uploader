@@ -29,15 +29,19 @@ class ValidatePage(StepPage):
         self.changes_box = Disclosure(self.changes)
         self.save = QPushButton()
         self.save.clicked.connect(self._save)
+        self.explore = QPushButton()
+        self.explore.clicked.connect(self.ctx.open_explore)
         row = QHBoxLayout()
         row.addStretch(1)
         row.addWidget(self.save)
+        row.addWidget(self.explore)
         for w in (self.headline, self.skipped, self.errors, self.warnings_box, self.changes_box):
             self.body.addWidget(w)
         self.body.addLayout(row)
 
     def translate(self) -> None:
         self.save.setText(self.tr("ui.validate.save"))
+        self.explore.setText(self.tr("ui.explore.open"))
         self.on_enter()
 
     def _issue_rows(self, issues) -> list[list]:
@@ -68,6 +72,7 @@ class ValidatePage(StepPage):
         self.changes_box.setVisible(bool(p.changes))
         self.changes_box.set_text(tr("ui.validate.changes", count=len(p.changes)))
         self.save.setVisible(bool(p.issues))
+        self.explore.setVisible(p.ready)
 
     def ready(self) -> bool:
         p = self.state.prepared

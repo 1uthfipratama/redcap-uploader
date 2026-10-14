@@ -34,9 +34,12 @@ class ResultPage(StepPage):
         self.again.setObjectName("Primary")
         self.save.clicked.connect(self._save_log)
         self.again.clicked.connect(self._again)
+        self.explore = QPushButton()
+        self.explore.clicked.connect(self.ctx.open_explore)
         buttons = QHBoxLayout()
         buttons.addStretch(1)
         buttons.addWidget(self.save)
+        buttons.addWidget(self.explore)
         buttons.addWidget(self.again)
         self.body.addWidget(self.headline)
         self.body.addLayout(grid)
@@ -51,6 +54,7 @@ class ResultPage(StepPage):
         self.problems_title.setText(tr("ui.result.problems"))
         self.save.setText(tr("ui.result.save_log"))
         self.again.setText(tr("ui.result.again"))
+        self.explore.setText(tr("ui.explore.open"))
         self.on_enter()
 
     def on_enter(self) -> None:

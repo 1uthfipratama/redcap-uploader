@@ -21,6 +21,7 @@ class Context:
     set_busy: Callable[[bool], None]  # disables navigation while work runs
     refresh_nav: Callable[[], None]  # re-reads ready() and the Next label
     go_to: Callable[[int], None]
+    open_explore: Callable[[], None]
 
 
 class StepPage(QWidget):

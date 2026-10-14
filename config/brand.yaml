@@ -25,3 +25,10 @@ radius:
 # Optional files; the app uses text instead when they are missing.
 logo: app/assets/brand/logo.png
 fonts_dir: app/assets/fonts
+# Chart colours: series 1 is the brand blue; 2-4 follow the validated reference order
+# (checked with the colour-blindness validator: all adjacent pairs pass). Grey is for
+# "unknown", "blank" and "other", which are context rather than a series of their own.
+chart:
+  series: ["#1E6BBD", "#EB6834", "#1BAF7A", "#EDA100"]
+  neutral: "#A7B0BC"
+  grid: "#E6EAF0"

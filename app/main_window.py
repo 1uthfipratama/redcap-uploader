@@ -55,7 +55,8 @@ class MainWindow(QMainWindow):
         self.rail = StepRail(tr)
         self.stack = QStackedWidget()
         ctx = Context(tr=tr, state=state, brand=brand, set_busy=self.set_busy,
-                      refresh_nav=self.refresh_nav, go_to=self.go_to)
+                      refresh_nav=self.refresh_nav, go_to=self.go_to, open_explore=self.open_explore)
+        self.explore_window = None
         self.pages: list[StepPage] = [cls(ctx) for cls in PAGES]
         for page in self.pages:
             self.stack.addWidget(page)
@@ -158,6 +159,20 @@ class MainWindow(QMainWindow):
         self.language.setEnabled(not self.busy)
         self.mode_note.setText(self.tr(f"ui.mode.{self.state.mode}") if self.state.project else "")
 
+    def open_explore(self) -> None:
+        """Summaries of the cleaned table in its own window; matplotlib loads only now."""
+        from app.explore_window import ExploreWindow
+
+        if self.state.prepared is None or self.state.prepared.frame is None:
+            return
+        if self.explore_window is not None:
+            self.explore_window.close()
+        self.explore_window = ExploreWindow(self.state.prepared, self.brand, self.tr)
+        self.explore_window.show()
+        self.explore_window.raise_()
+
     def closeEvent(self, event) -> None:  # noqa: N802 (Qt API)
+        if self.explore_window is not None:
+            self.explore_window.close()
         self.state.stop_mock()
         super().closeEvent(event)

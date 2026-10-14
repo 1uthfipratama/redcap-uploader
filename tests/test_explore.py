@@ -80,7 +80,15 @@ def test_categories_follow_the_form_order_and_flag_small_groups(frame, fields):
 def test_numeric_histogram_counts_every_value(frame, fields):
     bins = explore.distribution(frame, fields["age"], "en")
     assert bins["n"].sum() == 4
-    assert bins["bin_start"].iloc[0] == 20.0 and bins["bin_end"].iloc[-1] == 50.0
+    # ages 20-50 in about 20 bins -> round width 2, from 20 up to 52 so that 50 has a bin
+    assert bins["bin_start"].iloc[0] == 20.0 and bins["bin_end"].iloc[-1] == 52.0
+    assert set((bins["bin_end"] - bins["bin_start"]).round(6)) == {2.0}
+
+
+def test_bins_sit_on_round_numbers():
+    edges = explore.nice_edges(0, 85, 20)
+    assert edges[0] == 0 and edges[-1] == 90 and set(edges[1:] - edges[:-1]) == {5.0}
+    assert list(explore.nice_edges(7, 7, 20)) == [6.5, 7.5]
 
 
 def test_group_comparison_numeric(frame, fields):
