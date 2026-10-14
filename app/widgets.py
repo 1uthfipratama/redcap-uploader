@@ -67,6 +67,7 @@ class StepRail(QFrame):
             number = QLabel(str(i))
             number.setObjectName("StepNumber")
             text = QLabel()
+            text.setWordWrap(True)
             h.addWidget(number)
             h.addWidget(text, 1)
             layout.addWidget(row)
@@ -161,7 +162,9 @@ def table_view(model: QAbstractTableModel) -> QTableView:
     return view
 
 
-def fill_table(table: QTableWidget, headers: list[str], rows: list[list[object]]) -> None:
+def fill_table(table: QTableWidget, headers: list[str], rows: list[list[object]],
+               stretch: tuple[int, ...] = ()) -> None:
+    """Fill a read-only table. Columns in `stretch` share the spare width and wrap long text."""
     table.clear()
     table.setColumnCount(len(headers))
     table.setHorizontalHeaderLabels(headers)
@@ -171,8 +174,13 @@ def fill_table(table: QTableWidget, headers: list[str], rows: list[list[object]]
             item = QTableWidgetItem("" if value is None else str(value))
             item.setFlags(item.flags() & ~Qt.ItemIsEditable)
             table.setItem(r, c, item)
+    header = table.horizontalHeader()
     table.resizeColumnsToContents()
-    table.horizontalHeader().setStretchLastSection(True)
+    for c in range(len(headers)):
+        header.setSectionResizeMode(c, QHeaderView.Stretch if c in stretch else QHeaderView.ResizeToContents)
+    if not stretch:
+        header.setSectionResizeMode(len(headers) - 1, QHeaderView.Stretch)
+    table.resizeRowsToContents()
 
 
 def new_table() -> QTableWidget:

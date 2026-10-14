@@ -120,3 +120,8 @@ def test_choice_code_not_allowed_when_validated_directly(so):
     frame = pd.DataFrame([{ROW: 18, "record_id": "a" * 16, "sex": "7"}], dtype=object)
     issues = validate(frame, so, unmapped=None, today=TODAY)
     assert ("choice_unknown", 18, "sex") in [(i.code, i.row, i.field) for i in issues]
+
+
+def test_unreadable_required_date_is_reported_once(tmp_path, so):
+    p = _prepare(tmp_path, so, [so_row(1, c039="2025-03-14")])
+    assert [(i.code, i.field) for i in p.issues if i.row == 18] == [("date_unreadable", "tx_start_date")]

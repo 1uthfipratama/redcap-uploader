@@ -86,10 +86,10 @@ class PreviewPage(StepPage):
             rows.append([number, col.label, field or "—", self._role_text(spec.role, spec.keep)])
         headers = [self.tr(f"ui.preview.h_{k}") for k in ("number", "column", "field", "handling")]
         fill_table(self.columns, headers, rows)
-        self.counts.setText(self.tr("ui.preview.counts", total=sum(roles.values()),
-                                    uploaded=roles["upload"] + roles["record_id"] + roles["patient_link"],
-                                    pseudonymised=roles["pseudonymise"] + roles["record_id"] + roles["patient_link"],
-                                    dropped=roles["drop_identifier"] + roles["drop_location"] + roles["ignore"]))
+        uploaded = sum(1 for r in rows if r[2] != "—")
+        pseudonymised = roles["pseudonymise"] + roles["record_id"] + roles["patient_link"]
+        self.counts.setText(self.tr("ui.preview.counts", total=len(rows), uploaded=uploaded,
+                                    pseudonymised=pseudonymised, dropped=len(rows) - uploaded))
         return rows
 
     def _generic_rows(self) -> list:

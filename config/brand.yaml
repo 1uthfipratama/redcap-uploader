@@ -20,7 +20,7 @@ fonts:
   body: DM Sans
   fallback: ["Segoe UI", "Helvetica Neue", "Arial"]
 radius:
-  button: 17
+  button: 16
   panel: 12
 # Optional files; the app uses text instead when they are missing.
 logo: app/assets/brand/logo.png

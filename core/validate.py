@@ -18,9 +18,14 @@ from core.parse import ROW
 from core.profile import RECORD_ID_FIELD, ColumnSpec, Profile
 
 
+UNREADABLE = {"date_unreadable", "not_a_number", "not_whole_number"}
+
+
 def validate(frame: pd.DataFrame, profile: Profile, unmapped: list[UnmappedSpelling] | None = None,
-             today: dt.date | None = None) -> list[Issue]:
+             today: dt.date | None = None, already: list[Issue] | None = None) -> list[Issue]:
+    """`already`: issues found while reading. A value reported as unreadable is not reported again as missing."""
     today = today or dt.date.today()
+    unreadable = {(i.row, i.field) for i in (already or []) if i.code in UNREADABLE}
     issues: list[Issue] = []
     issues += _duplicate_record_ids(frame)
     if RECORD_ID_FIELD not in frame.columns:
@@ -34,6 +39,8 @@ def validate(frame: pd.DataFrame, profile: Profile, unmapped: list[UnmappedSpell
         for idx, value in frame[col.field].items():
             row = int(frame.at[idx, ROW])
             if value is None:
+                if (row, col.field) in unreadable:
+                    continue
                 if col.required:
                     issues.append(Issue("required_missing", row=row, field=col.field))
                 elif col.required_when and _condition_holds(frame, idx, col, by_key):

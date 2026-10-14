@@ -57,8 +57,8 @@ class ValidatePage(StepPage):
             self.headline.setStyleSheet(f"color: {self.ctx.brand.colors['success']};")
         self.skipped.setText(tr("ui.validate.skipped", blank=p.skipped_rows["blank"], summary=p.skipped_rows["summary"]))
         self.errors.setVisible(bool(p.errors))
-        fill_table(self.errors, headers, self._issue_rows(p.errors))
-        fill_table(self.warnings, headers, self._issue_rows(p.warnings))
+        fill_table(self.errors, headers, self._issue_rows(p.errors), stretch=(2, 3))
+        fill_table(self.warnings, headers, self._issue_rows(p.warnings), stretch=(2, 3))
         self.warnings_box.setVisible(bool(p.warnings))
         self.warnings_box.set_text(tr("ui.validate.warnings", count=len(p.warnings)))
         change_headers = [tr("ui.validate.h_field"), tr("ui.validate.h_in_file"), tr("ui.validate.h_becomes"),

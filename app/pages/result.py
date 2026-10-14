@@ -73,7 +73,7 @@ class ResultPage(StepPage):
             for p in rejected.problems:
                 rows.append([rejected.rows.get(p.record, ""), p.record, p.field, p.value, p.message])
         headers = [tr(f"ui.result.h_{k}") for k in ("row", "record", "field", "value", "message")]
-        fill_table(self.problems, headers, rows)
+        fill_table(self.problems, headers, rows, stretch=(4,))
         self.problems.setVisible(bool(rows))
         self.problems_title.setVisible(bool(rows))
 

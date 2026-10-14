@@ -37,6 +37,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.state, self.brand, self.tr = state, brand, tr
         self.busy = False
+        self._built = False  # pages call refresh_nav() while they are being created
         self.setWindowTitle(brand.product_name)
         self.resize(1180, 780)
         self.setMinimumSize(980, 640)
@@ -64,6 +65,7 @@ class MainWindow(QMainWindow):
         outer.addWidget(self._footer())
         self.setCentralWidget(root)
 
+        self._built = True
         tr.changed.connect(lambda _: self.retranslate())
         self.retranslate()
         self.go_to(0)
@@ -144,6 +146,8 @@ class MainWindow(QMainWindow):
         self.refresh_nav()
 
     def refresh_nav(self) -> None:
+        if not self._built:
+            return
         index = self.stack.currentIndex()
         last = index == len(self.pages) - 1
         self.back.setVisible(0 < index and not last)

@@ -80,7 +80,7 @@ def style_sheet(b: Brand) -> str:
     #StepNumber[state="current"] {{ background: {c['primary']}; color: white; }}
     #StepNumber[state="done"] {{ background: {c['primary_soft']}; color: {c['primary']}; }}
 
-    QPushButton {{ border-radius: {b.button_radius}px; padding: 8px 20px; font-family: "{b.heading_font}";
+    QPushButton {{ border-radius: {b.button_radius}px; padding: 8px 22px; min-height: 18px; font-family: "{b.heading_font}";
                    background: transparent; color: {c['primary']}; border: none; }}
     QPushButton:hover {{ background: {c['primary_soft']}; }}
     QPushButton:disabled {{ color: {c['border']}; }}

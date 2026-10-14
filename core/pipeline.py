@@ -121,7 +121,7 @@ def prepare(source: str | Path | Detected, profile: Profile, key: bytes | None =
     normalised = normalise(frame, profile)
     result.changes, result.unmapped = normalised.changes, normalised.unmapped
     result.frame = normalised.frame
-    result.issues += validate(result.frame, profile, result.unmapped, today=today)
+    result.issues += validate(result.frame, profile, result.unmapped, today=today, already=result.issues)
     log.info("prepared %d rows: %d errors, %d warnings, %d blank and %d summary rows skipped",
              len(result.frame), len(result.errors), len(result.warnings),
              len(layout.blank_rows), len(layout.summary_rows))
