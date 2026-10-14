@@ -1,0 +1,10 @@
+# How the app talks to a REDCap project. Best-case defaults until the real
+# project exists; each line maps to an entry in docs/REDCAP_ASSUMPTIONS.md.
+record_id_field: record_id
+date_format: YMD            # dates sent as YYYY-MM-DD (A08)
+overwrite_behavior: normal  # blanks never erase stored values (A10)
+batch_size: 100             # records per import request
+timeout_seconds: 60
+project_type: classic       # not longitudinal (A03)
+repeating_instruments: false
+data_access_groups: false
