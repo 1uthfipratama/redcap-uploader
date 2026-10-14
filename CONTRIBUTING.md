@@ -45,12 +45,13 @@ Python 3.10+, PySide6, pandas, openpyxl, xlrd (legacy .xls), pydantic and PyYAML
 
 ## 5. What the real SITB files look like (structure only)
 - docs/forms/tbc03_so_columns.csv and tbc03_ro_columns.csv list every column: official number, flattened header, type, fill rate, suggested role, and the spellings seen in low-cardinality columns. Build the profiles from these. Do not ask for the real exports.
-- Each file starts with a title block (form name, facility, period), then a header spread over several rows with merged cells, then the data rows, then one summary row. Official column numbers appear in brackets, for example (39); use them as stable keys, not the labels.
+- Each file starts with a title block (form name, edition, facility, period; SO also states the case count, "Jumlah Kasus"), then a four-row merged header (Excel rows 13 to 16), a row of official column numbers in brackets such as (39) (row 17), the data rows from row 18, and one trailing blank row. The exports have no summary row at the bottom; the reader still skips one if present. Use the official numbers as stable keys (c039, or c083_bta for a sub-column), not the labels.
 - Dates are usually text (dd/mm/yyyy); accept real Excel date cells too. The exports are legacy .xls.
 - SO has 84 numbered columns. RO has 114 numbers, some covering a smear and culture pair (144 sheet columns). Value sets differ between the two forms.
 - Identifier columns: NIK, name, full address, BPJS, record and registration numbers, lab registration numbers. Patient province, district, subdistrict and village are quasi-identifiers: drop them unless the profile says keep.
-- NIK and registration numbers may be stored as numbers and lose digits; treat any NIK that is not 16 digits as invalid.
-- RO follow-up months 1 to 24 import as plain wide fields first (bta_m1 to bta_m24).
+- NIK and register numbers are stored as numbers in the exports, so they can lose digits; treat any NIK that is not 16 digits as invalid.
+- Nomor Register Pasien is filled and unique on every row: it is the record_id source. Nomor Register SITB repeats across a patient's episodes and is pseudonymised as sitb_pid.
+- RO follow-up months 1 to 24 import as plain wide fields first (smear_m1 to smear_m24, culture_m1 to culture_m24; months 4 to 6 also have smear2_mN and culture2_mN).
 
 ## 6. Wizard steps
 1. Connect: Demo or Real; shows the project name and REDCap version.
