@@ -1,6 +1,6 @@
 # REDCap Uploader
 
-A desktop app (Windows and macOS) that guides a researcher through uploading a spreadsheet to REDCap. It reads SITB TBC.03 SO and RO register exports, or any sheet with one header row, and turns them into REDCap records:
+A desktop app (Windows and macOS) that guides any researcher or TB programme team using SITB through uploading a spreadsheet to REDCap. It reads SITB TBC.03 SO and RO register exports, or any sheet with one header row, and turns them into REDCap records:
 - identifiers are dropped or pseudonymised
 - answers are mapped to REDCap codes
 - every row is validated before anything is sent
@@ -28,6 +28,19 @@ On macOS use `.venv/bin/python`.
 - `profiles/`: one YAML file per source form.
 - `docs/forms/`: column inventories of the real exports (structure only, no patient data).
 
+## Using it at your site
+
+The tool is not tied to one facility or study:
+- **Your own REDCap.** Each team uses its own REDCap project and settings.
+- **Your own pseudonym key.** Each team keeps its own key. The same key must be used for every upload in a study, or patients will not link across files.
+- **New spellings.** The TBC.03 profiles were built from one facility's exports. Spellings the profiles do not know yet are reported, not guessed, so profiles can be extended for other sites.
+
 ## Privacy
 
-Real exports never go in this repo. The app needs a pseudonym key from `REDCAP_UPLOADER_PSEUDONYM_KEY` (hex) or a key file named in `REDCAP_UPLOADER_KEY_FILE`, kept outside the repo. There is no default key.
+Real exports never go in this repo. The app needs a pseudonym key from `REDCAP_UPLOADER_PSEUDONYM_KEY` (hex) or a key file named in `REDCAP_UPLOADER_KEY_FILE`, kept outside the repo. There is no default key. To make one:
+
+```bash
+python -c "import secrets; print(secrets.token_hex(32))"
+```
+
+Store it where your team keeps secrets, and back it up: a lost key means new uploads can no longer be linked to earlier ones.

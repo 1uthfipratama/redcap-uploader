@@ -3,18 +3,19 @@
 Read this fully before writing or changing code. If a request conflicts with this file, stop and ask.
 
 ## 1. What this is
+- A universal tool for any researcher or TB programme team that works with SITB exports, at any facility, district or province. It is not tied to one study or site.
 - A desktop app for Windows and macOS (PySide6) that guides a researcher through uploading a spreadsheet to REDCap: connect, choose file and form, preview and map, validate (dry run), upload, result.
 - Two ways out: direct API import (PyCap), or an import-ready CSV plus the matching data dictionary for REDCap's Data Import Tool when API access is not available.
 - Form-agnostic: every source form is a form profile (YAML). TBC.03 SO and TBC.03 RO from the Indonesian TB register (SITB) ship first; a Generic profile reads any single-header sheet. A new form must need a new profile, never new code.
 - After cleaning, an Explore screen shows descriptive statistics and charts.
 - A teaching tool: every step has a "What's happening?" panel showing the real API call, token masked.
-- Stage 1 (now): prototype on synthetic data against an embedded mock REDCap. There is no REDCap account yet, so every assumption about real REDCap is written down and checked later (section 8). Stage 2 (later): production SITB-to-REDCap uploader for the TBestie LTFU study, after ethics approval, data-governance sign-off and a real REDCap project.
+- Stage 1 (now): prototype on synthetic data against an embedded mock REDCap. There is no REDCap account yet, so every assumption about real REDCap is written down and checked later (section 8). Stage 2 (later): production use on real SITB extracts by any team, each after its own ethics approval, data-governance sign-off and REDCap project. The TBestie LTFU study is the first user.
 - UI languages: Bahasa Indonesia and English from the first release.
 
 ## 2. Hard rules
 1. No patient-identifying data in the repo, tests, logs, screenshots or fixtures: no NIK, names, addresses, BPJS or record numbers, and no raw SITB exports. Real files live outside the repo folder. tools/make_inventory.py is the only code that opens a real export, and it writes structure only.
 2. Identifiers are handled right after parsing, per the profile: dropped, or pseudonymised with a keyed hash (HMAC-SHA256). The key is never in the repo. Raw identifiers never reach logs, charts, error messages or the REDCap client.
-3. record_id is episode-level: a keyed hash of the form and the SITB registration number, so one patient can have several records. patient_pid, a keyed hash of the cleaned NIK, links a patient's episodes.
+3. record_id is episode-level: a keyed hash of the form, the facility code and the patient register number, so one patient can have several records. patient_pid, a keyed hash of the cleaned NIK, links a patient's episodes.
 4. NIKs are cleaned before hashing: digits only, exactly 16, no scientific notation or leading apostrophe. A blank or invalid NIK never gets a pseudonym; it is reported with a count.
 5. The API token is never written to a file, log or error message. Memory only; OS keyring only if the user opts in.
 6. core/ has no UI imports. The UI never imports PyCap; only core/client.py does.
@@ -25,6 +26,7 @@ Read this fully before writing or changing code. If a request conflicts with thi
 11. Uploads use overwriteBehavior=normal, so a blank cell never erases a value already in REDCap.
 12. The Explore screen is descriptive only: no p-values, tests or models.
 13. Do not add features outside the PRD without asking.
+14. Universal by design: no facility, region, study or institution is hard-coded in code or profiles. Facility details come from the file. Each team brings its own pseudonym key, REDCap project and settings.
 
 ## 3. Stack
 Python 3.10+, PySide6, pandas, openpyxl, xlrd (legacy .xls), pydantic and PyYAML (profiles), PyCap, Flask for the mock (small, synchronous, bundles cleanly with PyInstaller), matplotlib with the Qt backend (import lazily), pytest and pytest-qt, PyInstaller (one-folder), Inno Setup (Windows), a .dmg (macOS), GitHub Actions. Dev-only: xlwt, to write .xls test fixtures.
@@ -44,7 +46,7 @@ Python 3.10+, PySide6, pandas, openpyxl, xlrd (legacy .xls), pydantic and PyYAML
   docs/          PRD.md, PROGRESS.md, DECISIONS.md, REDCAP_ASSUMPTIONS.md, forms/ (structure-only column inventories)
 
 ## 5. What the real SITB files look like (structure only)
-- docs/forms/tbc03_so_columns.csv and tbc03_ro_columns.csv list every column: official number, flattened header, type, fill rate, suggested role, and the spellings seen in low-cardinality columns. Build the profiles from these. Do not ask for the real exports.
+- docs/forms/tbc03_so_columns.csv and tbc03_ro_columns.csv list every column: official number, flattened header, type, fill rate, suggested role, and the spellings seen in low-cardinality columns. Build the profiles from these. Do not ask for the real exports. They come from one facility's exports (2020 to 2025). Other facilities, district-level exports and later SITB editions may add spellings or columns: unknown spellings are reported, and layout differences block reading with a clear message.
 - Each file starts with a title block (form name, edition, facility, period; SO also states the case count, "Jumlah Kasus"), then a four-row merged header (Excel rows 13 to 16), a row of official column numbers in brackets such as (39) (row 17), the data rows from row 18, and one trailing blank row. The exports have no summary row at the bottom; the reader still skips one if present. Use the official numbers as stable keys (c039, or c083_bta for a sub-column), not the labels.
 - Dates are usually text (dd/mm/yyyy); accept real Excel date cells too. The exports are legacy .xls.
 - SO has 84 numbered columns. RO has 114 numbers, some covering a smear and culture pair (144 sheet columns). Value sets differ between the two forms.
@@ -85,4 +87,4 @@ Data overview, variable summary, distributions, missingness, group comparison, r
 - After each phase, update docs/PROGRESS.md: what is done, what is next, open questions.
 
 ## 11. Open decisions (ask, do not assume)
-Intel Mac build; ethics and data-governance status for stage 2; which forms come after TBC.03; repeating instruments for RO follow-up; who holds the pseudonym key; REDCap API access policy, version and project status at the institution.
+Intel Mac build; ethics and data-governance status for stage 2; which forms come after TBC.03; repeating instruments for RO follow-up; who holds the pseudonym key; REDCap API access policy, version and project status at the institution; whether Nomor Register Pasien is unique nationally (record_id includes the facility code until this is known).

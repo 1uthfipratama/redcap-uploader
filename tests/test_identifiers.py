@@ -133,3 +133,16 @@ def test_load_key_reads_file_outside_repo(monkeypatch, tmp_path):
 def test_apply_refuses_short_key(so_file, so):
     with pytest.raises(ids.PseudonymKeyInvalid):
         ids.apply_identifiers(_parsed(so_file, so), so, b"short")
+
+
+def test_same_register_number_at_two_facilities_stays_two_records(tmp_path, so):
+    """District and province exports mix facilities; record_id includes the facility code."""
+    from synthetic.register_writer import RegisterSpec, write_register
+    from tests.conftest import so_row
+
+    shared = so_row(1)["c009"]
+    rows = [so_row(1, c021="0000001"), so_row(2, c009=shared, c021="0000002")]
+    path = write_register(tmp_path / "two_facilities.xls", so, RegisterSpec(rows=rows))
+    frame, _, _ = ids.apply_identifiers(_parsed(path, so), so, TEST_KEY)
+    assert frame[RECORD_ID_FIELD].iloc[0] != frame[RECORD_ID_FIELD].iloc[1]
+    assert frame["c021"].tolist() == ["0000001", "0000002"]  # the facility code itself is uploaded as data

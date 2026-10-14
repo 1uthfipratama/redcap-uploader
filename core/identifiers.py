@@ -136,7 +136,7 @@ def apply_identifiers(frame: pd.DataFrame, profile: Profile, key: bytes) -> tupl
         if spec.key not in out.columns:
             continue
         if spec.role == Role.record_id_source:
-            cleaned = [clean_register_number(x) for x in out[spec.key]]
+            cleaned = [_scoped(x, scope_row) for x, scope_row in zip(out[spec.key], _scope_values(out, profile))]
             ids = _hash_all(key, ("record", form), cleaned, issues)
             out[RECORD_ID_FIELD] = pd.Series(ids, index=out.index, dtype=object)
             report.record_id_missing_rows = [r for r, i in zip(rows, ids) if i is None]
@@ -176,6 +176,18 @@ def apply_identifiers(frame: pd.DataFrame, profile: Profile, key: bytes) -> tupl
         len(report.dropped), len(report.quasi_dropped), report.pseudonymised, dict(report.nik_status),
     )
     return out, report, issues
+
+
+def _scope_values(frame: pd.DataFrame, profile: Profile) -> list[tuple[str, ...]]:
+    """Per row, the cleaned values of the record_id scope columns (for example the facility code)."""
+    keys = [k for k in profile.record_id_scope if k in frame.columns]
+    return [tuple(clean_register_number(frame.at[i, k]) or "" for k in keys) for i in frame.index]
+
+
+def _scoped(register_number: object, scope: tuple[str, ...]) -> str | None:
+    """The text hashed into record_id: scope values, then the register number. None if no number."""
+    number = clean_register_number(register_number)
+    return None if number is None else "".join((*scope, number))
 
 
 def _hash_all(key: bytes, purpose: tuple[str, ...], cleaned: list[str | None], issues: list[Issue]) -> list[str | None]:

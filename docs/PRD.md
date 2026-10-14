@@ -2,6 +2,8 @@
 
 2026-10-14 · @Luthfi
 
+> Scope, 2026-10-14: the tool is for any researcher or programme team using SITB, not one study or site. The TBestie LTFU study is the first user.
+>
 > Snapshot of the PRD doc, 2026-10-14. Where it differs from `CONTRIBUTING.md` (record ID, upload path, mock framework), `CONTRIBUTING.md` wins.
 
 ## Overview

@@ -17,6 +17,8 @@ layout:
     period: Periode
   case_count_label: Jumlah Kasus
   date_format: '%d/%m/%Y'
+record_id_scope:
+- c021
 instrument: tbc03_so
 choice_sets:
   yes_no:
@@ -524,42 +526,48 @@ columns:
 - key: c017
   number: 17
   label: Provinsi
-  role: constant
+  role: data
+  field: fasyankes_province
   type: text
   label_id: Alamat Lengkap Faskes > Provinsi
   label_en: Facility province
 - key: c018
   number: 18
   label: Kabupaten/Kota
-  role: constant
+  role: data
+  field: fasyankes_district
   type: text
   label_id: Alamat Lengkap Faskes > Kabupaten/Kota
   label_en: Facility district
 - key: c019
   number: 19
   label: Jenis Fasyankes
-  role: constant
+  role: data
+  field: fasyankes_type
   type: text
   label_id: Alamat Lengkap Faskes > Jenis Fasyankes
   label_en: Facility type
 - key: c020
   number: 20
   label: Kepemilikan Fasyankes
-  role: constant
+  role: data
+  field: fasyankes_ownership
   type: text
   label_id: Alamat Lengkap Faskes > Kepemilikan Fasyankes
   label_en: Facility ownership
 - key: c021
   number: 21
   label: Kode Fasyankes
-  role: constant
+  role: data
+  field: fasyankes_code
   type: text
   label_id: Alamat Lengkap Faskes > Kode Fasyankes
   label_en: Facility code
 - key: c022
   number: 22
   label: Nama Fasyankes
-  role: constant
+  role: data
+  field: fasyankes_name
   type: text
   label_id: Alamat Lengkap Faskes > Nama Fasyankes
   label_en: Facility name

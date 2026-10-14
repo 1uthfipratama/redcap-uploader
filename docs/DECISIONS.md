@@ -40,3 +40,11 @@ Each entry says what was decided, why, and when to revisit it. Newest at the bot
 **Pseudonym fields are flagged as identifiers in the dictionary.** `patient_pid` and `sitb_pid` are marked `Identifier? = y`, so REDCap's de-identified exports leave them out. `record_id` cannot be flagged.
 
 **Request log.** Every API call is kept in `RedcapClient.log` for the teaching panels. The token is replaced by `********` and record data by a count (`<5 records>`). Error text is kept: it contains REDCap's lines of record, field, value and message, which hold pseudonyms and coded values, never raw identifiers.
+
+## 2026-10-14 · Universal use
+
+**For any SITB user, not one site.** No facility, region or study is hard-coded. Facility, district and province come from each row, so exports at district or province level, which mix facilities, work too. Each team uses its own pseudonym key and REDCap project.
+
+**Facility columns are data.** The six facility-address columns are uploaded (`fasyankes_province`, `fasyankes_district`, `fasyankes_type`, `fasyankes_ownership`, `fasyankes_code`, `fasyankes_name`), not treated as constant. Facility details are not patient identifiers.
+
+**record_id includes the facility code.** It is now a keyed hash of the form, the facility code (`record_id_scope` in the profile) and Nomor Register Pasien. It is not yet known whether that number is unique nationally. If it is not, two facilities could share a number and their patients would be merged into one record, silently. Including the facility code means the worst case is the opposite: one episode exported under two facility codes would give two records, which is visible and easy to fix. Revisit once SITB's numbering is confirmed.

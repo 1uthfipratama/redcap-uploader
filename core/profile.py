@@ -104,6 +104,9 @@ class LayoutSpec(_Model):
 class Profile(_Model):
     identity: Identity
     layout: LayoutSpec = Field(default_factory=LayoutSpec)
+    # Column keys whose values join the register number in the record_id hash, e.g. the
+    # facility code, so the same register number at two facilities never merges two patients.
+    record_id_scope: list[str] = Field(default_factory=list)
     instrument: str
     choice_sets: dict[str, list[Choice]] = Field(default_factory=dict)
     columns: list[ColumnSpec] = Field(default_factory=list)
@@ -191,6 +194,9 @@ def profile_problems(profile: Profile) -> list[str]:
         codes = [c.code for c in choices]
         if len(codes) != len(set(codes)):
             problems.append(f"choice set '{name}' repeats a code")
+    for key in profile.record_id_scope:
+        if key not in keys:
+            problems.append(f"record_id_scope refers to unknown key '{key}'")
     if not profile.is_generic and sum(c.role == Role.record_id_source for c in profile.columns) != 1:
         problems.append("a register profile needs exactly one record_id_source column")
     return problems
