@@ -104,3 +104,17 @@ Each entry says what was decided, why, and when to revisit it. Newest at the bot
 **REDCap's own messages stay as they are, with a plain fix beside them.** Rewriting the server's words risks losing detail. Instead each message is matched to a kind of problem (category, date, range, number, unknown field, record ID, permission, other), and the "How to fix" column explains that kind. The patterns are an assumption about REDCap's wording, to be checked in phase 7 (A07).
 
 **The privacy wording describes what the app does, and makes no promises.** For example: the code "cannot be turned back into the NIK without the key." It never claims the data is anonymous: pseudonymised data can still be personal data under data-protection rules.
+
+## 2026-10-14 · Phase 6
+
+**One-folder builds, not single files.** A single-file executable has to unpack itself to a temporary folder every time it starts, which is slower, and antivirus tools often flag it. The installer and the .dmg wrap a one-folder build instead.
+
+**Per-user install on Windows by default.** Hospital and university computers often deny administrator rights. The installer therefore installs to the user's own programs folder by default, and offers "all users" (Program Files) when an administrator runs it.
+
+**Measured on Windows 11 (local build, Python 3.13, PySide6 6.12):** the app folder is 207 MB, the window appears in about 3.0 s, and the full demo smoke test (500 records) passes in about 5 s. CI writes the installer and .dmg sizes and start-up times into each build run's summary.
+
+**The build runs only by hand or on a version tag.** On a private repository, GitHub counts macOS minutes ten times and Windows minutes twice against the free allowance. Tests run on Linux, the cheapest runner, on every push.
+
+**Signing waits for certificates.** Both workflows sign and notarise only when the secrets exist, and skip cleanly otherwise. Until then, docs/INSTALL.md explains the SmartScreen "Run anyway" and the macOS "Open Anyway" steps. A Windows code-signing certificate and an Apple Developer account (99 USD a year) are needed before wider rollout.
+
+**Apple silicon only on macOS for now** (the macos-14 runner). An Intel build needs a second runner or a universal build. That is still the open decision about Intel Macs.

@@ -9,6 +9,10 @@ It runs against a built-in mock REDCap until a real project is available.
 
 Status: prototype; phases 1 to 5 done (core pipeline, mock REDCap, upload, synthetic data, the desktop wizard in Indonesian and English, the Explore screen, and "What's happening?" explanations on every screen). See [docs/PROGRESS.md](docs/PROGRESS.md).
 
+## Install
+
+Installers come from GitHub Actions: **Actions → Build installers → Run workflow**, then download the `windows-installer` or `macos-dmg` artifact. [docs/INSTALL.md](docs/INSTALL.md) explains installing on each system, in Indonesian and English.
+
 ## Run the app
 
 ```bash
