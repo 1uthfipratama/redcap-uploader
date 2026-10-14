@@ -2,7 +2,7 @@
 
 ## Status (2026-10-14)
 
-Phases 1 to 4 are built; 170 tests pass. Phase 3's last gate check is a person trial (below). Next is phase 5 (teaching panels).
+Phases 1 to 5 are built; 189 tests pass. Two gate checks need people: the phase 3 trial and the phase 5 reading test (below). Next is phase 6 (Windows and macOS installers).
 
 ## Done
 
@@ -105,9 +105,27 @@ Run it with `.venv/Scripts/python -m app`.
 - **Where it opens:** from the Check step once there are no errors, and from Result.
 - **Speed:** a 10,000-row file shows its summary and first chart in under 3 seconds.
 
-## Next: phase 5
+### Phase 5 (teaching layer)
 
-The "What's happening?" panels: a plain-language note on every step and every Explore tab. Steps that call the API also show the actual request from the client's log, with the token masked.
+- **`app/teaching.py`:** a "What's happening?" panel on every wizard step and every Explore tab. It is collapsed by default and written in plain Indonesian or English.
+  - **Connect:** what the practice REDCap and the token are.
+  - **Choose file:** how the form was recognised, where the header and data were found, and what a profile is.
+  - **Preview:** how identifiers become keyed-hash pseudonyms, how many NIKs got a patient link, and why column numbers beat names.
+  - **Check:** what a dry run is, an example of a spelling turned into a code, and "Tidak diketahui".
+  - **Upload:** the existence check, all-or-nothing batches, "normal" overwrite, and the import-file path.
+  - **Result:** how to check the records in REDCap.
+  - **Explore tabs:** what each statistic means, why missing data matters, and why small groups are flagged.
+- **Request log:** steps that talk to REDCap list every request, first in words, then as the actual parameters (`content=record · overwriteBehavior=normal · data=<100 records> · token=********`).
+- **Plain fixes for REDCap's rejections:** `core/client.classify_problem`, with the Result table showing a "How to fix" per problem.
+- **Tests:** `tests/test_teaching.py` checks the panels in both languages, the request lines, and that no label, button, table cell, panel, request log or log line holds the token or an identifier.
+
+**Still open for the phase 5 gate:**
+1. **Reading test.** Someone who has never used REDCap reads the Upload/Result panel and can say what call was made.
+2. **Wording review (your call).** The privacy explanations (pseudonyms, the key) and the Indonesian phrasing should be read by you or a colleague before real users see them.
+
+## Next: phase 6
+
+Installers: a PyInstaller one-folder build per OS, an Inno Setup installer for Windows and a .dmg for macOS, GitHub Actions on Windows and Apple-silicon runners, a `--smoke-test` flag that runs the demo flow headlessly in CI, and a one-page researcher README in both languages.
 
 ## When the REDCap account arrives (phase 7, short version)
 

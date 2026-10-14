@@ -94,3 +94,13 @@ Each entry says what was decided, why, and when to revisit it. Newest at the bot
 **The Variables table shows a one-line summary.** On screen it has eight readable columns ("mean 41.3 (SD 20.8) · median 41 (Q1–Q3 26–53) · range 0–85"). The saved CSV keeps every statistic in its own column.
 
 **Tables fit their content.** Numbers are right-aligned, and only free-text columns stretch. A table is as tall as its rows, up to 12, and then scrolls. Each save button sits next to the chart or table it saves.
+
+## 2026-10-14 · Phase 5
+
+**Explanations are collapsed by default.** The panel sits under each step's work and opens with one click, so first-time users can learn and regular users aren't slowed down.
+
+**Each request is shown twice: in words, then as the real parameters.** The words ("Sent 100 records to be saved (overwrite: normal)") are for people new to REDCap. The parameter line is for anyone who wants to see the real API call. Both come from `RedcapClient.log`, which already masks the token and turns record data into a count. The panel therefore cannot show anything secret, and a test checks this.
+
+**REDCap's own messages stay as they are, with a plain fix beside them.** Rewriting the server's words risks losing detail. Instead each message is matched to a kind of problem (category, date, range, number, unknown field, record ID, permission, other), and the "How to fix" column explains that kind. The patterns are an assumption about REDCap's wording, to be checked in phase 7 (A07).
+
+**The privacy wording describes what the app does, and makes no promises.** For example: the code "cannot be turned back into the NIK without the key." It never claims the data is anonymous: pseudonymised data can still be personal data under data-protection rules.
