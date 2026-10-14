@@ -35,3 +35,11 @@ def test_import_csv_check_catches_labels_and_dates(tmp_path, so):
     path.write_text("record_id,sex,tx_start_date\nabc,Laki-laki,14/03/2025\n", encoding="utf-8")
     problems = check_import_csv(path, dictionary)
     assert any("sex" in p for p in problems) and any("tx_start_date" in p for p in problems)
+
+
+def test_missing_fields_lists_what_the_project_lacks(so):
+    from core.dictionary import missing_fields
+
+    fields = [r["field_name"] for r in build_dictionary(so)]
+    assert missing_fields(so, fields) == []
+    assert missing_fields(so, [f for f in fields if f not in ("age", "sex")]) == ["age", "sex"]

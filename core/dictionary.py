@@ -91,3 +91,9 @@ def choices_from_row(row: dict[str, str]) -> dict[str, str]:
             code, label = part.split(",", 1)
             out[code.strip()] = label.strip()
     return out
+
+
+def missing_fields(profile: Profile, project_fields: list[str]) -> list[str]:
+    """Fields this form uploads that the REDCap project does not have, in upload order."""
+    have = set(project_fields)
+    return [f for f in profile.redcap_fields() if f not in have]
