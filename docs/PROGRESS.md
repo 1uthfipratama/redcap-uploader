@@ -2,7 +2,7 @@
 
 ## Status (2026-10-14)
 
-Phase 1a (profiles and core pipeline) passes its gate. Next is phase 1b (mock REDCap, client and upload).
+Phases 1a (profiles and core pipeline) and 1b (mock REDCap, client and upload) pass their gates. 104 tests pass. Next is phase 2 (synthetic data).
 
 ## Done
 
@@ -28,6 +28,17 @@ Phase 1a (profiles and core pipeline) passes its gate. Next is phase 1b (mock RE
   - end to end for SO and RO
   - privacy guards: no spreadsheets, keys or plausible NIKs in tracked files
 
+### Phase 1b
+
+- **REDCap behaviour, observed and assumed.** `tools/observe_pycap.py` logs what PyCap sends. `docs/REDCAP_ASSUMPTIONS.md` lists 17 assumptions, each with its source, status and test.
+- **`core/dictionary.py`:** builds a profile's data dictionary, with API keys and the 18 CSV headers.
+- **`mock_redcap/`:** a Flask mock on 127.0.0.1 with a random port and token. It answers version, project, metadata, exportFieldNames and formEventMapping, plus record import and export. Imports are all-or-nothing and checked against the dictionary, and blanks never erase stored values.
+- **`core/client.py`:** the only module that imports PyCap. It keeps a masked request log, parses REDCap error lines, and checks URL and token so the token never appears in an error.
+- **`core/upload.py`:** counts new and existing records first, then imports in batches. It stops at the first rejected batch, keeps the earlier ones, and maps each problem to its spreadsheet row.
+- **`core/export_csv.py` and `tools/export_dictionary.py`:** write the dictionary CSV and an import-ready CSV for REDCap's Data Import Tool, with a checker.
+- **`tests/contract/`:** one test per assumption. They run against the mock, or against a real test project when `REDCAP_TEST_URL` and `REDCAP_TEST_TOKEN` are set.
+- **`tests/test_upload.py`:** the gate test. The fixture goes to the mock and back; a rejected batch stops the upload; neither the token nor any identifier appears in any log.
+
 ## Run
 
 ```bash
@@ -36,9 +47,15 @@ python -m venv .venv
 .venv/Scripts/python -m pytest
 ```
 
-## Next: phase 1b
+## Next: phase 2
 
-`docs/REDCAP_ASSUMPTIONS.md`, the Flask mock, `core/client.py`, `core/upload.py`, `core/export_csv.py`, and `tests/contract/`. See `docs/PRD.md` (Milestones).
+Synthetic data generators for TBC.03 SO and RO, each with a clean file and a messy file plus `defects.json`. They build on `synthetic/register_writer.py`. See `docs/PRD.md` (Milestones).
+
+## When the REDCap account arrives (phase 7, short version)
+
+1. `python -m tools.export_dictionary tbc03_so out/tbc03_so_dictionary.csv`, then upload that file on the test project's Data Dictionary page.
+2. Set `REDCAP_TEST_URL` and `REDCAP_TEST_TOKEN` in your own terminal, then run `pytest tests/contract`.
+3. Mark each line of `docs/REDCAP_ASSUMPTIONS.md` verified or different.
 
 ## Open questions
 

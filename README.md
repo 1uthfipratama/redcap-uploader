@@ -7,7 +7,7 @@ A desktop app (Windows and macOS) that guides a researcher through uploading a s
 
 It runs against a built-in mock REDCap until a real project is available.
 
-Status: prototype, phase 1a done (core pipeline, no UI yet). See [docs/PROGRESS.md](docs/PROGRESS.md).
+Status: prototype; phases 1a and 1b done (core pipeline, mock REDCap, client and upload; no UI yet). See [docs/PROGRESS.md](docs/PROGRESS.md).
 
 ## Develop
 

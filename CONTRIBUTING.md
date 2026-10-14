@@ -31,11 +31,11 @@ Python 3.10+, PySide6, pandas, openpyxl, xlrd (legacy .xls), pydantic and PyYAML
 
 ## 4. Repo layout
   app/           PySide6 wizard, step screens, Explore screen, teaching panels
-  core/          profile, layout, parse, identifiers, mapping, normalise, validate, client, upload, export_csv, explore (no UI imports)
+  core/          grid, layout, profile, parse, identifiers, mapping, normalise, validate, pipeline, dictionary, client, upload, export_csv, explore (no UI imports)
   profiles/      tbc03_so.yaml, tbc03_ro.yaml, generic.yaml
   mock_redcap/   embedded Flask mock; its data dictionary is generated from the selected profile
   synthetic/     generators that reproduce the TBC.03 layouts with fake values
-  tools/         make_inventory.py (structure-only column inventory from a real export)
+  tools/         make_inventory.py (structure-only column inventory from a real export), observe_pycap.py, export_dictionary.py
   i18n/          id.json, en.json
   config/        settings, redcap_target.yaml
   tests/         unit tests; tests/contract/ runs against the mock or a real test project
