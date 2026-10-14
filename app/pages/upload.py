@@ -70,8 +70,8 @@ class UploadPage(StepPage):
         self.detail.setText("")
 
         def done(plan):
+            state.plan = plan  # before set_busy(False), which re-reads ready()
             self.ctx.set_busy(False)
-            state.plan = plan
             self._show_plan()
 
         def failed(key, params):
@@ -112,9 +112,9 @@ class UploadPage(StepPage):
                           rows_by_record=rows, plan=state.plan, on_progress=progress)
 
         def done(result):
-            self.ctx.set_busy(False)
             state.result = result
             state.plan = None  # counts change after an upload
+            self.ctx.set_busy(False)
             proceed()
 
         def failed(key, params):

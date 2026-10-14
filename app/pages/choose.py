@@ -111,9 +111,9 @@ class ChoosePage(StepPage):
         profiles = self.state.profiles
 
         def done(detected):
-            self.ctx.set_busy(False)
             self.state.detected = detected
             self.state.form_code = detected.form_code
+            self.ctx.set_busy(False)
             self._fill_forms()
             self._show_summary()
             self.ctx.refresh_nav()
