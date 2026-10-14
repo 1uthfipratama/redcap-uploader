@@ -7,7 +7,7 @@ A desktop app (Windows and macOS) that guides any researcher or TB programme tea
 
 It runs against a built-in mock REDCap until a real project is available.
 
-Status: prototype; phases 1a and 1b done (core pipeline, mock REDCap, client and upload; no UI yet). See [docs/PROGRESS.md](docs/PROGRESS.md).
+Status: prototype; phases 1a, 1b and 2 done (core pipeline, mock REDCap, client and upload, synthetic data; no UI yet). See [docs/PROGRESS.md](docs/PROGRESS.md).
 
 ## Develop
 

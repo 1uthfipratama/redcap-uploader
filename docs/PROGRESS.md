@@ -2,7 +2,7 @@
 
 ## Status (2026-10-14)
 
-Phases 1a (profiles and core pipeline) and 1b (mock REDCap, client and upload) pass their gates. 104 tests pass. Next is phase 2 (synthetic data).
+Phases 1a (profiles and core pipeline), 1b (mock REDCap, client and upload) and 2 (synthetic data) pass their gates. 138 tests pass. Next is phase 3 (desktop UI).
 
 ## Done
 
@@ -39,6 +39,33 @@ Phases 1a (profiles and core pipeline) and 1b (mock REDCap, client and upload) p
 - **`tests/contract/`:** one test per assumption. They run against the mock, or against a real test project when `REDCAP_TEST_URL` and `REDCAP_TEST_TOKEN` are set.
 - **`tests/test_upload.py`:** the gate test. The fixture goes to the mock and back; a rejected batch stops the upload; neither the token nor any identifier appears in any log.
 
+### Phase 2
+
+- **`synthetic/generate.py`:** a seeded generator for TBC.03 SO (500 rows by default) and RO (100 rows). It reads only the profile and the structure-only inventory:
+  - Fill rates and spellings follow the inventory, so values look like a real export ("L" and "P", "Neg").
+  - Distributions are plausible but made up (`synthetic/distributions.yaml`).
+  - Every identifier is obviously fake.
+  - Options: `--facilities N` makes a district-style export that mixes facilities; `--year` sets the period.
+- **Messy files** plant 17 defects, each listed in `<form>_defects.json` with its row, column and how it should be reported:
+  - four spelling variants
+  - a missing record ID and a duplicate record ID
+  - age out of range
+  - a mixed date format and a future date
+  - an unknown spelling and a missing required field
+  - two bad NIKs
+  - an extra blank row
+  - a changed header label
+  - a summary row
+  - a wrong case count (SO)
+- **`synthetic/defects.py`:** checks that every planted defect was reported.
+- **Gate tests:** `tests/test_synthetic.py`.
+
+Make files with:
+
+```bash
+.venv/Scripts/python -m synthetic.generate tbc03_so --out out/synthetic
+```
+
 ## Run
 
 ```bash
@@ -47,9 +74,9 @@ python -m venv .venv
 .venv/Scripts/python -m pytest
 ```
 
-## Next: phase 2
+## Next: phase 3
 
-Synthetic data generators for TBC.03 SO and RO, each with a clean file and a messy file plus `defects.json`. They build on `synthetic/register_writer.py`. See `docs/PRD.md` (Milestones).
+The PySide6 wizard on top of `core/`: six steps, Indonesian and English, the embedded mock in Demo mode, and long operations off the UI thread.
 
 ## When the REDCap account arrives (phase 7, short version)
 

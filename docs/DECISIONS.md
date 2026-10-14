@@ -48,3 +48,13 @@ Each entry says what was decided, why, and when to revisit it. Newest at the bot
 **Facility columns are data.** The six facility-address columns are uploaded (`fasyankes_province`, `fasyankes_district`, `fasyankes_type`, `fasyankes_ownership`, `fasyankes_code`, `fasyankes_name`), not treated as constant. Facility details are not patient identifiers.
 
 **record_id includes the facility code.** It is now a keyed hash of the form, the facility code (`record_id_scope` in the profile) and Nomor Register Pasien. It is not yet known whether that number is unique nationally. If it is not, two facilities could share a number and their patients would be merged into one record, silently. Including the facility code means the worst case is the opposite: one episode exported under two facility codes would give two records, which is visible and easy to fix. Revisit once SITB's numbering is confirmed.
+
+## 2026-10-14 · Phase 2
+
+**Planted defects follow the real files.** The plan listed "a missing summary row" as a defect, but the real exports have no summary row. The messy file plants the two cases that can actually happen instead:
+- an unexpected summary row, which is skipped and counted;
+- a case count in the title block that does not match the rows read (SO only).
+
+**Synthetic values use the real spellings.** For each choice, the generator writes the spelling the inventory shows most often (for example "L", not "Laki-laki"). Clean files therefore exercise the same value maps that real files do. Weights for key fields are in `synthetic/distributions.yaml` and are made up; nothing comes from patient-level data.
+
+**No outcome dates after today.** A synthetic outcome whose date would fall after today is left blank, as for a patient still on treatment. Clean files therefore always pass the "date in the future" check.
