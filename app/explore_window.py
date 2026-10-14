@@ -23,6 +23,7 @@ from PySide6.QtWidgets import (
 )
 
 from app.charts import Chart
+from app.teaching import TeachingPanel
 from app.i18n import Translator
 from app.theme import Brand
 from app.widgets import Panel, fill_table, label, new_table
@@ -43,6 +44,8 @@ def _num(x):
 
 class Tab(QWidget):
     """Pickers, chart and its save button, table and its save button, notes."""
+
+    teach_keys: tuple[str, ...] = ()  # "What's happening?" paragraphs for this tab
 
     def __init__(self, win: "ExploreWindow", with_chart: bool = True):
         super().__init__()
@@ -89,6 +92,9 @@ class Tab(QWidget):
         self.panel.body.addWidget(self.table)
         self.footnote = label("Muted")
         self.panel.body.addWidget(self.footnote)
+        self.teach = TeachingPanel(self.tr)
+        self.panel.body.addSpacing(8)
+        self.panel.body.addWidget(self.teach)
         self.export = pd.DataFrame()
 
     def picker(self, caption_key: str) -> QComboBox:
@@ -120,6 +126,7 @@ class Tab(QWidget):
             w = self.controls.itemAt(i).widget()
             if w is not None and w.property("key"):
                 w.setText(self.tr(w.property("key")))
+        self.teach.set_content([self.tr(k) for k in self.teach_keys])
         self.refresh()
 
     def refresh(self) -> None:
@@ -154,6 +161,8 @@ def small_note(tr, flags, settings: dict) -> str:
 # ---- tabs -------------------------------------------------------------------------
 
 class OverviewTab(Tab):
+    teach_keys = ("ui.teach.ex_overview", "ui.teach.ex_private")
+
     def __init__(self, win):
         super().__init__(win, with_chart=False)
         for w in (self.table, self.table_title, self.save_csv):
@@ -181,6 +190,8 @@ class OverviewTab(Tab):
 
 
 class VariablesTab(Tab):
+    teach_keys = ("ui.teach.ex_centre", "ui.teach.ex_spread")
+
     EXPORT = ["label", "field", "type", "count", "blank", "blank_pct", "unknown", "distinct",
               "mean", "sd", "min", "q1", "median", "q3", "max", "top"]
 
@@ -221,6 +232,8 @@ class VariablesTab(Tab):
 
 
 class DistributionTab(Tab):
+    teach_keys = ("ui.teach.ex_distribution",)
+
     def __init__(self, win):
         super().__init__(win)
         self.field = self.picker("ui.explore.field")
@@ -274,6 +287,8 @@ class DistributionTab(Tab):
 
 
 class MissingTab(Tab):
+    teach_keys = ("ui.teach.ex_missing",)
+
     def refresh(self) -> None:
         tr, win = self.tr, self.win
         data = explore.missingness(win.frame, win.fields)
@@ -294,6 +309,8 @@ class MissingTab(Tab):
 
 
 class CompareTab(Tab):
+    teach_keys = ("ui.teach.ex_compare", "ui.teach.ex_small")
+
     def __init__(self, win):
         super().__init__(win)
         self.field = self.picker("ui.explore.field")
@@ -370,6 +387,8 @@ class CompareTab(Tab):
 
 
 class OverTimeTab(Tab):
+    teach_keys = ("ui.teach.ex_over_time",)
+
     def __init__(self, win):
         super().__init__(win)
         self.field = self.picker("ui.explore.date_field")

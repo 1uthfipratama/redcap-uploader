@@ -122,6 +122,22 @@ class PreviewPage(StepPage):
         self.state.overrides[key] = box.currentData()
         self.state.prepared_stale = True
 
+    def teaching(self):
+        tr, p = self.tr, self.state.prepared
+        if not p or p.frame is None:
+            return [], None
+        if p.profile.is_generic:
+            return [tr("ui.teach.preview_generic")], None
+        report = p.identifier_report
+        dropped = len(report.dropped) if report else 0
+        location = len(report.quasi_dropped) if report else 0
+        nik = report.nik_status.get("ok", 0) if report else 0
+        problems = sum(v for k, v in (report.nik_status.items() if report else []) if k != "ok")
+        return [tr("ui.teach.preview_dropped", dropped=dropped, location=location),
+                tr("ui.teach.preview_hash"),
+                tr("ui.teach.preview_nik", ok=nik, problems=problems),
+                tr("ui.teach.preview_numbers")], None
+
     # ---- navigation ------------------------------------------------------------
     def advance(self, proceed) -> None:
         state = self.state

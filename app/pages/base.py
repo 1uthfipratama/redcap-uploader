@@ -10,6 +10,7 @@ from PySide6.QtWidgets import QScrollArea, QVBoxLayout, QWidget
 from app.i18n import Translator
 from app.state import AppState
 from app.theme import Brand
+from app.teaching import TeachingPanel
 from app.widgets import Panel, label
 
 
@@ -54,8 +55,12 @@ class StepPage(QWidget):
         layout.addSpacing(8)
         layout.addWidget(self.panel)
         layout.addWidget(self.message)
+        self.teach = TeachingPanel(self.tr)
+        layout.addSpacing(6)
+        layout.addWidget(self.teach)
         layout.addStretch(1)
         self._error: tuple[str, dict] | None = None
+        self.log_start = 0  # client.log position when this step was entered
 
     # ---- language --------------------------------------------------------------
     def retranslate(self) -> None:
@@ -67,6 +72,19 @@ class StepPage(QWidget):
 
     def translate(self) -> None:
         """Pages set their own text here; called on start and on every language switch."""
+
+    # ---- "What's happening?" ---------------------------------------------------
+    def teaching(self) -> tuple[list[str], list | None]:
+        """Paragraphs for this step, and the REDCap requests to show (None: this step sends none)."""
+        return [], None
+
+    def requests_here(self) -> list:
+        client = self.state.client
+        return list(client.log[self.log_start:]) if client else []
+
+    def update_teaching(self) -> None:
+        paragraphs, requests = self.teaching()
+        self.teach.set_content(paragraphs, requests)
 
     # ---- navigation ------------------------------------------------------------
     def on_enter(self) -> None:

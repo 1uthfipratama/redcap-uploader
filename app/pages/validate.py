@@ -74,6 +74,18 @@ class ValidatePage(StepPage):
         self.save.setVisible(bool(p.issues))
         self.explore.setVisible(p.ready)
 
+    def teaching(self):
+        tr, p = self.tr, self.state.prepared
+        paragraphs = [tr("ui.teach.check_dry")]
+        if p and p.changes:
+            c = p.changes[0]
+            paragraphs.append(tr("ui.teach.check_codes_example", spelling=c.spelling, field=c.field, code=c.code,
+                                 label=c.label))
+        else:
+            paragraphs.append(tr("ui.teach.check_codes"))
+        paragraphs.append(tr("ui.teach.check_unknown"))
+        return paragraphs, None
+
     def ready(self) -> bool:
         p = self.state.prepared
         return bool(p and p.ready)

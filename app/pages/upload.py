@@ -89,6 +89,13 @@ class UploadPage(StepPage):
         self.plan.setText(self.tr("ui.upload.plan", total=plan.total, project=project))
         self.detail.setText(self.tr("ui.upload.plan_detail", new=plan.new, existing=plan.existing))
 
+    def teaching(self):
+        tr, target = self.tr, self.state.target
+        return [tr("ui.teach.upload_plan"),
+                tr("ui.teach.upload_batches", size=target.batch_size),
+                tr("ui.teach.upload_overwrite"),
+                tr("ui.teach.upload_alt")], self.requests_here()
+
     # ---- upload --------------------------------------------------------------
     def ready(self) -> bool:
         return self.state.plan is not None
@@ -98,6 +105,7 @@ class UploadPage(StepPage):
         frame = state.prepared.frame
         rows = dict(zip(frame[RECORD_ID_FIELD], frame[ROW].astype(int)))
         records = self._records()
+        state.upload_log_from = len(state.client.log)
         self.progress.setValue(0)
         self.progress.show()
 

@@ -31,6 +31,7 @@ class AppState:
     prepared_stale: bool = False  # Generic mapping changed since the last prepare()
     plan: UploadPlan | None = None
     result: UploadResult | None = None
+    upload_log_from: int = 0  # position in client.log where the last upload's requests start
 
     @property
     def profile(self) -> Profile | None:

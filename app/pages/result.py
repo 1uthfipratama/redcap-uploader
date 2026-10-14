@@ -9,6 +9,7 @@ from PySide6.QtWidgets import QFileDialog, QGridLayout, QHBoxLayout, QPushButton
 
 from app.pages.base import StepPage
 from app.widgets import fill_table, label, new_table
+from core.client import classify_problem
 
 
 class ResultPage(StepPage):
@@ -75,11 +76,20 @@ class ResultPage(StepPage):
         rows = []
         if rejected:
             for p in rejected.problems:
-                rows.append([rejected.rows.get(p.record, ""), p.record, p.field, p.value, p.message])
-        headers = [tr(f"ui.result.h_{k}") for k in ("row", "record", "field", "value", "message")]
-        fill_table(self.problems, headers, rows, stretch=(4,))
+                fix = tr(f"ui.fix.redcap_{classify_problem(p.message)}", field=p.field or "—")
+                rows.append([rejected.rows.get(p.record, ""), p.field, p.value, p.message, fix])
+        headers = [tr(f"ui.result.h_{k}") for k in ("row", "field", "value", "message", "fix")]
+        fill_table(self.problems, headers, rows, stretch=(3, 4))
         self.problems.setVisible(bool(rows))
         self.problems_title.setVisible(bool(rows))
+
+    def teaching(self):
+        tr, result, client = self.tr, self.state.result, self.state.client
+        if result is None:
+            return [], None
+        text = tr("ui.teach.result_done") if result.complete else tr("ui.teach.result_stopped")
+        requests = list(client.log[self.state.upload_log_from:]) if client else []
+        return [text, tr("ui.teach.result_check")], requests
 
     def ready(self) -> bool:
         return False  # the last step; "Upload another file" starts again

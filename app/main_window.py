@@ -134,6 +134,7 @@ class MainWindow(QMainWindow):
         self.stack.setCurrentIndex(index)
         self.rail.set_current(index)
         self.page.clear_error()
+        self.page.log_start = len(self.state.client.log) if self.state.client else 0
         self.page.on_enter()
         self.refresh_nav()
 
@@ -158,6 +159,7 @@ class MainWindow(QMainWindow):
         self.next.setEnabled(not self.busy and self.page.ready())
         self.language.setEnabled(not self.busy)
         self.mode_note.setText(self.tr(f"ui.mode.{self.state.mode}") if self.state.project else "")
+        self.page.update_teaching()
 
     def open_explore(self) -> None:
         """Summaries of the cleaned table in its own window; matplotlib loads only now."""

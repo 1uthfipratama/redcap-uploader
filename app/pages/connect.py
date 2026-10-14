@@ -72,6 +72,11 @@ class ConnectPage(StepPage):
         self._show_key_status()
         self._show_status()
 
+    def teaching(self):
+        tr = self.tr
+        mode = tr("ui.teach.connect_demo") if self.state.mode == "demo" else tr("ui.teach.connect_real")
+        return [mode, tr("ui.teach.connect_token"), tr("ui.teach.connect_calls")], self.requests_here()
+
     # ---- mode, key and connection --------------------------------------------
     def _mode_changed(self) -> None:
         self.state.mode = "demo" if self.demo.isChecked() else "real"

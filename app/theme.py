@@ -110,5 +110,10 @@ def style_sheet(b: Brand) -> str:
                     border-bottom: 2px solid transparent; font-family: "{b.heading_font}"; }}
     QTabBar::tab:selected {{ color: {c['navy']}; border-bottom: 2px solid {c['primary']}; }}
     QTabBar::tab:hover {{ color: {c['primary']}; }}
+    #Teach {{ background: {c['surface']}; border: 1px solid {c['border']}; border-radius: {b.panel_radius}px; }}
+    #TeachText {{ color: {c['text']}; }}
+    #TeachHeading {{ color: {c['navy']}; font-weight: 600; padding-top: 4px; }}
+    #TeachCode {{ font-family: "Consolas", "Menlo", monospace; font-size: 9.5pt; color: {c['muted']};
+                  background: {c['canvas']}; border-radius: 6px; padding: 6px 8px; }}
     #DropZone[hover="true"] {{ border-color: {c['primary']}; background: {c['primary_soft']}; }}
     """

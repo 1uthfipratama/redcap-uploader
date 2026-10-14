@@ -157,6 +157,19 @@ class ChoosePage(StepPage):
         self.values["rows"].setText(str(len(d.layout.data_rows)))
         self.values["columns"].setText(str(len(d.layout.columns)))
 
+    def teaching(self):
+        tr, d, profile = self.tr, self.state.detected, self.state.profile
+        if d is None:
+            return [tr("ui.teach.choose_start")], None
+        layout = d.layout
+        found = tr("ui.teach.choose_layout", header=layout.header_start + 1, numbers=(layout.number_row or 0) + 1,
+                   first=layout.first_data_row + 1, rows=len(layout.data_rows),
+                   skipped=len(layout.blank_rows) + len(layout.summary_rows))
+        if profile is None or profile.is_generic:
+            return [tr("ui.teach.choose_generic")], None
+        return [tr("ui.teach.choose_found", form=profile.identity.name), found, tr("ui.teach.choose_profile")], (
+            self.requests_here() or None)
+
     # ---- navigation ------------------------------------------------------------
     def ready(self) -> bool:
         return self.state.detected is not None and self.state.form_code is not None
