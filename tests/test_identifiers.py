@@ -14,8 +14,8 @@ from tests.conftest import OTHER_TEST_KEY, TEST_KEY, fake_nik, raw_identifier_st
     ("0000123456789012", "0000123456789012", "ok"),
     ("'0000123456789012", "0000123456789012", "ok"),  # Excel text prefix
     (" 0000 1234 5678 9012 ", "0000123456789012", "ok"),
-    (3171012345678901.0, "3171012345678901", "ok"),  # exact as a float (below 2**53)
-    (9471012345678901.0, None, "precision_lost"),  # above 2**53: digits may be gone
+    (1001012345678901.0, "1001012345678901", "ok"),  # exact as a float (below 2**53)
+    (9571012345678901.0, None, "precision_lost"),  # above 2**53: digits may be gone
     ("3.17101E+15", None, "scientific"),
     ("317101234567890", None, "wrong_length"),
     ("31710123456789AB", None, "not_digits"),
