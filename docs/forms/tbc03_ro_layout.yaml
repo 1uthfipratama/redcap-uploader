@@ -1,0 +1,42 @@
+files: 2
+data_rows_total: 1741
+kind: numbered
+header_rows_1based:
+- 13
+- 16
+number_row_1based: 17
+first_data_row_1based: 18
+sheet_columns_used: 144
+official_numbers: 114
+title_lines:
+- PENANGGULANGAN TBC NASIONAL
+- TBC.03 RO FASYANKES
+- REGISTER PASIEN TBC RO FASYANKES PADUAN JANGKA PENDEK & INDIVIDUAL
+- Nama Fasyankes
+- <value>
+- Kode Fasyankes
+- Jenis Fasyankes
+- <value>
+- Kabupaten/ Kota
+- <value>
+- Provinsi
+- <value>
+- Periode
+title_labels:
+- jenis fasyankes
+- kabupaten/ kota
+- kode fasyankes
+- nama fasyankes
+- penanggulangan tbc nasional
+- periode
+- provinsi
+- register pasien tbc ro fasyankes paduan jangka pendek & individual
+trailing_blank_rows:
+- 1
+- 1
+summary_rows_at_end:
+- 0
+- 0
+metadata_case_count_matches_rows:
+- true
+- true
