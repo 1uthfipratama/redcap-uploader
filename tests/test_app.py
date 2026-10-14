@@ -135,3 +135,22 @@ def test_no_hard_coded_text_in_app():
                 if isinstance(arg, ast.Constant) and isinstance(arg.value, str) and any(ch.isalpha() for ch in arg.value):
                     problems.append(f"{path.name}:{node.lineno} {arg.value!r}")
     assert problems == []
+
+
+def test_generic_sheet_maps_by_name_and_reaches_the_check_step(qtbot, window, tmp_path):
+    w = window
+    sheet = tmp_path / "other_study.csv"
+    sheet.write_text("Record ID,Nama,Umur,Jenis Kelamin\nG-001,NAMA-SINTETIS-0001,34,1\nG-002,NAMA-SINTETIS-0002,51,2\n",
+                     encoding="utf-8")
+    next_step(qtbot, w)
+    next_step(qtbot, w)
+    w.pages[1].load(sheet)
+    idle(qtbot, w)
+    assert w.state.form_code == "generic"
+    next_step(qtbot, w)
+    matches = {m.source_label: m.field for m in w.state.prepared.mapping.matches}
+    assert matches["Umur"] == "age" and matches["Jenis Kelamin"] == "sex" and matches["Nama"] is None
+    assert matches["Record ID"] == "record_id"
+    assert "NAMA-SINTETIS-0001" not in w.state.prepared.frame.to_string()
+    next_step(qtbot, w)
+    assert w.stack.currentIndex() == 3 and w.state.prepared.ready

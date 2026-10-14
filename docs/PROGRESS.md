@@ -2,7 +2,7 @@
 
 ## Status (2026-10-14)
 
-Phases 1a (profiles and core pipeline), 1b (mock REDCap, client and upload) and 2 (synthetic data) pass their gates. 138 tests pass. Next is phase 3 (desktop UI).
+Phases 1a, 1b, 2 and 3 are built; 149 tests pass. Phase 3's last gate check is a person trial (below). Next is phase 4 (Explore screen).
 
 ## Done
 
@@ -74,24 +74,27 @@ python -m venv .venv
 .venv/Scripts/python -m pytest
 ```
 
-## In progress: phase 3 (desktop UI)
+### Phase 3 (desktop UI)
 
-The design follows RPRI's brand (`config/brand.yaml`: blue #1E6BBD, navy #002157, Rubik and DM Sans).
+- **The wizard:** `app/`, a PySide6 app in RPRI's style. Brand tokens are in `config/brand.yaml`: blue #1E6BBD, navy #002157, Rubik and DM Sans with Segoe UI as fallback.
+- **The six steps:** Connect, Choose file, Preview and map, Check, Upload and Result. A step rail shows progress, Back and Next drive the flow, and a language switch in the header changes every screen at once.
+- **Demo mode:** starts the built-in mock with a random token and a throwaway pseudonym key. "Or try a sample" generates a clean or messy synthetic file.
+- **Real mode:** takes the URL and token (memory only) and a pseudonym key file kept outside the app folder. It checks that the project has the form's fields, and offers the dictionary CSV when it doesn't.
+- **No frozen screens or stack traces:** slow work runs off the UI thread, and errors show as plain messages. The details go to a log in the user's app-data folder, without the token.
+- **Tests:** `tests/test_app.py` uses pytest-qt.
+  - It runs the demo end to end in both languages, plus a messy file and a Generic sheet.
+  - It checks language switching, and that a bad token or unreachable server gives a plain message without echoing the token.
+  - It checks that no visible text is hard-coded in `app/`.
 
-Done:
-- `app/theme.py`, `app/i18n.py`, `app/workers.py`, `app/state.py`, `app/widgets.py`
-- `app/pages/base.py` and `app/pages/connect.py`
+Run it with `.venv/Scripts/python -m app`.
 
-Still to do:
-1. The pages for choosing the file, preview, validate, upload and result.
-2. `app/main_window.py` and `app/__main__.py`.
-3. The `ui.*` strings in `i18n/id.json` and `en.json`.
-4. pytest-qt smoke tests, and a test that `app/` has no hard-coded text.
-5. Optional, needs your OK: the official RPRI logo and the Rubik and DM Sans font files in `app/assets/`.
+**Still open for the phase 3 gate:**
+1. **Person trial.** Someone who has never used REDCap tries the clean sample unaided. The target is under 5 minutes.
+2. **Logo and fonts (needs your OK).** The official RPRI logo goes in `app/assets/brand/logo.png`. The Rubik and DM Sans files (open licence) go in `app/assets/fonts/`. Until then, the header shows "RPRI" as text.
 
-## Next: phase 3 (plan)
+## Next: phase 4
 
-The PySide6 wizard on top of `core/`: six steps, Indonesian and English, the embedded mock in Demo mode, and long operations off the UI thread.
+The Explore screen: descriptive summaries and charts computed in `core/explore`. It opens from the Check step once there are no errors, and from Result.
 
 ## When the REDCap account arrives (phase 7, short version)
 

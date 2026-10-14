@@ -7,7 +7,15 @@ A desktop app (Windows and macOS) that guides any researcher or TB programme tea
 
 It runs against a built-in mock REDCap until a real project is available.
 
-Status: prototype; phases 1a, 1b and 2 done (core pipeline, mock REDCap, client and upload, synthetic data; no UI yet). See [docs/PROGRESS.md](docs/PROGRESS.md).
+Status: prototype; phases 1 to 3 done (core pipeline, mock REDCap, upload, synthetic data, and the desktop wizard in Indonesian and English). See [docs/PROGRESS.md](docs/PROGRESS.md).
+
+## Run the app
+
+```bash
+.venv/Scripts/python -m app
+```
+
+It opens in Demo mode, with a practice REDCap built in. On the Choose file step, "Or try a sample" loads a synthetic file, so you can walk through the whole flow without real data.
 
 ## Develop
 

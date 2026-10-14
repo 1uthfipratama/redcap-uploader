@@ -58,3 +58,15 @@ Each entry says what was decided, why, and when to revisit it. Newest at the bot
 **Synthetic values use the real spellings.** For each choice, the generator writes the spelling the inventory shows most often (for example "L", not "Laki-laki"). Clean files therefore exercise the same value maps that real files do. Weights for key fields are in `synthetic/distributions.yaml` and are made up; nothing comes from patient-level data.
 
 **No outcome dates after today.** A synthetic outcome whose date would fall after today is left blank, as for a patient still on treatment. Clean files therefore always pass the "date in the future" check.
+
+## 2026-10-14 · Phase 3
+
+**RPRI's look, with few colours.** One blue for actions and the current step, navy for headings, and white panels on a pale canvas. There are no badges or status pills. Errors and successes are shown as a coloured headline line, not as banners.
+
+**"Check" instead of "Validate"** in the step names. It is the plainer word in both languages ("Periksa").
+
+**Demo mode uses a fresh random pseudonym key** each session. Demo mode only ever handles synthetic files, so there is nothing to link across sessions, and no key ever needs to be stored.
+
+**Real mode checks the project before reading the file.** If the REDCap project lacks fields the form uploads, the app stops at Choose file. It names the missing fields and offers the data dictionary CSV to set the project up, instead of failing later with a server error on every batch.
+
+**An unreadable value is reported once.** A required date that cannot be read used to appear twice: as "not a date" and as "required but empty". Now only the first is shown.
