@@ -34,6 +34,12 @@ class Translator(QObject):
     def fix(self, issue: Issue) -> str:
         return messages.suggest_fix(issue, self.lang)
 
+    def problem(self, issue: Issue) -> str:
+        """The message alone, without the "Row 14, age:" prefix (for tables with their own columns)."""
+        params = {"row": issue.row, "field": issue.field, **issue.params}
+        text = messages.text(f"issue.{issue.code}", self.lang, **params)
+        return text[:1].upper() + text[1:]
+
 
 def default_language() -> str:
     """Follows the operating system: Indonesian on an Indonesian system, English otherwise."""

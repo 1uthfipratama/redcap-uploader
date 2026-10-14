@@ -28,6 +28,7 @@ class AppState:
     form_code: str | None = None
     overrides: dict[str, str | None] = field(default_factory=dict)  # Generic mapping corrections
     prepared: Prepared | None = None
+    prepared_stale: bool = False  # Generic mapping changed since the last prepare()
     plan: UploadPlan | None = None
     result: UploadResult | None = None
 
@@ -44,6 +45,7 @@ class AppState:
     def forget_file(self) -> None:
         self.detected = self.prepared = self.plan = self.result = None
         self.overrides = {}
+        self.prepared_stale = False
 
     def stop_mock(self) -> None:
         if self.mock is not None:
