@@ -82,3 +82,15 @@ Each entry says what was decided, why, and when to revisit it. Newest at the bot
 **The SD is the sample SD** (n−1). A group with one value has no SD rather than 0.
 
 **No hover tooltips in charts.** In a desktop app, the table next to each chart is the reliable way to read exact values. Tooltips can come later if users ask for them.
+
+## 2026-10-14 · Explore readability pass
+
+**Every chart has a title, a one-row legend under it, and room to breathe.** Saved PNGs are self-explaining. Legends never sit on the data or the axis label. Long category labels wrap. Count axes use whole numbers. Horizontal charts get taller as rows are added, instead of squeezing bars.
+
+**Answer comparisons are grouped bars with every answer shown.** The first version stacked four named answers and folded the rest into "other". That hid "lost to follow-up", the outcome this tool's first study cares about most. Now each answer is a row with one bar per group. Up to four groups are drawn, each in its own validated colour, and the table always lists all groups.
+
+**Blanks stay out of distribution charts.** A field that is 90% blank used to squeeze every real answer into slivers. Blanks are now a note under the chart and a row in the table. Percentages are shares of answered records, and the table also gives the share of all records.
+
+**The Variables table shows a one-line summary.** On screen it has eight readable columns ("mean 41.3 (SD 20.8) · median 41 (Q1–Q3 26–53) · range 0–85"). The saved CSV keeps every statistic in its own column.
+
+**Tables fit their content.** Numbers are right-aligned, and only free-text columns stretch. A table is as tall as its rows, up to 12, and then scrolls. Each save button sits next to the chart or table it saves.
