@@ -137,6 +137,27 @@ def parse_error_lines(message: str) -> list[ImportProblem]:
     return problems
 
 
+# Words REDCap uses in import errors, mapped to a kind of problem the app can explain in plain
+# language (assumption A07; the wording is checked against a real server in phase 7).
+PROBLEM_PATTERNS: list[tuple[str, str]] = [
+    ("permission", r"permission|token"),
+    ("unknown_field", r"not found|fields were not|not valid: "),
+    ("record_id", r"record id"),
+    ("category", r"categor|choice"),
+    ("date", r"\bdate\b"),
+    ("range", r"range|minimum|maximum"),
+    ("number", r"integer|number"),
+]
+
+
+def classify_problem(message: str) -> str:
+    """The kind of an import problem ("category", "date", "range", ...), or "other"."""
+    import re
+
+    text = message.casefold()
+    return next((kind for kind, pattern in PROBLEM_PATTERNS if re.search(pattern, text)), "other")
+
+
 class RedcapClient:
     """One REDCap project, reached by URL and token. Switching Demo to Real changes only these two."""
 

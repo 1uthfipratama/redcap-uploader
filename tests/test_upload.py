@@ -91,3 +91,19 @@ def test_bad_settings_never_echo_the_token(url, token, what):
         RedcapClient(url, token)
     assert caught.value.what == what
     assert token not in str(caught.value) and token not in repr(caught.value)
+
+
+@pytest.mark.parametrize("message, kind", [
+    ("The value is not a valid category for sex", "category"),
+    ("The value is not a valid date (YYYY-MM-DD)", "date"),
+    ("The value is outside the allowed range (0 to 120)", "range"),
+    ("This field has a validation type of integer, but the value is not an integer", "number"),
+    ("The following fields were not found in the project as real data fields: x", "unknown_field"),
+    ("The record ID is missing", "record_id"),
+    ("You do not have permissions to use the API", "permission"),
+    ("Something else entirely", "other"),
+])
+def test_redcap_problems_are_classified_for_plain_fixes(message, kind):
+    from core.client import classify_problem
+
+    assert classify_problem(message) == kind
