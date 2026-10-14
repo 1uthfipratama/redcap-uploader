@@ -10,7 +10,7 @@ Phases 1a, 1b, 2 and 3 are built; 149 tests pass. Phase 3's last gate check is a
 - **`core/grid.py`:** reads `.xls`, `.xlsx` and `.csv`. CSV encoding and delimiter are detected.
 - **`core/layout.py`:** finds the title block, the merged four-row header, the official column numbers, sub-columns (RO smear/culture pairs), data rows, and blank or summary rows.
 - **`tools/make_inventory.py` and the inventories.** `docs/forms/tbc03_so_*` and `tbc03_ro_*` were built from the 2020–2024 and 2025 exports of one hospital and hold structure only.
-- **`core/profile.py` and the profiles.** The schema has roles, choice sets with codes, rules and field-name checks. `profiles/tbc03_so.yaml` has 84 columns, 61 of them uploaded; `tbc03_ro.yaml` has 144 columns, 125 uploaded; `generic.yaml` covers Generic mode.
+- **`core/profile.py` and the profiles.** The schema has roles, choice sets with codes, rules and field-name checks. `profiles/tbc03_so.yaml` has 84 columns, 65 of them uploaded (67 REDCap fields with record_id and patient_pid); `tbc03_ro.yaml` has 144 columns, 129 uploaded (131 fields); `generic.yaml` covers Generic mode.
 - **Pipeline:** `core/pipeline.py` runs parse, identifiers, mapping, normalise and validate.
   - **Identifiers** are dropped or pseudonymised right after parsing.
   - **Generic mode** matches columns by name, synonym and similarity, and drops look-alike identifier columns.
