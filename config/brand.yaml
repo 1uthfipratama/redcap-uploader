@@ -32,3 +32,8 @@ chart:
   series: ["#1E6BBD", "#EB6834", "#1BAF7A", "#EDA100"]
   neutral: "#A7B0BC"
   grid: "#E6EAF0"
+# Packaging
+bundle_id: org.yayasanrpri.redcap-uploader   # macOS bundle identifier
+publisher: Yayasan RPRI
+icon_windows: app/assets/brand/icon.ico       # optional; the default icon is used when missing
+icon_macos: app/assets/brand/icon.icns
