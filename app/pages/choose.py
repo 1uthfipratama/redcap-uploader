@@ -78,6 +78,7 @@ class ChoosePage(StepPage):
         self._show_summary()
 
     def on_enter(self) -> None:
+        self._show_summary()
         demo = self.state.mode == "demo"
         for w in (self.sample_label, self.sample_clean, self.sample_messy):
             w.setVisible(demo)
