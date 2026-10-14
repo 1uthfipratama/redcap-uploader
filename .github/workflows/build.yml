@@ -139,10 +139,8 @@ jobs:
           QT_QPA_PLATFORM: offscreen  # CI machines have no screen to show the window on
         run: |
           size=$(du -m dist/*.dmg | cut -f1)
-          start=$(date +%s.%N)
-          "dist/REDCap Uploader.app/Contents/MacOS/REDCap Uploader" --quit-after-start
-          end=$(date +%s.%N)
-          echo "| macOS | dmg ${size} MB | start-up $(echo "$end - $start" | bc) s |" >> "$GITHUB_STEP_SUMMARY"
+          seconds=$(python3 -c "import subprocess, time; t = time.perf_counter(); subprocess.run(['dist/REDCap Uploader.app/Contents/MacOS/REDCap Uploader', '--quit-after-start'], check=True); print(round(time.perf_counter() - t, 1))")
+          echo "| macOS | dmg ${size} MB | start-up ${seconds} s |" >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         with:
           name: macos-dmg

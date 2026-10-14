@@ -111,7 +111,7 @@ Each entry says what was decided, why, and when to revisit it. Newest at the bot
 
 **Per-user install on Windows by default.** Hospital and university computers often deny administrator rights. The installer therefore installs to the user's own programs folder by default, and offers "all users" (Program Files) when an administrator runs it.
 
-**Measured on Windows 11 (local build, Python 3.13, PySide6 6.12):** the app folder is 207 MB, the window appears in about 3.0 s, and the full demo smoke test (500 records) passes in about 5 s. CI writes the installer and .dmg sizes and start-up times into each build run's summary.
+**Measured.** On Windows 11 (local build, Python 3.13, PySide6 6.12) the app folder is 207 MB, the window appears in about 3.0 s, and the full demo smoke test (500 records) passes in about 5 s. On the first CI run (Python 3.12) the Windows installer was 63 MB and the macOS .dmg 76 MB, and the macOS smoke test passed in 16 s on the Apple-silicon runner. Later runs write sizes and start-up times into each run's summary.
 
 **The build runs only by hand or on a version tag.** On a private repository, GitHub counts macOS minutes ten times and Windows minutes twice against the free allowance. Tests run on Linux, the cheapest runner, on every push.
 

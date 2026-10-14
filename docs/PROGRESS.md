@@ -2,7 +2,7 @@
 
 ## Status (2026-10-14)
 
-Phases 1 to 5 are built; 189 tests pass. Two gate checks need people: the phase 3 trial and the phase 5 reading test (below). Next is phase 6 (Windows and macOS installers).
+Phases 1 to 6 are built; 198 tests pass on Windows, macOS and Linux. The gate checks left need people or a REDCap account (below). Next is phase 7 (real REDCap check), when the account arrives.
 
 ## Done
 
@@ -123,9 +123,23 @@ Run it with `.venv/Scripts/python -m app`.
 1. **Reading test.** Someone who has never used REDCap reads the Upload/Result panel and can say what call was made.
 2. **Wording review (your call).** The privacy explanations (pseudonyms, the key) and the Indonesian phrasing should be read by you or a colleague before real users see them.
 
-## Next: phase 6
+### Phase 6 (installers)
 
-Installers: a PyInstaller one-folder build per OS, an Inno Setup installer for Windows and a .dmg for macOS, GitHub Actions on Windows and Apple-silicon runners, a `--smoke-test` flag that runs the demo flow headlessly in CI, and a one-page researcher README in both languages.
+- **`--smoke-test`:** runs the whole demo headlessly (500 records uploaded, Explore opened) and exits 0 on success. `--quit-after-start` measures start-up time.
+- **`build/redcap_uploader.spec`:** a PyInstaller one-folder build for both systems, with an `.app` bundle on macOS.
+- **`build/windows/installer.iss`:** Inno Setup. Installs per user by default (no administrator rights), with "all users" optional, a Start menu entry and an uninstaller.
+- **`build/macos/make_dmg.sh`:** builds a .dmg with an Applications link. Signing and notarisation run only when their secrets exist.
+- **`.github/workflows/ci.yml`:** tests on Linux on every push.
+- **`.github/workflows/build.yml`:** builds, tests and smoke-tests the **built** package on Windows and Apple silicon. It runs only when started by hand (choose both, windows or macos) or on a `v*` tag.
+- **First full run (2026-10-14):** both jobs passed. The Windows installer is 63 MB and the macOS .dmg 76 MB. On Windows 11 the window appears in about 3 s.
+- **CSV fix:** the Windows job found that Python 3.12 (the build's version) guessed a semicolon CSV's delimiter wrongly. Delimiters are now chosen by a fixed rule on every version.
+- **`docs/INSTALL.md`:** install guide in Indonesian and English (SmartScreen, macOS Open Anyway, Demo mode, where the log is).
+
+Get the installers from **Actions → Build installers → Run workflow**, then download the artifacts from the finished run.
+
+**Still open for the phase 6 gate:**
+1. **Clean-machine test.** Install on a Windows PC and a Mac that have no Python, start the app, and run the demo flow in both languages.
+2. **Signing (before wider rollout).** A Windows code-signing certificate and an Apple Developer account; the workflow steps are ready for their secrets.
 
 ## When the REDCap account arrives (phase 7, short version)
 
