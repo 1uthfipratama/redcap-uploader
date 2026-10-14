@@ -2,7 +2,7 @@
 
 ## Status (2026-10-14)
 
-Phases 1 to 6 are built; 198 tests pass on Windows, macOS and Linux. The gate checks left need people or a REDCap account (below). Next is phase 7 (real REDCap check), when the account arrives.
+Phases 1 to 6 are built; 197 tests pass on Windows, macOS and Linux. The gate checks left need people or a REDCap account (below). Next is phase 7 (real REDCap check), when the account arrives.
 
 ## Done
 
