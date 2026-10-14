@@ -1,0 +1,1113 @@
+# Form profile. Generated once from docs/forms/tbc03_so_columns.csv; edit this file, not the generator.
+identity:
+  form_code: tbc03_so
+  name: TBC.03 SO (register pasien TBC sensitif obat)
+  edition: INDONESIA 2020/EDISI 3
+  recognition:
+  - TBC.03 SO
+layout:
+  kind: numbered
+  first_data_row: 18
+  metadata_labels:
+    facility: Nama Fasyankes
+    facility_code: Kode Fasyankes
+    facility_type: Jenis Fasyankes
+    district: Kabupaten/ Kota
+    province: Provinsi
+    period: Periode
+  case_count_label: Jumlah Kasus
+  date_format: '%d/%m/%Y'
+instrument: tbc03_so
+choice_sets:
+  yes_no:
+  - code: '1'
+    label_id: Ya
+    label_en: 'Yes'
+  - code: '0'
+    label_id: Tidak
+    label_en: 'No'
+  yes_no_unknown:
+  - code: '1'
+    label_id: Ya
+    label_en: 'Yes'
+  - code: '0'
+    label_id: Tidak
+    label_en: 'No'
+  - code: '99'
+    label_id: Tidak diketahui
+    label_en: Unknown
+    spellings:
+    - Tidak Tahu
+  hiv_status:
+  - code: '1'
+    label_id: ODHIV
+    label_en: Living with HIV
+  - code: '0'
+    label_id: Bukan ODHIV
+    label_en: Not living with HIV
+  - code: '99'
+    label_id: Tidak diketahui
+    label_en: Unknown
+    spellings:
+    - Tidak Tahu
+  sex:
+  - code: '1'
+    label_id: Laki-laki
+    label_en: Male
+    spellings:
+    - L
+  - code: '2'
+    label_id: Perempuan
+    label_en: Female
+    spellings:
+    - P
+  pregnancy:
+  - code: '1'
+    label_id: Hamil
+    label_en: Pregnant
+  - code: '0'
+    label_id: Tidak Hamil
+    label_en: Not pregnant
+  - code: '99'
+    label_id: Tidak diketahui
+    label_en: Unknown
+    spellings:
+    - Tidak Tahu
+  month:
+  - code: '1'
+    label_id: Januari
+    label_en: January
+  - code: '2'
+    label_id: Februari
+    label_en: February
+  - code: '3'
+    label_id: Maret
+    label_en: March
+  - code: '4'
+    label_id: April
+    label_en: April
+  - code: '5'
+    label_id: Mei
+    label_en: May
+  - code: '6'
+    label_id: Juni
+    label_en: June
+  - code: '7'
+    label_id: Juli
+    label_en: July
+  - code: '8'
+    label_id: Agustus
+    label_en: August
+  - code: '9'
+    label_id: September
+    label_en: September
+  - code: '10'
+    label_id: Oktober
+    label_en: October
+  - code: '11'
+    label_id: November
+    label_en: November
+  - code: '12'
+    label_id: Desember
+    label_en: December
+  treat_standard:
+  - code: '1'
+    label_id: Sesuai standar
+    label_en: Meets the standard
+  - code: '0'
+    label_id: Tidak sesuai standar
+    label_en: Does not meet the standard
+  dx_type:
+  - code: '1'
+    label_id: Terkonfirmasi bakteriologis
+    label_en: Bacteriologically confirmed
+  - code: '2'
+    label_id: Terdiagnosis klinis
+    label_en: Clinically diagnosed
+  tb_site:
+  - code: '1'
+    label_id: TBC Paru
+    label_en: Pulmonary
+  - code: '2'
+    label_id: TBC Ekstraparu
+    label_en: Extrapulmonary
+  tx_history:
+  - code: '1'
+    label_id: Baru
+    label_en: New
+  - code: '2'
+    label_id: Kambuh
+    label_en: Relapse
+  - code: '3'
+    label_id: Diobati setelah gagal kategori 1
+    label_en: Treated after failure of category 1
+  - code: '4'
+    label_id: Diobati setelah gagal kategori 2
+    label_en: Treated after failure of category 2
+  - code: '5'
+    label_id: Diobati setelah gagal pengobatan lini 2
+    label_en: Treated after failure of second-line treatment
+  - code: '6'
+    label_id: Diobati setelah putus berobat
+    label_en: Treated after loss to follow-up
+  - code: '7'
+    label_id: Pernah diobati tidak diketahui hasilnya
+    label_en: Previously treated, outcome unknown
+  - code: '8'
+    label_id: Lain-lain
+    label_en: Other
+  - code: '99'
+    label_id: Tidak diketahui
+    label_en: Unknown
+    spellings:
+    - Tidak Tahu
+  tst_type:
+  - code: '1'
+    label_id: Tuberkulin
+    label_en: Tuberculin skin test
+  - code: '2'
+    label_id: IGRA
+    label_en: IGRA
+  - code: '98'
+    label_id: TDL (tidak dilakukan)
+    label_en: Not done
+    spellings:
+    - TDL
+  tst_result:
+  - code: '0'
+    label_id: Negatif
+    label_en: Negative
+  - code: '1'
+    label_id: Positif (>=10mm atau >=5mm)
+    label_en: Positive (>=10 mm or >=5 mm)
+  - code: '98'
+    label_id: TDL (tidak dilakukan)
+    label_en: Not done
+    spellings:
+    - TDL
+  cxr:
+  - code: '1'
+    label_id: Pos
+    label_en: Positive
+    spellings:
+    - Positif
+  - code: '0'
+    label_id: Neg
+    label_en: Negative
+    spellings:
+    - Negatif
+  - code: '98'
+    label_id: TDL (tidak dilakukan)
+    label_en: Not done
+    spellings:
+    - TDL
+  regimen_so:
+  - code: '1'
+    label_id: Kategori 1
+    label_en: Category 1
+  - code: '2'
+    label_id: Kategori 2
+    label_en: Category 2
+  - code: '3'
+    label_id: Kategori Anak
+    label_en: Child category
+  - code: '4'
+    label_id: Paduan tidak standar TB SO
+    label_en: Non-standard DS-TB regimen
+  drug_source:
+  - code: '1'
+    label_id: Program TBC
+    label_en: TB programme
+  - code: '2'
+    label_id: Bayar sendiri
+    label_en: Self-paid
+  - code: '3'
+    label_id: Lain-lain
+    label_en: Other
+  dx_test_type:
+  - code: '1'
+    label_id: TCM Xpert
+    label_en: Xpert
+  - code: '2'
+    label_id: TCM BDMAX
+    label_en: BD MAX
+  microscopy:
+  - code: '0'
+    label_id: Neg
+    label_en: Negative
+    spellings:
+    - Negatif
+  - code: '1'
+    label_id: 1 (scanty)
+    label_en: 1 AFB (scanty)
+    spellings:
+    - '1'
+  - code: '2'
+    label_id: 2 (scanty)
+    label_en: 2 AFB (scanty)
+    spellings:
+    - '2'
+  - code: '3'
+    label_id: 3 (scanty)
+    label_en: 3 AFB (scanty)
+    spellings:
+    - '3'
+  - code: '4'
+    label_id: 4 (scanty)
+    label_en: 4 AFB (scanty)
+    spellings:
+    - '4'
+  - code: '5'
+    label_id: 5 (scanty)
+    label_en: 5 AFB (scanty)
+    spellings:
+    - '5'
+  - code: '6'
+    label_id: 6 (scanty)
+    label_en: 6 AFB (scanty)
+    spellings:
+    - '6'
+  - code: '7'
+    label_id: 7 (scanty)
+    label_en: 7 AFB (scanty)
+    spellings:
+    - '7'
+  - code: '8'
+    label_id: 8 (scanty)
+    label_en: 8 AFB (scanty)
+    spellings:
+    - '8'
+  - code: '9'
+    label_id: 9 (scanty)
+    label_en: 9 AFB (scanty)
+    spellings:
+    - '9'
+  - code: '11'
+    label_id: 1+
+    label_en: 1+
+  - code: '12'
+    label_id: 2+
+    label_en: 2+
+  - code: '13'
+    label_id: 3+
+    label_en: 3+
+  - code: '98'
+    label_id: TDL (tidak dilakukan)
+    label_en: Not done
+    spellings:
+    - TDL
+  validity:
+  - code: '1'
+    label_id: Valid
+    label_en: Valid
+  - code: '2'
+    label_id: Invalid
+    label_en: Invalid
+  - code: '3'
+    label_id: No Result
+    label_en: No result
+  - code: '4'
+    label_id: Error
+    label_en: Error
+  mtb_detect:
+  - code: '1'
+    label_id: D (MTB terdeteksi)
+    label_en: MTB detected
+    spellings:
+    - D
+    - MTB Detected (D)
+  - code: '0'
+    label_id: ND (MTB tidak terdeteksi)
+    label_en: MTB not detected
+    spellings:
+    - ND
+  resistance:
+  - code: '1'
+    label_id: RD (resistansi terdeteksi)
+    label_en: Resistance detected
+    spellings:
+    - RD
+    - Resistance Detected (RD)
+  - code: '0'
+    label_id: RND (resistansi tidak terdeteksi)
+    label_en: Resistance not detected
+    spellings:
+    - RND
+    - Resistance NOT Detected (RND)
+  culture:
+  - code: '0'
+    label_id: Neg
+    label_en: Negative
+    spellings:
+    - Negatif
+  - code: '1'
+    label_id: Pos
+    label_en: Positive
+    spellings:
+    - Positif
+  - code: '2'
+    label_id: NTM
+    label_en: NTM
+  - code: '3'
+    label_id: TKM
+    label_en: TKM (as recorded)
+  - code: '98'
+    label_id: TDL (tidak dilakukan)
+    label_en: Not done
+    spellings:
+    - TDL
+  outcome:
+  - code: '1'
+    label_id: Sembuh
+    label_en: Cured
+  - code: '2'
+    label_id: Pengobatan Lengkap
+    label_en: Treatment completed
+  - code: '3'
+    label_id: Gagal
+    label_en: Treatment failed
+  - code: '4'
+    label_id: Meninggal
+    label_en: Died
+  - code: '5'
+    label_id: Putus berobat (lost to follow up)
+    label_en: Lost to follow-up
+  - code: '6'
+    label_id: Tidak dievaluasi/pindah
+    label_en: Not evaluated / transferred out
+  - code: '7'
+    label_id: Gagal karena Perubahan Diagnosis
+    label_en: Failed due to change of diagnosis
+  dm_screen_so:
+  - code: '1'
+    label_id: Positif
+    label_en: Positive
+  - code: '0'
+    label_id: Negatif
+    label_en: Negative
+  dm_therapy:
+  - code: '1'
+    label_id: OHO
+    label_en: Oral glucose-lowering drugs
+  - code: '2'
+    label_id: Inj Insulin
+    label_en: Insulin injection
+columns:
+- key: c001
+  number: 1
+  label: No. Urut
+  role: ignore
+  type: text
+  label_id: No. Urut
+  label_en: Row number
+- key: c002
+  number: 2
+  label: No. Registrasi Fasyankes
+  role: identifier_drop
+  type: text
+  label_id: No. Registrasi Fasyankes
+  label_en: Facility registration number
+- key: c003
+  number: 3
+  label: No.Registrasi TBC Kab/Kota
+  role: identifier_drop
+  type: text
+  label_id: No.Registrasi TBC Kab/Kota
+  label_en: District TB registration number
+- key: c004
+  number: 4
+  label: Bulan
+  role: data
+  field: reg_month
+  type: choice
+  choice_set: month
+  label_id: Bulan
+  label_en: Registration month
+- key: c005
+  number: 5
+  label: No. Rekam Medis
+  role: identifier_drop
+  type: text
+  label_id: No. Rekam Medis
+  label_en: Medical record number
+- key: c006
+  number: 6
+  label: Nomor Identitas Kependudukan (NIK)
+  role: patient_id_source
+  type: text
+  label_id: Nomor Identitas Kependudukan (NIK)
+  label_en: National ID (NIK)
+- key: c007
+  number: 7
+  label: Nomor Register SITB
+  role: identifier_pseudonymise
+  field: sitb_pid
+  type: text
+  label_id: Nomor Register SITB
+  label_en: SITB register number (pseudonymised)
+- key: c008
+  number: 8
+  label: Nomor Register Terduga
+  role: identifier_drop
+  type: text
+  label_id: Nomor Register Terduga
+  label_en: Presumptive TB register number
+- key: c009
+  number: 9
+  label: Nomor Register Pasien
+  role: record_id_source
+  type: text
+  required: true
+  label_id: Nomor Register Pasien
+  label_en: Patient register number
+- key: c010
+  number: 10
+  label: Nomor BPJS
+  role: identifier_drop
+  type: text
+  label_id: Nomor BPJS
+  label_en: BPJS number
+- key: c011
+  number: 11
+  label: Status Pengobatan
+  role: data
+  field: treat_standard
+  type: choice
+  choice_set: treat_standard
+  label_id: Status Pengobatan
+  label_en: Treatment status
+- key: c012
+  number: 12
+  label: Nama Lengkap Pasien
+  role: identifier_drop
+  type: text
+  label_id: Nama Lengkap Pasien
+  label_en: Full name
+- key: c013
+  number: 13
+  label: Umur (Tahun)
+  role: data
+  field: age
+  type: integer
+  required: true
+  min: 0
+  max: 120
+  label_id: Umur (Tahun)
+  label_en: Age (years)
+- key: c014
+  number: 14
+  label: Jenis Kelamin
+  role: data
+  field: sex
+  type: choice
+  choice_set: sex
+  required: true
+  label_id: Jenis Kelamin
+  label_en: Sex
+- key: c015
+  number: 15
+  label: Pekerjaan/ Status
+  role: data
+  field: occupation
+  type: text
+  label_id: Pekerjaan/ Status
+  label_en: Occupation / status
+- key: c016
+  number: 16
+  label: Status Hamil
+  role: data
+  field: pregnant
+  type: choice
+  choice_set: pregnancy
+  label_id: Status Hamil
+  label_en: Pregnancy status
+- key: c017
+  number: 17
+  label: Provinsi
+  role: constant
+  type: text
+  label_id: Alamat Lengkap Faskes > Provinsi
+  label_en: Facility province
+- key: c018
+  number: 18
+  label: Kabupaten/Kota
+  role: constant
+  type: text
+  label_id: Alamat Lengkap Faskes > Kabupaten/Kota
+  label_en: Facility district
+- key: c019
+  number: 19
+  label: Jenis Fasyankes
+  role: constant
+  type: text
+  label_id: Alamat Lengkap Faskes > Jenis Fasyankes
+  label_en: Facility type
+- key: c020
+  number: 20
+  label: Kepemilikan Fasyankes
+  role: constant
+  type: text
+  label_id: Alamat Lengkap Faskes > Kepemilikan Fasyankes
+  label_en: Facility ownership
+- key: c021
+  number: 21
+  label: Kode Fasyankes
+  role: constant
+  type: text
+  label_id: Alamat Lengkap Faskes > Kode Fasyankes
+  label_en: Facility code
+- key: c022
+  number: 22
+  label: Nama Fasyankes
+  role: constant
+  type: text
+  label_id: Alamat Lengkap Faskes > Nama Fasyankes
+  label_en: Facility name
+- key: c023
+  number: 23
+  label: Provinsi
+  role: quasi_identifier
+  field: pt_province
+  type: text
+  label_id: Alamat Lengkap Pasien > Provinsi
+  label_en: Patient province
+- key: c024
+  number: 24
+  label: Kabupaten/Kota
+  role: quasi_identifier
+  field: pt_district
+  type: text
+  label_id: Alamat Lengkap Pasien > Kabupaten/Kota
+  label_en: Patient district
+- key: c025
+  number: 25
+  label: Kecamatan
+  role: quasi_identifier
+  field: pt_subdistrict
+  type: text
+  label_id: Alamat Lengkap Pasien > Kecamatan
+  label_en: Patient subdistrict
+- key: c026
+  number: 26
+  label: Kelurahan
+  role: quasi_identifier
+  field: pt_village
+  type: text
+  label_id: Alamat Lengkap Pasien > Kelurahan
+  label_en: Patient village
+- key: c027
+  number: 27
+  label: Alamat Lengkap
+  role: identifier_drop
+  type: text
+  label_id: Alamat Lengkap Pasien > Alamat Lengkap
+  label_en: Patient full address
+- key: c028
+  number: 28
+  label: Dilakukan Pemeriksaan kontak
+  role: data
+  field: contact_investigated
+  type: choice
+  choice_set: yes_no
+  label_id: Dilakukan Pemeriksaan kontak
+  label_en: Contact investigation done
+- key: c029
+  number: 29
+  label: Dirujuk/ dikirim Oleh
+  role: data
+  field: referred_by
+  type: text
+  label_id: Dirujuk/ dikirim Oleh
+  label_en: Referred / sent by
+- key: c030
+  number: 30
+  label: Tipe Diagnosis TBC
+  role: data
+  field: dx_type
+  type: choice
+  choice_set: dx_type
+  label_id: Tipe Diagnosis TBC
+  label_en: TB diagnosis type
+- key: c031
+  number: 31
+  label: Klasifikasi Berdasarkan Lokasi Anatomi
+  role: data
+  field: tb_site
+  type: choice
+  choice_set: tb_site
+  required: true
+  label_id: Klasifikasi Berdasarkan Lokasi Anatomi
+  label_en: Anatomical site
+- key: c032
+  number: 32
+  label: Klasifikasi Berdasarkan Riwayat Pengobatan Sebelumnya
+  role: data
+  field: tx_history
+  type: choice
+  choice_set: tx_history
+  label_id: Klasifikasi Berdasarkan Riwayat Pengobatan Sebelumnya
+  label_en: Previous treatment history
+- key: c033
+  number: 33
+  label: Riwayat DM
+  role: data
+  field: dm
+  type: choice
+  choice_set: yes_no_unknown
+  label_id: Riwayat DM
+  label_en: Diabetes history
+- key: c034
+  number: 34
+  label: Status HIV
+  role: data
+  field: hiv
+  type: choice
+  choice_set: hiv_status
+  label_id: Status HIV
+  label_en: HIV status
+- key: c035
+  number: 35
+  label: Skoring TBC Anak (0-13)
+  role: data
+  field: child_tb_score
+  type: integer
+  min: 0
+  max: 13
+  label_id: Skoring TBC Anak (0-13)
+  label_en: Child TB score (0-13)
+- key: c036
+  number: 36
+  label: Dilakukan Pemeriksaan Tuberkulin/IGRA
+  role: data
+  field: tst_igra_done
+  type: choice
+  choice_set: tst_type
+  label_id: Dilakukan Pemeriksaan Tuberkulin/IGRA
+  label_en: Tuberculin / IGRA test done
+- key: c037
+  number: 37
+  label: Hasil Pemeriksaan Tuberkulin/IGRA
+  role: data
+  field: tst_igra_result
+  type: choice
+  choice_set: tst_result
+  label_id: Hasil Pemeriksaan Tuberkulin/IGRA
+  label_en: Tuberculin / IGRA result
+- key: c038
+  number: 38
+  label: Hasil Pemeriksaan Foto Toraks
+  role: data
+  field: cxr
+  type: choice
+  choice_set: cxr
+  label_id: Hasil Pemeriksaan Foto Toraks
+  label_en: Chest X-ray result
+- key: c039
+  number: 39
+  label: Tanggal Mulai Pengobatan
+  role: data
+  field: tx_start_date
+  type: date
+  required: true
+  not_future: true
+  label_id: Tanggal Mulai Pengobatan
+  label_en: Treatment start date
+- key: c040
+  number: 40
+  label: Paduan OAT
+  role: data
+  field: regimen_cat
+  type: choice
+  choice_set: regimen_so
+  label_id: Paduan OAT
+  label_en: Regimen category
+- key: c041
+  number: 41
+  label: Paduan Pengobatan
+  role: data
+  field: regimen_detail
+  type: text
+  label_id: Paduan Pengobatan
+  label_en: Treatment regimen (as written)
+- key: c042
+  number: 42
+  label: Sumber Obat
+  role: data
+  field: drug_source
+  type: choice
+  choice_set: drug_source
+  label_id: Sumber Obat
+  label_en: Drug source
+- key: c043
+  number: 43
+  label: Tanggal Hasil Pemeriksaan Mikroskopis
+  role: data
+  field: smear_dx_date
+  type: date
+  label_id: Pemeriksaan Contoh Uji > Sebelum Pengobatan > Tanggal Hasil Pemeriksaan Mikroskopis
+  label_en: Baseline microscopy result date
+- key: c044
+  number: 44
+  label: Hasil Mikroskopis
+  role: data
+  field: smear_dx
+  type: choice
+  choice_set: microscopy
+  label_id: Pemeriksaan Contoh Uji > Sebelum Pengobatan > Hasil Mikroskopis
+  label_en: Baseline microscopy result
+- key: c045
+  number: 45
+  label: Tanggal Hasil Pemeriksaan Diagnosis TBC
+  role: data
+  field: dx_test_date
+  type: date
+  label_id: Pemeriksaan Contoh Uji > Sebelum Pengobatan > Tanggal Hasil Pemeriksaan Diagnosis TBC
+  label_en: Diagnostic test result date
+- key: c046
+  number: 46
+  label: Hasil Pemeriksaan Diagnosis TBC
+  role: data
+  field: dx_test_result
+  type: text
+  label_id: Pemeriksaan Contoh Uji > Sebelum Pengobatan > Hasil Pemeriksaan Diagnosis TBC
+  label_en: Diagnostic test result (as written)
+- key: c047
+  number: 47
+  label: Jenis Pemeriksaan Diagnosis
+  role: data
+  field: dx_test_type
+  type: choice
+  choice_set: dx_test_type
+  label_id: Pemeriksaan Contoh Uji > Sebelum Pengobatan > Jenis Pemeriksaan Diagnosis
+  label_en: Diagnostic test type
+- key: c048
+  number: 48
+  label: Tanggal Hasil Pemeriksaan TCM-XDR
+  role: data
+  field: xdr_date
+  type: date
+  label_id: Pemeriksaan Contoh Uji > Hasil Pemeriksaan Xpert (TCM) - XDR > Tanggal Hasil Pemeriksaan TCM-XDR
+  label_en: Xpert XDR result date
+- key: c049
+  number: 49
+  label: Valid/Invalid/Error/No Result
+  role: data
+  field: xdr_valid
+  type: choice
+  choice_set: validity
+  label_id: Pemeriksaan Contoh Uji > Hasil Pemeriksaan Xpert (TCM) - XDR > Valid/Invalid/Error/No Result
+  label_en: Xpert XDR validity
+- key: c050
+  number: 50
+  label: MTB
+  role: data
+  field: xdr_mtb
+  type: choice
+  choice_set: mtb_detect
+  label_id: Pemeriksaan Contoh Uji > Hasil Pemeriksaan Xpert (TCM) - XDR > MTB
+  label_en: 'Xpert XDR: MTB'
+- key: c051
+  number: 51
+  label: H Dosis Rendah (Low)
+  role: data
+  field: xdr_h_low
+  type: choice
+  choice_set: resistance
+  label_id: Pemeriksaan Contoh Uji > Hasil Pemeriksaan Xpert (TCM) - XDR > H Dosis Rendah (Low)
+  label_en: 'Xpert XDR: INH low level'
+- key: c052
+  number: 52
+  label: H
+  role: data
+  field: xdr_h
+  type: choice
+  choice_set: resistance
+  label_id: Pemeriksaan Contoh Uji > Hasil Pemeriksaan Xpert (TCM) - XDR > H
+  label_en: 'Xpert XDR: INH'
+- key: c053
+  number: 53
+  label: Eto
+  role: data
+  field: xdr_eto
+  type: choice
+  choice_set: resistance
+  label_id: Pemeriksaan Contoh Uji > Hasil Pemeriksaan Xpert (TCM) - XDR > Eto
+  label_en: 'Xpert XDR: ethionamide'
+- key: c054
+  number: 54
+  label: FQ Dosis Rendah (Low)
+  role: data
+  field: xdr_fq_low
+  type: choice
+  choice_set: resistance
+  label_id: Pemeriksaan Contoh Uji > Hasil Pemeriksaan Xpert (TCM) - XDR > FQ Dosis Rendah (Low)
+  label_en: 'Xpert XDR: FQ low level'
+- key: c055
+  number: 55
+  label: FQ
+  role: data
+  field: xdr_fq
+  type: choice
+  choice_set: resistance
+  label_id: Pemeriksaan Contoh Uji > Hasil Pemeriksaan Xpert (TCM) - XDR > FQ
+  label_en: 'Xpert XDR: FQ'
+- key: c056
+  number: 56
+  label: Amk
+  role: data
+  field: xdr_amk
+  type: choice
+  choice_set: resistance
+  label_id: Pemeriksaan Contoh Uji > Hasil Pemeriksaan Xpert (TCM) - XDR > Amk
+  label_en: 'Xpert XDR: amikacin'
+- key: c057
+  number: 57
+  label: Km
+  role: data
+  field: xdr_km
+  type: choice
+  choice_set: resistance
+  label_id: Pemeriksaan Contoh Uji > Hasil Pemeriksaan Xpert (TCM) - XDR > Km
+  label_en: 'Xpert XDR: kanamycin'
+- key: c058
+  number: 58
+  label: Cm
+  role: data
+  field: xdr_cm
+  type: choice
+  choice_set: resistance
+  label_id: Pemeriksaan Contoh Uji > Hasil Pemeriksaan Xpert (TCM) - XDR > Cm
+  label_en: 'Xpert XDR: capreomycin'
+- key: c059
+  number: 59
+  label: Tanggal Hasil Biakan
+  role: data
+  field: culture_date
+  type: date
+  label_id: Pemeriksaan Contoh Uji > Hasil Pemeriksaan Biakan > Tanggal Hasil Biakan
+  label_en: Culture result date
+- key: c060
+  number: 60
+  label: Hasil Biakan
+  role: data
+  field: culture_result
+  type: choice
+  choice_set: culture
+  label_id: Pemeriksaan Contoh Uji > Hasil Pemeriksaan Biakan > Hasil Biakan
+  label_en: Culture result
+- key: c061
+  number: 61
+  label: Tanggal Hasil LPA Lini 1
+  role: data
+  field: lpa1_date
+  type: date
+  label_id: Pemeriksaan Contoh Uji > Hasil Pemeriksaan LPA (Line Probe Assay) Lini 1 > Tanggal Hasil LPA Lini 1
+  label_en: LPA line 1 result date
+- key: c062
+  number: 62
+  label: Valid/ Invalid
+  role: data
+  field: lpa1_valid
+  type: choice
+  choice_set: validity
+  label_id: Pemeriksaan Contoh Uji > Hasil Pemeriksaan LPA (Line Probe Assay) Lini 1 > Valid/ Invalid
+  label_en: LPA line 1 validity
+- key: c063
+  number: 63
+  label: MTB
+  role: data
+  field: lpa1_mtb
+  type: choice
+  choice_set: mtb_detect
+  label_id: Pemeriksaan Contoh Uji > Hasil Pemeriksaan LPA (Line Probe Assay) Lini 1 > MTB
+  label_en: 'LPA line 1: MTB'
+- key: c064
+  number: 64
+  label: R
+  role: data
+  field: lpa1_r
+  type: choice
+  choice_set: resistance
+  label_id: Pemeriksaan Contoh Uji > Hasil Pemeriksaan LPA (Line Probe Assay) Lini 1 > R
+  label_en: 'LPA line 1: rifampicin'
+- key: c065
+  number: 65
+  label: H
+  role: data
+  field: lpa1_h
+  type: choice
+  choice_set: resistance
+  label_id: Pemeriksaan Contoh Uji > Hasil Pemeriksaan LPA (Line Probe Assay) Lini 1 > H
+  label_en: 'LPA line 1: isoniazid'
+- key: c066
+  number: 66
+  label: No Reg Lab
+  role: identifier_drop
+  type: text
+  label_id: Pemeriksaan Contoh Uji > Akhir Bulan ke 2 > No Reg Lab
+  label_en: Lab register number, month 2
+- key: c067
+  number: 67
+  label: Hasil Mikroskopis
+  role: data
+  field: smear_m2
+  type: choice
+  choice_set: microscopy
+  label_id: Pemeriksaan Contoh Uji > Akhir Bulan ke 2 > Hasil Mikroskopis
+  label_en: Microscopy, end of month 2
+- key: c068
+  number: 68
+  label: No Reg Lab
+  role: identifier_drop
+  type: text
+  label_id: Pemeriksaan Contoh Uji > Akhir Bulan ke 3 > No Reg Lab
+  label_en: Lab register number, month 3
+- key: c069
+  number: 69
+  label: Hasil Mikroskopis
+  role: data
+  field: smear_m3
+  type: choice
+  choice_set: microscopy
+  label_id: Pemeriksaan Contoh Uji > Akhir Bulan ke 3 > Hasil Mikroskopis
+  label_en: Microscopy, end of month 3
+- key: c070
+  number: 70
+  label: No Reg Lab
+  role: identifier_drop
+  type: text
+  label_id: Pemeriksaan Contoh Uji > Akhir Bulan ke 5 > No Reg Lab
+  label_en: Lab register number, month 5
+- key: c071
+  number: 71
+  label: Hasil Mikroskopis
+  role: data
+  field: smear_m5
+  type: choice
+  choice_set: microscopy
+  label_id: Pemeriksaan Contoh Uji > Akhir Bulan ke 5 > Hasil Mikroskopis
+  label_en: Microscopy, end of month 5
+- key: c072
+  number: 72
+  label: No Reg Lab
+  role: identifier_drop
+  type: text
+  label_id: Pemeriksaan Contoh Uji > Akhir Pengobatan > No Reg Lab
+  label_en: Lab register number, end of treatment
+- key: c073
+  number: 73
+  label: Hasil Mikroskopis
+  role: data
+  field: smear_end
+  type: choice
+  choice_set: microscopy
+  label_id: Pemeriksaan Contoh Uji > Akhir Pengobatan > Hasil Mikroskopis
+  label_en: Microscopy, end of treatment
+- key: c074
+  number: 74
+  label: Tanggal (hh/bb/tttt)
+  role: data
+  field: outcome_date
+  type: date
+  not_future: true
+  required_when:
+    field: c075
+    filled: true
+  label_id: Hasil Akhir Pengobatan > Tanggal (hh/bb/tttt)
+  label_en: Treatment outcome date
+- key: c075
+  number: 75
+  label: Hasil
+  role: data
+  field: outcome
+  type: choice
+  choice_set: outcome
+  label_id: Hasil Akhir Pengobatan > Hasil
+  label_en: Treatment outcome
+- key: c076
+  number: 76
+  label: Tanggal Dianjurkan
+  role: data
+  field: hiv_test_offer_date
+  type: date
+  label_id: Kolaborasi Kegiatan TBC-HIV > Layanan Tes dan Konseling HIV > Tanggal Dianjurkan
+  label_en: Date HIV test recommended
+- key: c077
+  number: 77
+  label: Tanggal Tes HIV
+  role: data
+  field: hiv_test_date
+  type: date
+  label_id: Kolaborasi Kegiatan TBC-HIV > Layanan Tes dan Konseling HIV > Tanggal Tes HIV
+  label_en: HIV test date
+- key: c078
+  number: 78
+  label: Hasil Tes
+  role: data
+  field: hiv_test_result
+  type: choice
+  choice_set: hiv_status
+  label_id: Kolaborasi Kegiatan TBC-HIV > Layanan Tes dan Konseling HIV > Hasil Tes
+  label_en: HIV test result
+- key: c079
+  number: 79
+  label: Kotrimoksasol
+  role: data
+  field: ctx
+  type: choice
+  choice_set: yes_no
+  label_id: Kolaborasi Kegiatan TBC-HIV > Layanan PDP > Kotrimoksasol
+  label_en: Cotrimoxazole
+- key: c080
+  number: 80
+  label: ART
+  role: data
+  field: art
+  type: choice
+  choice_set: yes_no
+  label_id: Kolaborasi Kegiatan TBC-HIV > Layanan PDP > ART
+  label_en: Antiretroviral therapy
+- key: c081
+  number: 81
+  label: DM
+  role: data
+  field: dm_screen
+  type: choice
+  choice_set: dm_screen_so
+  label_id: Kegiatan TBC-DM > DM
+  label_en: Diabetes screening result
+- key: c082
+  number: 82
+  label: Terapi DM
+  role: data
+  field: dm_therapy
+  type: choice
+  choice_set: dm_therapy
+  label_id: Kegiatan TBC-DM > Terapi DM
+  label_en: Diabetes therapy
+- key: c083
+  number: 83
+  label: Dipindah ke TBC.03 RO
+  role: data
+  field: moved_to_ro
+  type: choice
+  choice_set: yes_no
+  label_id: Dipindah ke TBC.03 RO
+  label_en: Moved to TBC.03 RO
+- key: c084
+  number: 84
+  label: Keterangan
+  role: identifier_drop
+  type: text
+  note: Free text can contain names; always dropped.
+  label_id: Keterangan
+  label_en: Remarks (free text)
+explore_defaults:
+- age
+- sex
+- tb_site
+- hiv
+- dm
+- cxr
+- outcome
+- tx_start_date
