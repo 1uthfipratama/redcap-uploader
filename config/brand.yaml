@@ -1,0 +1,27 @@
+# Visual identity, following Yayasan RPRI (https://yayasanrpri.org/).
+# Change the look here, not in code.
+name: RPRI
+product_name: REDCap Uploader
+colors:
+  primary: "#1E6BBD"        # RPRI blue
+  primary_hover: "#185A9F"
+  primary_soft: "#E8F0FA"   # selected rows, active step background
+  navy: "#002157"           # headings
+  text: "#1D1E20"
+  muted: "#5B6573"
+  canvas: "#F4F7FB"         # window background
+  surface: "#FFFFFF"        # panels
+  border: "#DDE3EB"
+  error: "#B42318"
+  warning: "#9A6700"
+  success: "#1D7A4F"
+fonts:
+  heading: Rubik
+  body: DM Sans
+  fallback: ["Segoe UI", "Helvetica Neue", "Arial"]
+radius:
+  button: 17
+  panel: 12
+# Optional files; the app uses text instead when they are missing.
+logo: app/assets/brand/logo.png
+fonts_dir: app/assets/fonts

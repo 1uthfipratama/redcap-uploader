@@ -55,11 +55,19 @@ def load_key() -> bytes:
     if os.environ.get(KEY_ENV):
         return _parse_key(os.environ[KEY_ENV])
     if os.environ.get(KEY_FILE_ENV):
-        path = Path(os.environ[KEY_FILE_ENV]).resolve()
-        if REPO_ROOT in path.parents:
-            raise PseudonymKeyInvalid("key file must be outside the repo")
-        return _parse_key(path.read_text(encoding="utf-8"))
+        return read_key_file(os.environ[KEY_FILE_ENV])
     raise PseudonymKeyMissing(f"set {KEY_ENV} or {KEY_FILE_ENV}")
+
+
+def read_key_file(path: str | Path) -> bytes:
+    """A key file holds the key as hex. It must live outside the repo."""
+    path = Path(path).resolve()
+    if REPO_ROOT in path.parents:
+        raise PseudonymKeyInvalid("key file must be outside the repo")
+    try:
+        return _parse_key(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError) as exc:
+        raise PseudonymKeyInvalid("key file cannot be read") from exc
 
 
 def _parse_key(text: str) -> bytes:

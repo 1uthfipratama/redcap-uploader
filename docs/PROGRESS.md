@@ -74,7 +74,22 @@ python -m venv .venv
 .venv/Scripts/python -m pytest
 ```
 
-## Next: phase 3
+## In progress: phase 3 (desktop UI)
+
+The design follows RPRI's brand (`config/brand.yaml`: blue #1E6BBD, navy #002157, Rubik and DM Sans).
+
+Done:
+- `app/theme.py`, `app/i18n.py`, `app/workers.py`, `app/state.py`, `app/widgets.py`
+- `app/pages/base.py` and `app/pages/connect.py`
+
+Still to do:
+1. The pages for choosing the file, preview, validate, upload and result.
+2. `app/main_window.py` and `app/__main__.py`.
+3. The `ui.*` strings in `i18n/id.json` and `en.json`.
+4. pytest-qt smoke tests, and a test that `app/` has no hard-coded text.
+5. Optional, needs your OK: the official RPRI logo and the Rubik and DM Sans font files in `app/assets/`.
+
+## Next: phase 3 (plan)
 
 The PySide6 wizard on top of `core/`: six steps, Indonesian and English, the embedded mock in Demo mode, and long operations off the UI thread.
 
