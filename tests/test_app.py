@@ -101,12 +101,12 @@ def test_bad_token_shows_a_plain_message_without_the_token(qtbot, window):
     page = w.pages[0]
     page.real.setChecked(True)
     page.url.setText("https://redcap.example.org/api/")
-    secret = "ABCDEF0123456789ABCDEF012345678"  # 31 characters: the wrong length
-    page.token.setText(secret)
+    wrong_length_token = "ABCDEF0123456789ABCDEF012345678"  # 31 characters: invalid on purpose
+    page.token.setText(wrong_length_token)
     next_step(qtbot, w)
     assert page.message.isVisible()
     assert page.message.text() == w.tr("ui.error.token")
-    assert secret not in page.message.text()
+    assert wrong_length_token not in page.message.text()
 
 
 def test_unreachable_server_shows_a_plain_message(qtbot, window):

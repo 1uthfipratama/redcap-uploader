@@ -141,6 +141,21 @@ Get the installers from **Actions → Build installers → Run workflow**, then 
 1. **Clean-machine test.** Install on a Windows PC and a Mac that have no Python, start the app, and run the demo flow in both languages.
 2. **Signing (before wider rollout).** A Windows code-signing certificate and an Apple Developer account; the workflow steps are ready for their secrets.
 
+## Real-file dry run (2026-10-15)
+
+The four exports from one hospital (TBC.03 SO 2020–2024 and 2025, RO 2020–2024 and 2025: 6,458 records) were run through the full pipeline locally with `tools/dry_run_report.py`. Nothing was sent anywhere, and only counts were printed.
+
+| File | Records | Read | Errors |
+| --- | --- | --- | --- |
+| SO 2020–2024 | 3,646 | all, form recognised | 9: 5 child TB scores above 13, 4 rare spellings |
+| SO 2025 | 1,071 | all | 1 rare spelling |
+| RO 2020–2024 | 1,542 | all | 31 rare spellings in lab fields (each seen fewer than 5 times) |
+| RO 2025 | 199 | all | 19: 6 "RD" in the Xpert-XDR MTB column, 12 rare lab spellings, 1 blank anatomical site |
+
+- **Layout and identifiers:** every layout matched its profile, and every NIK was valid (no precision loss). Every record got a record ID.
+- **Rare spellings:** these are shown in the app's Check step on the approved machine, so a team member can add them to the profile.
+- **Blocked uploads:** a single bad row currently stops the whole file at Check. For real use, an option to set rows with errors aside (listed in a report, never silently) and upload the rest may be needed. Open question 7.
+
 ## When the REDCap account arrives (phase 7, short version)
 
 1. `python -m tools.export_dictionary tbc03_so out/tbc03_so_dictionary.csv`, then upload that file on the test project's Data Dictionary page.
@@ -155,3 +170,4 @@ Get the installers from **Actions → Build installers → Run workflow**, then 
 4. **Free-text fields that are uploaded:** `occupation`, `referred_by`, `regimen_detail`, `prior_tx_detail`, `cxr_findings`, `satellite_facility` and `dst_other_*`. Patient names are unlikely there, but not impossible. Drop any of them?
 5. **Quasi-identifiers.** Keep the patient district for analysis, or drop all four (current default)?
 6. **SO and RO:** one REDCap project each (current default), or a single project?
+7. **Rows with errors:** block the whole file (current behaviour), or allow uploading the clean rows while the rest are set aside and listed?

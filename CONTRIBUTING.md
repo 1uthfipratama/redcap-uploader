@@ -13,7 +13,7 @@ Read this fully before writing or changing code. If a request conflicts with thi
 - UI languages: Bahasa Indonesia and English from the first release.
 
 ## 2. Hard rules
-1. No patient-identifying data in the repo, tests, logs, screenshots or fixtures: no NIK, names, addresses, BPJS or record numbers, and no raw SITB exports. Real files live outside the repo folder. tools/make_inventory.py is the only code that opens a real export, and it writes structure only.
+1. No patient-identifying data in the repo, tests, logs, screenshots or fixtures: no NIK, names, addresses, BPJS or record numbers, and no raw SITB exports. Real files live outside the repo folder. Besides the app itself, only tools/make_inventory.py and tools/dry_run_report.py open a real export, and they print structure and counts only.
 2. Identifiers are handled right after parsing, per the profile: dropped, or pseudonymised with a keyed hash (HMAC-SHA256). The key is never in the repo. Raw identifiers never reach logs, charts, error messages or the REDCap client.
 3. record_id is episode-level: a keyed hash of the form, the facility code and the patient register number, so one patient can have several records. patient_pid, a keyed hash of the cleaned NIK, links a patient's episodes.
 4. NIKs are cleaned before hashing: digits only, exactly 16, no scientific notation or leading apostrophe. A blank or invalid NIK never gets a pseudonym; it is reported with a count.
@@ -27,6 +27,7 @@ Read this fully before writing or changing code. If a request conflicts with thi
 12. The Explore screen is descriptive only: no p-values, tests or models.
 13. Do not add features outside the PRD without asking.
 14. Universal by design: no facility, region, study or institution is hard-coded in code or profiles. Facility details come from the file. Each team brings its own pseudonym key, REDCap project and settings.
+15. No secrets in the repo: no API tokens, pseudonym keys, certificates or passwords, in any file or commit message. Signing secrets live only in GitHub's encrypted secrets. A test fails on anything token- or key-shaped.
 
 ## 3. Stack
 Python 3.10+, PySide6, pandas, openpyxl, xlrd (legacy .xls), pydantic and PyYAML (profiles), PyCap, Flask for the mock (small, synchronous, bundles cleanly with PyInstaller), matplotlib with the Qt backend (import lazily), pytest and pytest-qt, PyInstaller (one-folder), Inno Setup (Windows), a .dmg (macOS), GitHub Actions. Dev-only: xlwt, to write .xls test fixtures.
@@ -37,7 +38,7 @@ Python 3.10+, PySide6, pandas, openpyxl, xlrd (legacy .xls), pydantic and PyYAML
   profiles/      tbc03_so.yaml, tbc03_ro.yaml, generic.yaml
   mock_redcap/   embedded Flask mock; its data dictionary is generated from the selected profile
   synthetic/     generators that reproduce the TBC.03 layouts with fake values
-  tools/         make_inventory.py (structure-only column inventory from a real export), observe_pycap.py, export_dictionary.py
+  tools/         make_inventory.py (structure-only column inventory), dry_run_report.py (aggregate-only dry run of a real export), observe_pycap.py, export_dictionary.py
   i18n/          id.json, en.json
   config/        settings, redcap_target.yaml
   tests/         unit tests; tests/contract/ runs against the mock or a real test project

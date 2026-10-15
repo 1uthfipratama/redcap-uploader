@@ -18,3 +18,12 @@ exports/
 # Local output
 out/
 logs/
+
+# Secrets never live in this repo
+*.pem
+*.p12
+*.pfx
+*.cer
+*.keychain
+.env.*
+secrets.*

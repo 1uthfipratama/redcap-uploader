@@ -35,3 +35,21 @@ def test_inventories_list_no_values_for_identifier_columns():
         for row in csv.DictReader(path.open(encoding="utf-8")):
             if row["suggested_role"] in ("patient_id_source", "identifier_drop", "identifier_pseudonymise", "quasi_identifier"):
                 assert row["spellings"] == "", (path.name, row["key"])
+
+
+def test_no_secrets_are_tracked():
+    """No REDCap-token-shaped strings, private keys, certificates or hard-coded passwords."""
+    token = re.compile(r"(?<![0-9A-Fa-f])[0-9A-F]{32}(?![0-9A-Fa-f])")  # REDCap API tokens: 32 hex characters
+    private_key = re.compile(r"BEGIN [A-Z ]*PRIVATE KEY")
+    password = re.compile(r"(password|passwd|secret)\s*[:=]\s*['\"][^'\"]{6,}['\"]", re.IGNORECASE)
+    hits = []
+    for path in _tracked_files():
+        if path.suffix.lower() in (".pem", ".p12", ".pfx", ".cer", ".key", ".keychain"):
+            hits.append(path.name)
+            continue
+        if path.suffix.lower() in (".py", ".yaml", ".yml", ".csv", ".md", ".json", ".txt", ".toml", ".iss", ".sh", ".spec"):
+            text = path.read_text(encoding="utf-8", errors="ignore")
+            for pattern in (token, private_key, password):
+                if pattern.search(text):
+                    hits.append(f"{path.name}: {pattern.pattern[:30]}")
+    assert hits == [], hits
