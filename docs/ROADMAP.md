@@ -7,7 +7,7 @@ Today the app fully understands two forms (SITB TBC.03 SO and RO) and uploads th
 3. **Any REDCap project**, including one the team already has, with its own field names, codes and design (events, repeating forms, checkboxes, data access groups).
 4. **Any team, without a developer.** A data manager can add a new form, check it, and share it with other sites.
 
-The plan below gets there in seven stages. Each stage ends in something that can be tested. The estimates are rough, for one developer with the AI-assisted workflow used so far.
+The plan below gets there in seven stages. Each stage ends in something that can be tested. The estimates are rough, for one developer.
 
 ## How it works today, and what has to change
 
