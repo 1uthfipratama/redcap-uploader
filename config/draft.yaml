@@ -1,0 +1,32 @@
+# Drafting a data dictionary from a spreadsheet with one header row (core/infer.py).
+# The draft is only a starting point: the person reviews every column before it is used.
+
+type_share: 0.9            # share of filled cells that must fit a type (date, number) for the column to get it
+choice_max: 20             # most answers an answer list may have
+choice_min_rows: 5         # with fewer filled cells, a text column stays free text
+choice_max_length: 40      # longer values make a column free text
+content_share: 0.8         # share of values that must look like a NIK, phone number, e-mail or name
+free_text_drop_length: 30  # free text longer than this on average is left out: it may hold names
+
+# Text dates are read with the format that fits the most cells. Excel date cells need none.
+date_formats: ["%d/%m/%Y", "%d-%m-%Y", "%Y-%m-%d", "%d.%m.%Y", "%d/%m/%y"]
+
+# Headers that suggest a column identifies each row (it becomes the pseudonymised record ID).
+record_id_headers: "(^|_)(id|no|nomor|kode|code|register|registrasi|reg|mrn|rm)($|_)"
+
+# Answer sets recognised by their spellings, so they get the codes REDCap projects usually use.
+answer_sets:
+  - name: yes_no_unknown
+    answers:
+      - {code: "1", label: "Ya", spellings: ["ya", "yes", "y"]}
+      - {code: "0", label: "Tidak", spellings: ["tidak", "no", "n", "t"]}
+      - {code: "99", label: "Tidak diketahui", spellings: ["tidak diketahui", "tidak tahu", "unknown", "tdk diketahui"]}
+  - name: sex
+    answers:
+      - {code: "1", label: "Laki-laki", spellings: ["laki-laki", "laki laki", "l", "male", "m", "pria"]}
+      - {code: "2", label: "Perempuan", spellings: ["perempuan", "p", "female", "f", "wanita"]}
+  - name: positive_negative
+    answers:
+      - {code: "1", label: "Positif", spellings: ["positif", "positive", "pos", "+"]}
+      - {code: "0", label: "Negatif", spellings: ["negatif", "negative", "neg", "-"]}
+      - {code: "99", label: "Tidak diketahui", spellings: ["tidak diketahui", "unknown", "tidak tahu"]}

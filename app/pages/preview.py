@@ -82,7 +82,7 @@ class PreviewPage(StepPage):
                 field = None
             key = "upload" if spec.role == Role.quasi_identifier and spec.keep else ROLE_KEYS[spec.role]
             roles[key] += 1
-            number = f"({col.number})" + (f" {col.sub_label}" if col.sub_label else "")
+            number = f"({col.number})" + (f" {col.sub_label}" if col.sub_label else "") if col.number else "—"
             rows.append([number, col.label, field or "—", self._role_text(spec.role, spec.keep)])
         headers = [self.tr(f"ui.preview.h_{k}") for k in ("number", "column", "field", "handling")]
         fill_table(self.columns, headers, rows, stretch=(1, 3))

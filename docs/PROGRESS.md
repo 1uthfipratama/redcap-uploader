@@ -164,6 +164,8 @@ The four exports from one hospital (TBC.03 SO 2020–2024 and 2025, RO 2020–20
 
 **Still to check on the real server:** an import through the Data Import Tool (A16), a full upload of a synthetic file through the app in Real mode, and adding fields to a fresh project from the app.
 
+**Data dictionary from any spreadsheet (2026-10-15).** A sheet with one header row that matches no saved form can now get a drafted data dictionary, reviewed column by column and saved as the person's own form (see DECISIONS.md). It then goes through the same checks as TBC.03 and is recognised automatically next time. To try with real REDCap: a new Development project, a spreadsheet, "Create a data dictionary", then "Add them to the project".
+
 **How to repeat it.** On a project in Development status, with API Export, API Import/Update, Data Import Tool and Project Design rights, and an API token:
 
 1. `python -m tools.export_dictionary tbc03_so out/tbc03_so_dictionary.csv`, then upload that file on the test project's Data Dictionary page.

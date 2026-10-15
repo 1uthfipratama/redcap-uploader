@@ -122,7 +122,9 @@ class Profile(_Model):
     # ---- lookups -------------------------------------------------------------
     @property
     def is_generic(self) -> bool:
-        return self.layout.kind == "single_header"
+        """The Generic profile: a single-header sheet matched to the project's fields by name.
+        A profile drafted from such a sheet has columns, and is handled like any other form."""
+        return self.layout.kind == "single_header" and not self.columns
 
     def column(self, key: str) -> ColumnSpec | None:
         return next((c for c in self.columns if c.key == key), None)
@@ -207,9 +209,27 @@ def load_profile(path: str | Path) -> Profile:
         return Profile.model_validate(yaml.safe_load(fh))
 
 
-def load_all_profiles(directory: str | Path = PROFILES_DIR) -> dict[str, Profile]:
-    profiles = {}
-    for path in sorted(Path(directory).glob("*.yaml")):
-        profile = load_profile(path)
-        profiles[profile.identity.form_code] = profile
+def load_all_profiles(directory: str | Path = PROFILES_DIR, *more: str | Path) -> dict[str, Profile]:
+    """The profiles in `directory` (the ones shipped with the app), then any in `more` (a person's
+    own). A profile whose form code is already taken, or that does not load, is skipped."""
+    profiles: dict[str, Profile] = {}
+    for folder in (directory, *more):
+        for path in sorted(Path(folder).glob("*.yaml")):
+            try:
+                profile = load_profile(path)
+            except (OSError, ValueError, yaml.YAMLError):
+                if folder == directory:
+                    raise  # a broken shipped profile must fail loudly
+                continue
+            profiles.setdefault(profile.identity.form_code, profile)
     return profiles
+
+
+def save_profile(profile: Profile, path: str | Path) -> Path:
+    """Write a profile as YAML that load_profile reads back unchanged."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    data = profile.model_dump(mode="json", by_alias=True, exclude_defaults=True)
+    with open(path, "w", encoding="utf-8", newline="\n") as fh:
+        yaml.safe_dump(data, fh, sort_keys=False, allow_unicode=True)
+    return path

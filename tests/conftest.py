@@ -15,6 +15,22 @@ OTHER_TEST_KEY = b"TEST-ONLY-pseudonym-key-never-use-for-real-data-0002"
 TODAY = dt.date(2026, 10, 14)
 
 
+@pytest.fixture(scope="session", autouse=True)
+def app_home(tmp_path_factory):
+    """The app's own folders (saved forms, dictionary backups) point at a temporary folder,
+    never at the person's Documents."""
+    import os
+
+    folder = tmp_path_factory.mktemp("app_home")
+    old = os.environ.get("REDCAP_UPLOADER_HOME")
+    os.environ["REDCAP_UPLOADER_HOME"] = str(folder)
+    yield folder
+    if old is None:
+        os.environ.pop("REDCAP_UPLOADER_HOME", None)
+    else:
+        os.environ["REDCAP_UPLOADER_HOME"] = old
+
+
 @pytest.fixture(scope="session")
 def profiles():
     return load_all_profiles()

@@ -6,7 +6,7 @@ Read this fully before writing or changing code. If a request conflicts with thi
 - A universal tool for any researcher or TB programme team that works with SITB exports, at any facility, district or province. It is not tied to one study or site.
 - A desktop app for Windows and macOS (PySide6) that guides a researcher through uploading a spreadsheet to REDCap: connect, choose file and form, preview and map, validate (dry run), upload, result.
 - Two ways out: direct API import (PyCap), or an import-ready CSV plus the matching data dictionary for REDCap's Data Import Tool when API access is not available.
-- Form-agnostic: every source form is a form profile (YAML). TBC.03 SO and TBC.03 RO from the Indonesian TB register (SITB) ship first; a Generic profile reads any single-header sheet. A new form must need a new profile, never new code.
+- Form-agnostic: every source form is a form profile (YAML). TBC.03 SO and TBC.03 RO from the Indonesian TB register (SITB) ship first; a Generic profile reads any single-header sheet, and the app can draft a profile (and so a data dictionary) from such a sheet for the person to review. A new form must need a new profile, never new code.
 - After cleaning, an Explore screen shows descriptive statistics and charts.
 - A teaching tool: every step has a "What's happening?" panel showing the real API call, token masked.
 - Stage 1 (now): prototype on synthetic data against an embedded mock REDCap. Every assumption about real REDCap is written down and checked against a real test project (section 8); phase 7 did this on REDCap 15.6.0. Stage 2 (later): production use on real SITB extracts by any team, each after its own ethics approval, data-governance sign-off and REDCap project. The TBestie LTFU study is the first user.
@@ -34,8 +34,8 @@ Python 3.10+, PySide6, pandas, openpyxl, xlrd (legacy .xls), pydantic and PyYAML
 
 ## 4. Repo layout
   app/           PySide6 wizard, step screens, Explore screen, teaching panels
-  core/          grid, layout, profile, parse, identifiers, mapping, normalise, validate, pipeline, dictionary, client, project_setup, upload, export_csv, explore (no UI imports)
-  profiles/      tbc03_so.yaml, tbc03_ro.yaml, generic.yaml
+  core/          grid, layout, profile, parse, identifiers, mapping, normalise, validate, pipeline, dictionary, infer (drafts a profile from a sheet), client, project_setup, upload, export_csv, explore (no UI imports)
+  profiles/      tbc03_so.yaml, tbc03_ro.yaml, generic.yaml (shipped). A person's own forms, drafted from their spreadsheets, live in Documents/REDCap Uploader/Profiles, never in the repo.
   mock_redcap/   embedded Flask mock; its data dictionary is generated from the selected profile
   synthetic/     generators that reproduce the TBC.03 layouts with fake values
   tools/         make_inventory.py (structure-only column inventory), dry_run_report.py (aggregate-only dry run of a real export), observe_pycap.py, export_dictionary.py, contract_check.py (runs tests/contract against a real test project)

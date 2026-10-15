@@ -10,11 +10,12 @@ from pathlib import Path
 from PySide6.QtCore import QStandardPaths
 from PySide6.QtWidgets import QApplication
 
+from app import paths
 from app.i18n import Translator
 from app.main_window import MainWindow
 from app.state import AppState
 from app.theme import load_brand, style_sheet
-from core.profile import load_all_profiles
+from core.profile import PROFILES_DIR, load_all_profiles
 from core.settings import load_target
 
 
@@ -34,7 +35,7 @@ def build(lang: str | None = None) -> tuple[QApplication, MainWindow]:
     app.setApplicationName(brand.product_name)
     app.setOrganizationName(brand.name)
     app.setStyleSheet(style_sheet(brand))
-    state = AppState(profiles=load_all_profiles(), target=load_target())
+    state = AppState(profiles=load_all_profiles(PROFILES_DIR, paths.profiles_folder()), target=load_target())
     window = MainWindow(state, brand, Translator(lang))
     return app, window
 

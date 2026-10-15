@@ -5,7 +5,6 @@ from __future__ import annotations
 import tempfile
 from pathlib import Path
 
-from PySide6.QtCore import QStandardPaths
 from PySide6.QtWidgets import (
     QComboBox,
     QFileDialog,
@@ -16,25 +15,26 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from app import workers
+from app import paths, workers
+from app.draft_dialog import DraftDialog
 from app.pages.base import StepPage
 from app.widgets import DropZone, label
 from core.dictionary import build_dictionary, field_conflicts, missing_fields
 from core.export_csv import write_dictionary_csv
 from core.grid import SUPPORTED_SUFFIXES
+from core.infer import draft_columns
 from core.mapping import read_metadata
 from core.pipeline import detect, prepare
+from core.profile import Profile, save_profile
 from core.project_setup import add_missing_fields
 from synthetic.generate import DEFAULT_ROWS, write_set
 
-FORM_ORDER = ["tbc03_so", "tbc03_ro", "generic"]
-BACKUP_FOLDER = ("REDCap Uploader", "Dictionary backups")  # under the user's Documents folder
+FORM_ORDER = ["tbc03_so", "tbc03_ro"]  # then the person's own forms, then Generic
 
 
 def backup_folder() -> Path:
     """Where a project's data dictionary is saved before the app adds fields to it."""
-    documents = QStandardPaths.writableLocation(QStandardPaths.DocumentsLocation) or str(Path.home())
-    return Path(documents).joinpath(*BACKUP_FOLDER)
+    return paths.backups_folder()
 
 
 class ChoosePage(StepPage):
@@ -75,6 +75,18 @@ class ChoosePage(StepPage):
         self.summary.hide()
         self.body.addWidget(self.summary)
 
+        # Shown when the file matches no saved form.
+        self.unknown_row = QWidget()
+        unknown = QHBoxLayout(self.unknown_row)
+        unknown.setContentsMargins(0, 4, 0, 0)
+        self.unknown_text = label("Muted")
+        self.create_dictionary = QPushButton()
+        self.create_dictionary.clicked.connect(self._create_dictionary)
+        unknown.addWidget(self.unknown_text, 1)
+        unknown.addWidget(self.create_dictionary)
+        self.unknown_row.hide()
+        self.body.addWidget(self.unknown_row)
+
         # Shown when the REDCap project lacks fields this form needs.
         self.dictionary_row = QWidget()
         buttons = QHBoxLayout(self.dictionary_row)
@@ -103,6 +115,8 @@ class ChoosePage(StepPage):
         self.sample_messy.setText(tr("ui.choose.sample_messy"))
         self.save_dictionary.setText(tr("ui.choose.save_dictionary"))
         self.add_fields.setText(tr("ui.choose.add_fields"))
+        self.unknown_text.setText(tr("ui.choose.unknown_file"))
+        self.create_dictionary.setText(tr("ui.choose.create_dictionary"))
         for k, w in self.names.items():
             w.setText(tr(f"ui.choose.{k}"))
         self._fill_forms()
@@ -160,7 +174,9 @@ class ChoosePage(StepPage):
     def _fill_forms(self) -> None:
         self.form_box.blockSignals(True)
         self.form_box.clear()
-        for code in FORM_ORDER:
+        own = sorted((c for c in self.state.profiles if c not in FORM_ORDER and c != "generic"),
+                     key=lambda c: self.state.profiles[c].identity.name.casefold())
+        for code in [*FORM_ORDER, *own, "generic"]:
             if code in self.state.profiles:
                 name = self.tr("ui.choose.generic") if code == "generic" else self.state.profiles[code].identity.name
                 self.form_box.addItem(name, code)
@@ -178,6 +194,7 @@ class ChoosePage(StepPage):
     def _show_summary(self) -> None:
         d = self.state.detected
         self.summary.setVisible(d is not None)
+        self.unknown_row.setVisible(d is not None and self.state.form_code == "generic")
         if not d:
             return
         profile = self.state.profile
@@ -251,6 +268,36 @@ class ChoosePage(StepPage):
 
         self.ctx.set_busy(True)
         workers.run(work, done, self._failed)
+
+    def _create_dictionary(self) -> None:
+        """Draft a data dictionary from the file, let the person review it, and keep it as a form."""
+        detected = self.state.detected
+        self.clear_error()
+
+        def done(draft):
+            self.ctx.set_busy(False)
+            name = self.state.file.stem if self.state.file else ""
+            dialog = DraftDialog(self.tr, draft, name, set(self.state.profiles), self)
+            if self.open_dialog(dialog):
+                self._use_profile(dialog.profile)
+
+        self.ctx.set_busy(True)
+        workers.run(lambda: draft_columns(detected.grid, detected.layout), done, self._failed)
+
+    def open_dialog(self, dialog: DraftDialog) -> bool:
+        return dialog.exec() == DraftDialog.Accepted
+
+    def _use_profile(self, profile: Profile) -> None:
+        code = profile.identity.form_code
+        save_profile(profile, paths.profiles_folder() / f"{code}.yaml")
+        self.state.profiles[code] = profile
+        self.state.form_code = code
+        self.state.prepared = None
+        self._fill_forms()
+        self._show_summary()
+        self.note.setText(self.tr("ui.choose.profile_saved", name=profile.identity.name))
+        self.note.show()
+        self.ctx.refresh_nav()
 
     def _hide_dictionary_help(self) -> None:
         self.dictionary_row.hide()

@@ -76,8 +76,10 @@ def column_row(col: ColumnSpec, profile: Profile) -> dict[str, str]:
 
 def build_dictionary(profile: Profile) -> list[dict[str, str]]:
     """Dictionary rows in upload order: record_id, patient_pid, then the profile's uploaded fields."""
+    source = next((c for c in profile.columns if c.role == Role.record_id_source), None)
+    what = source.label if source and profile.layout.kind == "single_header" else "the patient register number"
     rows = [_row(field_name=RECORD_ID_FIELD, form_name=profile.instrument, field_type="text",
-                 field_label="Record ID (pseudonym of the patient register number)")]
+                 field_label=f"Record ID (pseudonym of {what})")]
     if any(c.role == Role.patient_id_source for c in profile.columns):
         rows.append(_row(field_name=PATIENT_ID_FIELD, form_name=profile.instrument, field_type="text",
                          field_label="Patient link (pseudonym of the NIK)", identifier="y"))

@@ -137,3 +137,17 @@ Each entry says what was decided, why, and when to revisit it. Newest at the bot
 
 **Same name, different setup, stops the upload.** TBC.03 SO and RO share 53 field names, and two of them differ: `regimen_cat` (code 1 is "Kategori 1" in SO but "Paduan Jangka Pendek" in RO) and `dm_screen` (Positif/Negatif against Ya/Tidak). REDCap would accept the codes and store the wrong meaning. So before reading the file, the app compares every shared field's type, answer list and format with the project, and stops with the field names when any differ. Min and max are not compared, because REDCap does not enforce them. This also means SO and RO cannot share one project with the current field names (open question 6).
 
+## 2026-10-15 · A data dictionary from any spreadsheet
+
+**A drafted dictionary is a profile.** For a sheet with one header row that matches no saved form, the Choose step offers "Create a data dictionary". The app drafts one REDCap field per column, the person reviews it, and it is saved as a profile in Documents/REDCap Uploader/Profiles. From then on the file goes through the same pipeline as TBC.03: identifiers turned into pseudonyms, answers converted to codes, strict checks, and "Add them to the project" for REDCap. No second code path, and nothing that only Generic mode does.
+
+**Generic now means "no columns".** `Profile.is_generic` is true only for the built-in Generic profile (a single-header layout with no columns). A profile drafted from a single-header sheet has columns, so it is handled like any other form.
+
+**Private by default.** Columns whose contents look like NIKs, phone numbers, e-mail addresses or people's names, columns whose header suggests an identifier, and long free text are left out; the first NIK column becomes the pseudonymised patient link. A column with a different value on every row, preferably one whose header says it is an ID or register number, becomes the pseudonymised record ID; a 1, 2, 3 row counter never does, because it changes between exports. The draft holds no cell values except the answers of answer-list columns.
+
+**Answer lists.** A text column becomes an answer list when it repeats a few short values (at most 20, each used twice on average). Yes/no, sex and positive/negative get the codes used elsewhere in the app (1/0/99, 1/2); other answers are coded by how often they appear. Spellings that differ only in case or spacing count as one answer. A new answer in a later file is reported at the Check step, never guessed.
+
+**Recognised by headers.** A drafted profile has no title block to recognise it by, so the app recognises a sheet when at least 90 % of the headers in either agree. A missing column blocks reading only if it holds the record ID; other missing or new columns are reported and not uploaded.
+
+**Dropdown arrows.** The style sheet hid every dropdown's arrow, so choices did not look clickable. A small chevron image (app/assets) now marks every dropdown, and disabled ones show none.
+

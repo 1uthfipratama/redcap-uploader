@@ -248,3 +248,37 @@ def test_a_project_set_up_for_another_form_is_refused(qtbot, window, tmp_path):
         assert w.stack.currentIndex() == 1
         assert "regimen_cat" in choose_page.message.text() and "dm_screen" in choose_page.message.text()
         assert not choose_page.dictionary_row.isVisible()
+
+
+def test_a_new_spreadsheet_gets_a_data_dictionary_and_uploads(qtbot, window, tmp_path, monkeypatch, app_home):
+    from tests.test_infer import ROWS, write_sheet
+
+    w = window
+    sheet = write_sheet(tmp_path / "cohort.xlsx")
+    next_step(qtbot, w)  # connect to the demo REDCap
+    next_step(qtbot, w)  # to Choose file
+    page = w.pages[1]
+    page.load(sheet)
+    idle(qtbot, w)
+    assert w.state.form_code == "generic" and page.unknown_row.isVisible()
+
+    monkeypatch.setattr(page, "open_dialog", lambda dialog: dialog.use())
+    page.create_dictionary.click()
+    idle(qtbot, w)
+    code = w.state.form_code
+    assert code == "cohort" and not page.unknown_row.isVisible() and page.note.isVisible()
+    assert (app_home / "Profiles" / "cohort.yaml").exists()
+    assert page.form_box.currentData() == "cohort"
+
+    next_step(qtbot, w)  # read, de-identify and check with the new form
+    assert w.state.prepared.ready, [w.tr.describe(i) for i in w.state.prepared.errors]
+    next_step(qtbot, w)  # past Preview
+    next_step(qtbot, w)  # Upload step plans new vs existing
+    assert w.state.plan.new == ROWS
+    next_step(qtbot, w)  # upload
+    assert w.state.result.complete and w.state.result.imported == ROWS
+
+    # The next file with the same columns is recognised as the new form.
+    page.load(write_sheet(tmp_path / "next.xlsx", rows=5))
+    idle(qtbot, w)
+    assert w.state.form_code == "cohort"

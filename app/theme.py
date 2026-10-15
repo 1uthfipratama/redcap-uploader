@@ -55,6 +55,9 @@ def _load_bundled_fonts(folder: Path) -> None:
             QFontDatabase.addApplicationFont(str(path))
 
 
+ARROW = (Path(__file__).resolve().parent / "assets" / "chevron-down.png").as_posix()
+
+
 def style_sheet(b: Brand) -> str:
     c = b.colors
     return f"""
@@ -94,11 +97,16 @@ def style_sheet(b: Brand) -> str:
                             padding: 6px 10px; min-height: 22px; }}
     QLineEdit:focus, QComboBox:focus {{ border: 1px solid {c['primary']}; }}
     QComboBox::drop-down {{ border: none; width: 22px; }}
+    QComboBox::down-arrow {{ image: url("{ARROW}"); width: 10px; height: 10px; }}
+    QComboBox::down-arrow:disabled {{ image: none; }}
     QRadioButton {{ spacing: 8px; padding: 4px 0; }}
 
     QTableView, QTableWidget {{ background: {c['surface']}; border: 1px solid {c['border']}; border-radius: 8px;
                                 gridline-color: {c['border']}; selection-background-color: {c['primary_soft']};
                                 selection-color: {c['text']}; }}
+    QComboBox#Cell {{ border: none; border-radius: 0; background: transparent; padding: 0 6px; min-height: 0; }}
+    QComboBox#Cell:hover {{ background: {c['primary_soft']}; }}
+    QComboBox#Cell:disabled {{ color: {c['muted']}; }}
     QHeaderView::section {{ background: {c['canvas']}; color: {c['muted']}; border: none;
                             border-bottom: 1px solid {c['border']}; padding: 6px 8px; font-weight: 600; }}
     QProgressBar {{ background: {c['canvas']}; border: none; border-radius: 4px; height: 8px; text-align: center; }}

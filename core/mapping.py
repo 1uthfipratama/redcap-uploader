@@ -29,6 +29,7 @@ from core.profile import (
 
 CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"
 MIN_CONFIDENCE = 0.75
+HEADER_MATCH = 0.9  # share of headers a sheet must share with a drafted profile to be recognised
 
 
 @dataclass
@@ -59,9 +60,11 @@ def check_layout(layout: Layout, profile: Profile) -> list[Issue]:
     """Differences between a file's layout and its profile. Errors block reading."""
     if profile.is_generic:
         return []
-    issues: list[Issue] = []
     if layout.kind != profile.layout.kind:
         return [Issue("layout_kind_differs", ERROR)]
+    if profile.layout.kind == "single_header":
+        return _check_headers(layout, profile)
+    issues: list[Issue] = []
     file_keys = {c.key: c for c in layout.columns}
     for spec in profile.columns:
         col = file_keys.get(spec.key)
@@ -81,14 +84,48 @@ def check_layout(layout: Layout, profile: Profile) -> list[Issue]:
     return issues
 
 
+def _check_headers(layout: Layout, profile: Profile) -> list[Issue]:
+    """A profile drafted from a sheet: a missing column blocks reading only if it holds the
+    record ID; other missing columns, and new ones, are reported and not uploaded."""
+    issues: list[Issue] = []
+    file_keys = {c.key for c in layout.columns}
+    for spec in profile.columns:
+        if spec.key not in file_keys:
+            severity = ERROR if spec.role == Role.record_id_source else WARNING
+            issues.append(Issue("header_missing", severity, params={"label": spec.label}))
+    known = {s.key for s in profile.columns}
+    for col in layout.columns:
+        if col.key not in known:
+            issues.append(Issue("header_extra", WARNING, params={"label": col.label}))
+    return issues
+
+
 def recognise(layout: Layout, profiles: dict[str, Profile]) -> str:
-    """The form code whose recognition phrases all appear in the title block, else 'generic'."""
+    """The form code whose recognition phrases all appear in the title block. A sheet with one
+    header row is recognised by its headers instead. Else 'generic'."""
     title = " ".join(layout.title_text).casefold()
     for code, profile in profiles.items():
         phrases = profile.identity.recognition
         if phrases and all(p.casefold() in title for p in phrases):
             return code
+    if layout.kind == "single_header":
+        return _recognise_headers(layout, profiles) or "generic"
     return "generic"
+
+
+def _recognise_headers(layout: Layout, profiles: dict[str, Profile]) -> str | None:
+    """The single-header profile sharing the most headers with the file, if at least
+    HEADER_MATCH of all headers in either agree (a column added or renamed still matches)."""
+    keys = {c.key for c in layout.columns}
+    best: tuple[float, str] | None = None
+    for code, profile in profiles.items():
+        if profile.layout.kind != "single_header" or not profile.columns:
+            continue
+        wanted = {c.key for c in profile.columns}
+        overlap = len(keys & wanted) / len(keys | wanted)
+        if overlap >= HEADER_MATCH and (best is None or overlap > best[0]):
+            best = (overlap, code)
+    return best[1] if best else None
 
 
 def read_metadata(layout: Layout, profile: Profile) -> dict[str, str]:
