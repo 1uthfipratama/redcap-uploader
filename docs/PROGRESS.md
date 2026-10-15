@@ -1,8 +1,8 @@
 # Progress
 
-## Status (2026-10-14)
+## Status (2026-10-15)
 
-Phases 1 to 6 are built; 197 tests pass on Windows, macOS and Linux. The gate checks left need people or a REDCap account (below). Next is phase 7 (real REDCap check), when the account arrives.
+Phases 1 to 6 are built; 200 tests pass on Windows, macOS and Linux. A REDCap account is now available (the institution runs REDCap 15.6.0), so phase 7 (real REDCap check) starts, on a separate test project in Development status. Projects that hold real data are never used for testing. After phase 7 comes Stage 1 of [ROADMAP.md](ROADMAP.md): uploading into a project whose instruments the team designed.
 
 ## Done
 
@@ -156,7 +156,9 @@ The four exports from one hospital (TBC.03 SO 2020–2024 and 2025, RO 2020–20
 - **Rare spellings:** these are shown in the app's Check step on the approved machine, so a team member can add them to the profile.
 - **Blocked uploads:** a single bad row currently stops the whole file at Check. For real use, an option to set rows with errors aside (listed in a report, never silently) and upload the rest may be needed. Open question 7.
 
-## When the REDCap account arrives (phase 7, short version)
+## Phase 7: real REDCap check (started 2026-10-15)
+
+On a new project in Development status, with API Export, API Import/Update, Data Import Tool and Project Design rights, and an API token:
 
 1. `python -m tools.export_dictionary tbc03_so out/tbc03_so_dictionary.csv`, then upload that file on the test project's Data Dictionary page.
 2. Set `REDCAP_TEST_URL` and `REDCAP_TEST_TOKEN` in your own terminal, then run `pytest tests/contract`.
