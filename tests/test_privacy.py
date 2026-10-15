@@ -37,6 +37,25 @@ def test_inventories_list_no_values_for_identifier_columns():
                 assert row["spellings"] == "", (path.name, row["key"])
 
 
+
+def test_inventories_do_not_name_the_source_site(so_file, tmp_path):
+    """A facility's name, district and province never reach an inventory, committed or newly written."""
+    import csv
+
+    from tools.make_inventory import SITE_RE, write_inventory
+
+    for path in (REPO / "docs" / "forms").glob("*_columns.csv"):
+        for row in csv.DictReader(path.open(encoding="utf-8")):
+            if SITE_RE.search(row["header"]):
+                assert row["spellings"] == "", (path.name, row["key"])
+    write_inventory(tmp_path / "inv", [so_file])
+    written = (tmp_path / "inv_columns.csv").read_text(encoding="utf-8")
+    written += (tmp_path / "inv_layout.yaml").read_text(encoding="utf-8")
+    for site in ("FASYANKES SINTETIS", "Kota Sintetis", "Provinsi Sintetis"):
+        assert site not in written, site
+    assert "<value>" in written and "TBC.03 SO" in written
+
+
 def test_no_secrets_are_tracked():
     """No REDCap-token-shaped strings, private keys, certificates or hard-coded passwords."""
     token = re.compile(r"(?<![0-9A-Fa-f])[0-9A-F]{32}(?![0-9A-Fa-f])")  # REDCap API tokens: 32 hex characters

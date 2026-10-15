@@ -7,6 +7,10 @@ from the data rows and writes only:
 - for low-cardinality, non-identifier columns: the spellings seen at least
   MIN_COUNT times (rarer spellings are counted, never listed).
 
+Nothing that says where an export came from is written: columns and title-block
+labels that name a facility or a place (SITE_RE) never list their values, and
+those title values show as <value>.
+
 Run it on the approved machine, read the output, then commit it:
 
     python -m tools.make_inventory docs/forms/tbc03_so FILE.xls [FILE.xls ...]
@@ -46,6 +50,10 @@ ROLE_RULES: list[tuple[str, str]] = [
     (r"^no\. urut", "ignore"),
     (r"alamat lengkap faskes", "facility"),
 ]
+# Headers and title-block labels that name a facility or a place. Their values say where an
+# export came from, so the inventory never lists them.
+SITE_RE = re.compile(r"fasyankes|faskes|puskesmas|rumah sakit|provinsi|kabupaten|kota|kecamatan|kelurahan|desa",
+                     re.IGNORECASE)
 IDENTIFIER_ROLES = {"patient_id_source", "identifier_drop", "identifier_pseudonymise", "quasi_identifier"}
 
 FIELDS = [
@@ -92,7 +100,7 @@ def column_stats(grid, layout: Layout, col: SheetColumn) -> dict:
         col_type = "choice"
     role = suggest_role(col, filled, distinct)
     spellings, rare = "", 0
-    if col_type == "choice" and role not in IDENTIFIER_ROLES:
+    if col_type == "choice" and role not in IDENTIFIER_ROLES and not SITE_RE.search(col.header_text):
         common = [s for s, k in counts.most_common() if k >= MIN_COUNT]
         rare = sum(1 for k in counts.values() if k < MIN_COUNT)
         spellings = " | ".join(common)
@@ -156,6 +164,7 @@ def write_inventory(out_prefix: Path, paths: list[Path]) -> None:
         writer.writeheader()
         writer.writerows(rows_by_key[c.key] for c in layout0.columns)
 
+    site_values = {v for _, _, l in loaded for label, v in l.metadata.items() if SITE_RE.search(label)}
     summary = {
         "files": len(loaded),
         "data_rows_total": sum(len(l.data_rows) for _, _, l in loaded),
@@ -165,7 +174,8 @@ def write_inventory(out_prefix: Path, paths: list[Path]) -> None:
         "first_data_row_1based": layout0.first_data_row + 1,
         "sheet_columns_used": len(layout0.columns),
         "official_numbers": len({c.number for c in layout0.columns}),
-        "title_lines": [t for t in layout0.title_text if re.search(r"[A-Za-z]{4}", t) and not re.search(r"\d{3,}", t)],
+        "title_lines": ["<value>" if t in site_values else t
+                        for t in layout0.title_text if re.search(r"[A-Za-z]{4}", t) and not re.search(r"\d{3,}", t)],
         "title_labels": sorted(layout0.metadata),
         "trailing_blank_rows": [len(l.blank_rows) for _, _, l in loaded],
         "summary_rows_at_end": [len(l.summary_rows) for _, _, l in loaded],
