@@ -38,7 +38,7 @@ Python 3.10+, PySide6, pandas, openpyxl, xlrd (legacy .xls), pydantic and PyYAML
   profiles/      tbc03_so.yaml, tbc03_ro.yaml, generic.yaml
   mock_redcap/   embedded Flask mock; its data dictionary is generated from the selected profile
   synthetic/     generators that reproduce the TBC.03 layouts with fake values
-  tools/         make_inventory.py (structure-only column inventory), dry_run_report.py (aggregate-only dry run of a real export), observe_pycap.py, export_dictionary.py
+  tools/         make_inventory.py (structure-only column inventory), dry_run_report.py (aggregate-only dry run of a real export), observe_pycap.py, export_dictionary.py, contract_check.py (runs tests/contract against a real test project)
   i18n/          id.json, en.json
   config/        settings, redcap_target.yaml
   tests/         unit tests; tests/contract/ runs against the mock or a real test project

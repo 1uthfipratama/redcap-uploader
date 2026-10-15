@@ -161,7 +161,7 @@ The four exports from one hospital (TBC.03 SO 2020–2024 and 2025, RO 2020–20
 On a new project in Development status, with API Export, API Import/Update, Data Import Tool and Project Design rights, and an API token:
 
 1. `python -m tools.export_dictionary tbc03_so out/tbc03_so_dictionary.csv`, then upload that file on the test project's Data Dictionary page.
-2. Set `REDCAP_TEST_URL` and `REDCAP_TEST_TOKEN` in your own terminal, then run `pytest tests/contract`.
+2. Run `python -m tools.contract_check` in your own terminal. It asks for the API URL and the token (not shown) and runs `tests/contract`; the token stays in that process only.
 3. Mark each line of `docs/REDCAP_ASSUMPTIONS.md` verified or different.
 
 ## Open questions
