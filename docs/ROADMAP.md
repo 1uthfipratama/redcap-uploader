@@ -133,3 +133,25 @@ Teach the client, the mock and the contract tests the REDCap features that real 
 - Any spreadsheet's values are checked against the target project before upload, as strictly as TBC.03.
 - An existing REDCap project, with its own field names and codes, is filled through a saved mapping.
 - Every test passes on Windows, macOS and Linux, including contract tests against real REDCap test projects.
+
+## Making uploads easier (ideas, 2026-10-15)
+
+Since this roadmap was written, the app gained "Add them to the project" (fields go into a Development project through the API), a guard against fields that share a name but differ in meaning, and "Create a data dictionary" from any spreadsheet. These are the next steps that would remove the most effort, roughly in order of value. Each is small enough to build and test on its own.
+
+| # | Improvement | What it removes | Size |
+| --- | --- | --- | --- |
+| 1 | **Remember projects.** Saved connections (URL and project name), and the token kept in the computer's own password store (Windows Credential Manager, macOS Keychain) when the person agrees. | Copying and pasting the URL and token every time | 2 days |
+| 2 | **Project readiness check at Connect.** A short checklist (Development or production, record ID field, auto-numbering, events, rights) with the exact place in REDCap to fix each item. | Failed uploads from project settings, and guessing why | 1–2 days |
+| 3 | **Fix it once at the Check step.** For an unknown answer, pick what it means from the list; for an unreadable date, pick the format. The choice is saved in the form, so next month's file passes. | The same errors every month | 3 days |
+| 4 | **Upload the clean rows.** Rows with errors are set aside and saved to a local "rows to fix" spreadsheet, with the reason on each row. | One bad row blocking a whole file | 2 days |
+| 5 | **Match to an existing project.** Read the project's own dictionary, match columns to its fields, convert answer labels to its codes, and check formats against it. | Building the CSV by hand to fit someone else's instruments | 1 week |
+| 6 | **See changes before overwriting.** "12 new, 3 changed, 185 unchanged", with the changed values listed, and an option to fill only empty fields so values entered by hand are never replaced. | Fear of overwriting manual corrections | 3 days |
+| 7 | **Upload history and receipt.** Every upload logged (date, form, file fingerprint, counts, outcome, never values), with a one-page receipt to share with a supervisor or ethics committee. | "What did we upload, and when?" | 2 days |
+| 8 | **Undo the last upload.** Delete the records it created and restore the values it changed, from a snapshot taken just before. | Mistakes that are hard to take back | 3 days |
+| 9 | **An Excel template for a project.** A workbook with the right headers, dropdowns for answers and date cells, so data collected offline arrives clean. | Cleaning data after the fact | 2 days |
+| 10 | **Several files at once.** Monthly exports from several facilities in one go, combined, with duplicates across files reported. | Repeating the wizard per file | 3 days |
+| 11 | **Codebook export.** A readable document of a form's fields and answers, for protocols and ethics submissions. | Writing the codebook by hand | 1 day |
+| 12 | **Scheduled uploads.** A command-line mode that runs a saved form against a folder, for monthly routines. | Manual monthly runs | 2 days |
+
+Stage 5 (repeating instruments, events, checkboxes, data access groups) and Stage 6 (signed installers, updates) above still apply.
+
