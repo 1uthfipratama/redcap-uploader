@@ -60,7 +60,7 @@ The app opens in **Demo mode**: a practice REDCap inside the app, with no accoun
 2. On **Choose file**, click **Clean** under "Or try a sample" to load a synthetic sample file.
 3. Click **Next** on each step until **Result**. Open **What's happening?** under any step to see what it does.
 
-To use a real REDCap project, choose **My REDCap project** on the first step. Enter the API URL and token from your project's API page, and choose your team's pseudonym key file.
+To use a real REDCap project, choose **My REDCap project** on the first step. Enter the API URL and token from your project's API page, and choose your team's pseudonym key file (it asks for the key's passphrase). If your team has no key yet, **Create a new key…** makes one; save the backup copy it asks for.
 
 ### If something goes wrong
 

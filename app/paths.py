@@ -23,6 +23,11 @@ def profiles_folder() -> Path:
     return home() / "Profiles"
 
 
+def keys_folder() -> Path:
+    """The suggested place for a new key file (protected by a passphrase)."""
+    return home() / "Keys"
+
+
 def backups_folder() -> Path:
     """Copies of a project's data dictionary, saved before the app adds fields to it."""
     return home() / "Dictionary backups"

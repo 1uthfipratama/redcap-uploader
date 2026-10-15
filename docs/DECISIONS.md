@@ -151,3 +151,17 @@ Each entry says what was decided, why, and when to revisit it. Newest at the bot
 
 **Dropdown arrows.** The style sheet hid every dropdown's arrow, so choices did not look clickable. A small chevron image (app/assets) now marks every dropdown, and disabled ones show none.
 
+## 2026-10-15 · Creating and keeping the pseudonym key
+
+**The app creates the key.** "Create a new key…" on the Connect step makes 32 random bytes with the operating system's secure generator. A person never has to run a command or handle the key itself.
+
+**Never in plain text on disk.** The key file holds the key encrypted with a passphrase of at least 10 characters: scrypt (n = 2^15, r = 8, p = 1, a fresh 16-byte salt) derives a key-encryption key, the key is XORed with it, and an HMAC-SHA256 detects a wrong passphrase or a changed file. Only Python's standard library is used, so the installers need no new cryptography package. A stolen key file is useless without the passphrase, which is why a key may sit in a synced Documents folder.
+
+**Backups are part of creating.** After saving, the window asks for a backup copy in another place and warns before closing without one. "Back up key…" makes another protected copy later, with the same or a new passphrase. Key files are never written over (a lost key cannot be recovered) and never inside the app's folder.
+
+**Fingerprints, not keys, are compared.** The key's fingerprint (the first 8 hex characters of a SHA-256 of a label and the key, shown as 7F3A-91C2) appears once a key is loaded. Teammates check they hold the same key by comparing fingerprints, which reveal nothing about the key.
+
+**Older formats still load.** Plain hex key files and the REDCAP_UPLOADER_PSEUDONYM_KEY and REDCAP_UPLOADER_KEY_FILE environment variables keep working, for scripted use and existing test keys.
+
+**A bug the new test caught.** PySide6 does not allow `dialog.Accepted` on an instance, so the Connect step's dialog check would have failed on first real use. Every result check now uses `QDialog.DialogCode.Accepted`, and a test runs the real dialog helpers.
+

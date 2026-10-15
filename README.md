@@ -19,7 +19,7 @@ REDCap Uploader handles all of this. It explains each step as it goes, and nothi
 ![How a spreadsheet becomes REDCap records: read, recognise, remove identifiers, map and clean, check, then upload](docs/pipeline.svg)
 
 1. **Read the layout.** Finds the title block, the header rows and the official column numbers such as (1) (2) (3). It skips blank and summary rows, and counts each one it skips.
-2. **Recognise the form.** A TBC.03 SO or RO export uses that form's **profile**: a settings file that says what each numbered column means. Any other sheet is read in **Generic** mode, where columns are matched by name.
+2. **Recognise the form.** A TBC.03 SO or RO export uses that form's **profile**: a settings file that says what each numbered column means. For any other sheet, the app can **draft a data dictionary** from the file for you to review, and keeps it as your own form; or it matches the columns by name to fields already in the project (**Generic** mode).
 3. **Remove identifiers.** Name, address, BPJS and medical record numbers are dropped. The NIK and the patient register number become **pseudonyms**: codes made with your team's secret key. The same patient always gets the same code, so their episodes stay linked, but the code cannot be turned back into the NIK without the key.
 4. **Map and clean.** Columns become REDCap fields, answers become REDCap codes ("L" → 1, "NEG" → 0), and dates become `YYYY-MM-DD`. "Tidak diketahui" keeps its own code, and an unknown spelling is reported, never guessed.
 5. **Check (dry run).** Every row is checked against the form's rules: required fields, allowed answers, ranges, dates and duplicate records. Each problem is listed by spreadsheet row, with how to fix it.
@@ -36,7 +36,7 @@ Along the way:
 | **SITB TBC.03 SO** (drug-sensitive TB register) | Ready | Its own profile: all 84 columns understood, with value maps and rules |
 | **SITB TBC.03 RO** (drug-resistant TB register) | Ready | Its own profile: all 114 numbered columns (144 sheet columns) |
 | **Other SITB forms** (for example TB.01 or TB.06) | Not yet | Each needs its own profile: a settings file, not new code. A sample export of the form is needed to write it. |
-| **Any other spreadsheet** with one header row (.csv, .xlsx, .xls) | Basic | Generic mode: columns matched to REDCap fields by name, and look-alike identifier columns (names, NIK, phone, address) dropped. Answers must already be REDCap codes, and dates are sent as written. |
+| **Any other spreadsheet** with one header row (.csv, .xlsx, .xls) | Ready | **Create a data dictionary**: the app drafts one REDCap field per column (type, answers, identifiers left out or turned into pseudonyms), you review it, and it is checked as strictly as TBC.03 from then on. Or **Generic** mode: columns matched by name to fields already in the project, with fewer checks. |
 
 The TBC.03 profiles came from one facility's exports, but nothing is tied to that site. Exports from any facility, district or province work, and spellings the profile does not know yet are reported so they can be added.
 
@@ -55,19 +55,15 @@ Installers are built by GitHub Actions: **Actions → Build installers → Run w
 ## Using it with your real REDCap project
 
 You need three things:
-- **A REDCap project** with the form's fields. The app saves the matching data dictionary for you, and you upload it once on the project's Data Dictionary page.
+- **A REDCap project.** If it is in Development status, the app adds the form's fields for you (**Add them to the project**), keeping every field the project already has. For a project in production, it saves the data dictionary for your REDCap administrator.
 - **An API token** from the project's API page. The app keeps it in memory only: never in a file or a log.
-- **Your team's pseudonym key**, kept outside the app and backed up. Use the same key for every upload in a study, or patients will not link across files. To make one:
-
-  ```bash
-  python -c "import secrets; print(secrets.token_hex(32))"
-  ```
+- **Your team's pseudonym key.** On the first step, **Create a new key…** makes one, saves it protected by a passphrase, and asks you to save a backup copy. Use the same key for every upload in a study, or patients will not link across files. Teammates load the same file with **Choose key file…**; its **fingerprint** (such as `7F3A-91C2`) shows that everyone has the same key without revealing it.
 
 Real patient exports should only be processed on approved computers, after your study's ethics approval and data-governance sign-off.
 
 ## Status
 
-A working prototype, tested on synthetic data against the built-in practice REDCap. It has not yet been tested against a real REDCap server. Every assumption about real REDCap is listed in [docs/REDCAP_ASSUMPTIONS.md](docs/REDCAP_ASSUMPTIONS.md), and each one is checked once a test project is available. Progress and open questions are in [docs/PROGRESS.md](docs/PROGRESS.md).
+A working prototype, tested on synthetic data against the built-in practice REDCap and, since October 2026, against a real REDCap 15.6.0 test project. Every assumption about real REDCap, and whether it held, is listed in [docs/REDCAP_ASSUMPTIONS.md](docs/REDCAP_ASSUMPTIONS.md). Progress and open questions are in [docs/PROGRESS.md](docs/PROGRESS.md); what comes next is in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## For developers
 

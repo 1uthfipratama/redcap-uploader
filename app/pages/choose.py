@@ -7,6 +7,7 @@ from pathlib import Path
 
 from PySide6.QtWidgets import (
     QComboBox,
+    QDialog,
     QFileDialog,
     QFormLayout,
     QHBoxLayout,
@@ -285,7 +286,7 @@ class ChoosePage(StepPage):
         workers.run(lambda: draft_columns(detected.grid, detected.layout), done, self._failed)
 
     def open_dialog(self, dialog: DraftDialog) -> bool:
-        return dialog.exec() == DraftDialog.Accepted
+        return dialog.exec() == QDialog.DialogCode.Accepted
 
     def _use_profile(self, profile: Profile) -> None:
         code = profile.identity.form_code

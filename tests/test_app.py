@@ -8,7 +8,7 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 import pytest  # noqa: E402
 from PySide6.QtCore import QThreadPool  # noqa: E402
-from PySide6.QtWidgets import QAbstractButton, QLabel  # noqa: E402
+from PySide6.QtWidgets import QAbstractButton, QDialog, QLabel  # noqa: E402
 
 from app.__main__ import build  # noqa: E402
 
@@ -282,3 +282,94 @@ def test_a_new_spreadsheet_gets_a_data_dictionary_and_uploads(qtbot, window, tmp
     page.load(write_sheet(tmp_path / "next.xlsx", rows=5))
     idle(qtbot, w)
     assert w.state.form_code == "cohort"
+
+
+def test_a_new_key_is_created_protected_and_backed_up(qtbot, window, tmp_path, monkeypatch):
+    from core.keyfile import fingerprint, is_protected, read_key
+
+    w = window
+    page = w.pages[0]
+    page.real.setChecked(True)
+    saved, backup = tmp_path / "study.key", tmp_path / "usb" / "study-backup.key"
+    passphrase = "a long test passphrase"
+
+    def drive(dialog):
+        dialog.first.setText(passphrase)
+        dialog.second.setText(passphrase + "x")
+        dialog.create()
+        assert not dialog.problem.isHidden() and dialog.key is None  # passphrases differ
+        dialog.second.setText(passphrase)
+        monkeypatch.setattr(dialog, "ask_save_path", lambda default: str(saved))
+        dialog.create()
+        assert dialog.pages.currentIndex() == 1
+        monkeypatch.setattr(dialog, "confirm_no_backup", lambda: False)
+        dialog.finish()
+        assert dialog.result() != QDialog.DialogCode.Accepted  # no backup yet: the person is asked first
+        monkeypatch.setattr(dialog, "ask_save_path", lambda default: str(backup))
+        dialog.backup()
+        dialog.finish()
+        return dialog.result() == QDialog.DialogCode.Accepted
+
+    monkeypatch.setattr(page, "open_dialog", drive)
+    page.create_key_button.click()
+    key = w.state.key
+    assert key is not None and is_protected(saved.read_text(encoding="utf-8"))
+    assert read_key(saved, passphrase) == key == read_key(backup, passphrase)
+    assert fingerprint(key) in page.key_status.text()
+    assert page.backup_key_button.isVisible()
+
+
+def test_a_protected_key_file_asks_for_its_passphrase(qtbot, window, tmp_path, monkeypatch):
+    from core.keyfile import new_key, write_key
+
+    w = window
+    page = w.pages[0]
+    page.real.setChecked(True)
+    key = new_key()
+    path = write_key(tmp_path / "team.key", key, "the team passphrase")
+
+    monkeypatch.setattr(page, "ask_passphrase", lambda new=False: "not the passphrase")
+    page.load_key(str(path))
+    assert w.state.key is None and page.message.text() == w.tr("ui.error.key_passphrase")
+
+    monkeypatch.setattr(page, "ask_passphrase", lambda new=False: "the team passphrase")
+    page.load_key(str(path))
+    assert w.state.key == key and not page.message.isVisible()
+
+    page.demo.setChecked(True)
+    page.real.setChecked(True)
+    assert w.state.key == key  # kept when switching modes
+
+    copy = tmp_path / "copy.key"
+    monkeypatch.setattr(page, "ask_passphrase", lambda new=False: "a different passphrase")
+    monkeypatch.setattr(page, "ask_save_path", lambda default: str(copy))
+    page.backup_key_button.click()
+    from core.keyfile import read_key
+
+    assert read_key(copy, "a different passphrase") == key and page.key_note.isVisible()
+
+
+def test_dialog_helpers_report_what_the_person_chose(qtbot, window):
+    """The helpers the other tests replace: they must read a dialog's real result."""
+    from PySide6.QtCore import QTimer
+    from PySide6.QtWidgets import QApplication
+
+    from app.key_dialog import CreateKeyDialog
+
+    w = window
+    connect_page, choose_page = w.pages[0], w.pages[1]
+    for page in (connect_page, choose_page):
+        accepted = CreateKeyDialog(w.tr, replacing=False, parent=page)
+        QTimer.singleShot(0, accepted.accept)
+        assert page.open_dialog(accepted) is True
+        rejected = CreateKeyDialog(w.tr, replacing=False, parent=page)
+        QTimer.singleShot(0, rejected.reject)
+        assert page.open_dialog(rejected) is False
+
+    def type_passphrase():
+        dialog = QApplication.activeModalWidget()
+        dialog.first.setText("twelve chars")
+        dialog._ok()
+
+    QTimer.singleShot(0, type_passphrase)
+    assert connect_page.ask_passphrase() == "twelve chars"

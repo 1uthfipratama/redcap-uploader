@@ -14,7 +14,7 @@ Read this fully before writing or changing code. If a request conflicts with thi
 
 ## 2. Hard rules
 1. No patient-identifying data in the repo, tests, logs, screenshots or fixtures: no NIK, names, addresses, BPJS or record numbers, and no raw SITB exports. Real files live outside the repo folder. Besides the app itself, only tools/make_inventory.py and tools/dry_run_report.py open a real export, and they print structure and counts only.
-2. Identifiers are handled right after parsing, per the profile: dropped, or pseudonymised with a keyed hash (HMAC-SHA256). The key is never in the repo. Raw identifiers never reach logs, charts, error messages or the REDCap client.
+2. Identifiers are handled right after parsing, per the profile: dropped, or pseudonymised with a keyed hash (HMAC-SHA256). The key is never in the repo. Raw identifiers never reach logs, charts, error messages or the REDCap client. A key the app creates is never written in plain text: the file is protected by a passphrase (core/keyfile.py), never written over an existing file, and known to people only by its fingerprint.
 3. record_id is episode-level: a keyed hash of the form, the facility code and the patient register number, so one patient can have several records. patient_pid, a keyed hash of the cleaned NIK, links a patient's episodes.
 4. NIKs are cleaned before hashing: digits only, exactly 16, no scientific notation or leading apostrophe. A blank or invalid NIK never gets a pseudonym; it is reported with a count.
 5. The API token is never written to a file, log or error message. Memory only; OS keyring only if the user opts in.

@@ -98,3 +98,5 @@ def _duplicate_record_ids(frame: pd.DataFrame) -> list[Issue]:
 
 def _fmt(x) -> str:
     return str(int(x)) if float(x).is_integer() else str(x)
+
+
