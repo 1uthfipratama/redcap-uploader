@@ -129,3 +129,11 @@ Each entry says what was decided, why, and when to revisit it. Newest at the bot
 
 **Dictionary upload through the API works in Development (A18).** The first upload of the dictionary on the Data Dictionary page did not reach the project, so it was imported through the API instead (67 fields). That is the mechanism for the planned "add the missing fields to the project" feature. The import replaces the whole dictionary, so the feature must merge with what the project already has and never remove fields.
 
+## 2026-10-15 · Adding a form's fields to a project
+
+**The app can add the missing fields itself.** When the project lacks fields the form needs, the Choose step offers "Add them to the project" next to "Save data dictionary…". It is offered only for a project in Development status whose record ID field is `record_id`; in production the dictionary file goes to the REDCap administrator instead. The person confirms first.
+
+**Add, never remove.** A dictionary import replaces the whole dictionary (A18), so the app downloads the current one, keeps every field unchanged and in order, and appends only the missing ones. A fresh project (only its record ID field) takes the form's dictionary as it is, so REDCap's default instrument disappears. The current dictionary is saved first, to Documents/REDCap Uploader/Dictionary backups.
+
+**Same name, different setup, stops the upload.** TBC.03 SO and RO share 53 field names, and two of them differ: `regimen_cat` (code 1 is "Kategori 1" in SO but "Paduan Jangka Pendek" in RO) and `dm_screen` (Positif/Negatif against Ya/Tidak). REDCap would accept the codes and store the wrong meaning. So before reading the file, the app compares every shared field's type, answer list and format with the project, and stops with the field names when any differ. Min and max are not compared, because REDCap does not enforce them. This also means SO and RO cannot share one project with the current field names (open question 6).
+

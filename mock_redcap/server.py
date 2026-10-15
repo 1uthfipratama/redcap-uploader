@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 
 from flask import Flask, Response, request
 
-from core.dictionary import choices_from_row
+from core.dictionary import API_KEYS, choices_from_row
 
 MOCK_VERSION = "14.5.0"
 
@@ -30,6 +30,7 @@ class MockProject:
     dictionary: list[dict[str, str]]
     title: str = "Demo project (mock REDCap)"
     project_id: int = 1
+    in_production: bool = False
     records: dict[str, dict[str, str]] = field(default_factory=dict)
     lock: threading.Lock = field(default_factory=threading.Lock)
 
@@ -91,7 +92,7 @@ def _project_info(project, form):
         "project_id": project.project_id,
         "project_title": project.title,
         "creation_time": "2026-10-14 00:00:00",
-        "in_production": 0,
+        "in_production": int(project.in_production),
         "is_longitudinal": 0,
         "has_repeating_instruments_or_events": 0,
         "surveys_enabled": 0,
@@ -102,11 +103,31 @@ def _project_info(project, form):
 
 
 def _metadata(project, form):
+    if "data" in form:
+        return _import_metadata(project, form)
     fields = set(_listed(form, "fields"))
     forms = set(_listed(form, "forms"))
     rows = [r for r in project.dictionary
             if (not fields or r["field_name"] in fields) and (not forms or r["form_name"] in forms)]
     return _json(rows)
+
+
+def _import_metadata(project, form):
+    """A18: in Development the whole dictionary is replaced; the answer is the number of fields."""
+    if project.in_production:
+        # Wording not seen on a real server: the app checks the status before it tries.
+        return _error("The data dictionary cannot be changed through the API while the project is in production")
+    try:
+        rows = json.loads(form["data"])
+    except ValueError:
+        return _error("The data you provided could not be parsed")
+    names = [str(r.get("field_name", "")) for r in rows]
+    bad = [n for n in names if not re.fullmatch(r"[a-z][a-z0-9_]*", n)]
+    if not rows or bad or len(set(names)) != len(names) or any(not r.get("form_name") for r in rows):
+        return _error("The data dictionary is not valid: " + (", ".join(bad) or "duplicate or missing names"))
+    with project.lock:
+        project.dictionary = [{k: str(r.get(k, "")) for k in API_KEYS} for r in rows]
+    return _json(len(rows))
 
 
 def _field_names(project, form):

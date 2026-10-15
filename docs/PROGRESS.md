@@ -160,7 +160,9 @@ The four exports from one hospital (TBC.03 SO 2020–2024 and 2025, RO 2020–20
 
 **Result:** the contract tests pass against a REDCap 15.6.0 test project (19 of 19). Fifteen assumptions are verified, one is different (A14: REDCap saves out-of-range numbers), and three new ones were added (A18 to A20). The mock and the fix texts now follow the real server. Details in `docs/REDCAP_ASSUMPTIONS.md` and `docs/DECISIONS.md`.
 
-**Still to check on the real server:** the dictionary CSV on the Data Dictionary page (A15; the first upload did not reach the project), and an import through the Data Import Tool (A16). Then a full upload of a synthetic file through the app in Real mode.
+**Since then:** the dictionary CSV passed REDCap's upload check (A15; the first try was not committed). The app can now add a form's missing fields to a project in Development status, and it stops when the project has a field of the same name set up differently (see DECISIONS.md). 20 of 20 contract tests pass on the real server.
+
+**Still to check on the real server:** an import through the Data Import Tool (A16), a full upload of a synthetic file through the app in Real mode, and adding fields to a fresh project from the app.
 
 **How to repeat it.** On a project in Development status, with API Export, API Import/Update, Data Import Tool and Project Design rights, and an API token:
 
@@ -175,5 +177,5 @@ The four exports from one hospital (TBC.03 SO 2020–2024 and 2025, RO 2020–20
 3. **Required-when rules.** The only one so far is "outcome date when an outcome is filled". Should pregnancy (women only), the child TB score (children only) or cotrimoxazole/ART (HIV positive only) be required when their condition holds?
 4. **Free-text fields that are uploaded:** `occupation`, `referred_by`, `regimen_detail`, `prior_tx_detail`, `cxr_findings`, `satellite_facility` and `dst_other_*`. Patient names are unlikely there, but not impossible. Drop any of them?
 5. **Quasi-identifiers.** Keep the patient district for analysis, or drop all four (current default)?
-6. **SO and RO:** one REDCap project each (current default), or a single project?
+6. **SO and RO:** one REDCap project each (current default), or a single project? A single project would need `regimen_cat` and `dm_screen` renamed in one of the profiles, since they mean different things in the two forms.
 7. **Rows with errors:** block the whole file (current behaviour), or allow uploading the clean rows while the rest are set aside and listed?

@@ -69,6 +69,7 @@ class ProjectInfo:
     record_id_field: str
     fields: list[str]
     dictionary: list[dict[str, str]] = field(repr=False)
+    in_production: bool = False
 
 
 class _LoggedProject(Project):
@@ -106,7 +107,8 @@ def mask_payload(payload: dict) -> dict[str, str]:
         if key == "token":
             out[key] = MASK
         elif key == "data":
-            out[key] = f"<{_count_records(value)} records>"
+            unit = "fields" if payload.get("content") == "metadata" else "records"
+            out[key] = f"<{_count_records(value)} {unit}>"
         else:
             out[key] = str(value)
     return out
@@ -194,6 +196,7 @@ class RedcapClient:
             record_id_field=dictionary[0]["field_name"] if dictionary else "",
             fields=[r["field_name"] for r in dictionary],
             dictionary=dictionary,
+            in_production=bool(int(info.get("in_production", 0) or 0)),
         )
 
     def existing_record_ids(self, record_id_field: str) -> set[str]:
@@ -204,6 +207,11 @@ class RedcapClient:
         """Import one batch; returns the saved record IDs. All-or-nothing (A06)."""
         return self._call(self._project.import_records, records, overwrite=overwrite,
                           return_content="ids", date_format="YMD")
+
+    def import_dictionary(self, rows: list[dict[str, str]]) -> int:
+        """Replace the project's data dictionary with these rows; returns the number of fields (A18).
+        Only for projects in Development status; core.project_setup keeps existing fields."""
+        return int(self._call(self._project.import_metadata, rows, import_format="json"))
 
     def export_records(self, fields: list[str] | None = None, records: list[str] | None = None) -> list[dict]:
         return self._call(self._project.export_records, fields=fields, records=records)

@@ -7,6 +7,8 @@ A15 in docs/REDCAP_ASSUMPTIONS.md).
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from core.profile import (
     PATIENT_ID_FIELD,
     RECORD_ID_FIELD,
@@ -97,3 +99,60 @@ def missing_fields(profile: Profile, project_fields: list[str]) -> list[str]:
     """Fields this form uploads that the REDCap project does not have, in upload order."""
     have = set(project_fields)
     return [f for f in profile.redcap_fields() if f not in have]
+
+
+class RecordIdDiffers(ValueError):
+    """The project's record ID field is not the one the app uploads to."""
+
+    def __init__(self, field_name: str):
+        super().__init__(field_name)
+        self.field_name = field_name
+
+
+def merge_dictionary(existing: list[dict[str, str]], wanted: list[dict[str, str]]) -> tuple[list[dict], list[str]]:
+    """The project's dictionary plus the wanted fields it lacks, and the names of the fields added.
+
+    Importing a dictionary replaces the whole one (A18), so every field the project has is
+    kept, unchanged and in order, and new fields go at the end. A fresh project, holding only
+    its record ID field, takes the wanted dictionary as it is, so the record ID sits on the
+    form's own instrument rather than on REDCap's default one.
+    """
+    if existing and wanted and existing[0]["field_name"] != wanted[0]["field_name"]:
+        raise RecordIdDiffers(existing[0]["field_name"])
+    have = {row["field_name"] for row in existing}
+    added = [dict(row) for row in wanted if row["field_name"] not in have]
+    names = [row["field_name"] for row in added]
+    if len(existing) <= 1:
+        return [dict(row) for row in wanted], names
+    return [dict(row) for row in existing] + added, names
+
+
+@dataclass
+class FieldConflict:
+    """A field the project already has, set up differently from what the form needs."""
+
+    field: str
+    aspect: str  # "type", "choices" or "validation"
+
+
+def field_conflicts(existing: list[dict[str, str]], wanted: list[dict[str, str]]) -> list[FieldConflict]:
+    """Fields in both dictionaries whose type, answer list or validation differ.
+
+    Uploading into such a field mixes meanings without any error from REDCap: in SITB,
+    regimen_cat code 1 is "Kategori 1" in TBC.03 SO but "Paduan Jangka Pendek" in RO.
+    Min and max are not compared, since REDCap does not enforce them (A14).
+    """
+    have = {row["field_name"]: row for row in existing}
+    conflicts = []
+    for row in wanted[1:]:  # the first row is the record ID field
+        old = have.get(row["field_name"])
+        if old is None:
+            continue
+        if old.get("field_type", "") != row.get("field_type", ""):
+            conflicts.append(FieldConflict(row["field_name"], "type"))
+        elif row.get("field_type") in ("radio", "dropdown", "checkbox") and choices_from_row(old) != choices_from_row(row):
+            conflicts.append(FieldConflict(row["field_name"], "choices"))
+        elif (old.get("text_validation_type_or_show_slider_number", "")
+              != row.get("text_validation_type_or_show_slider_number", "")):
+            conflicts.append(FieldConflict(row["field_name"], "validation"))
+    return conflicts

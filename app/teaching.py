@@ -24,6 +24,8 @@ SHOWN_PARAMS = ["content", "action", "format", "type", "overwriteBehavior", "ret
 def request_kind(entry: RequestLog) -> str:
     if entry.content == "record":
         return "record_import" if "data" in entry.params else "record_export"
+    if entry.content == "metadata" and "data" in entry.params:
+        return "metadata_import"
     return entry.content if entry.content in ("version", "project", "metadata", "formEventMapping") else "other"
 
 
@@ -45,7 +47,7 @@ def request_line(entry: RequestLog) -> str:
 
 def describe_request(tr: Translator, entry: RequestLog) -> str:
     kind = request_kind(entry)
-    count = entry.params.get("data", "").strip("<>").split(" ")[0] if kind == "record_import" else ""
+    count = entry.params.get("data", "").strip("<>").split(" ")[0] if kind.endswith("_import") else ""
     text = tr(f"ui.req.{kind}", count=count, overwrite=entry.params.get("overwriteBehavior", ""))
     if entry.ok:
         return tr("ui.req.ok", what=text, seconds=entry.seconds)

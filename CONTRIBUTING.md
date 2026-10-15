@@ -34,7 +34,7 @@ Python 3.10+, PySide6, pandas, openpyxl, xlrd (legacy .xls), pydantic and PyYAML
 
 ## 4. Repo layout
   app/           PySide6 wizard, step screens, Explore screen, teaching panels
-  core/          grid, layout, profile, parse, identifiers, mapping, normalise, validate, pipeline, dictionary, client, upload, export_csv, explore (no UI imports)
+  core/          grid, layout, profile, parse, identifiers, mapping, normalise, validate, pipeline, dictionary, client, project_setup, upload, export_csv, explore (no UI imports)
   profiles/      tbc03_so.yaml, tbc03_ro.yaml, generic.yaml
   mock_redcap/   embedded Flask mock; its data dictionary is generated from the selected profile
   synthetic/     generators that reproduce the TBC.03 layouts with fake values
@@ -58,7 +58,7 @@ Python 3.10+, PySide6, pandas, openpyxl, xlrd (legacy .xls), pydantic and PyYAML
 
 ## 6. Wizard steps
 1. Connect: Demo or Real; shows the project name and REDCap version.
-2. Choose file and form: CSV, XLSX or XLS; recognise the form or fall back to Generic; read the merged header; skip title and summary rows.
+2. Choose file and form: CSV, XLSX or XLS; recognise the form or fall back to Generic; read the merged header; skip title and summary rows. Stop if the project has a field of the same name set up differently; if fields are missing, offer to add them (Development only, never removing any) or to save the dictionary.
 3. Preview and map: match by official column number (name similarity in Generic mode); show which columns will be dropped or pseudonymised.
 4. Validate (dry run): apply value maps, then check required fields, choices, ranges, date formats, duplicate IDs. Nothing is sent.
 5. Upload: first export existing record IDs and show new and existing counts; then import_records in batches with progress. Or save the import-ready CSV instead.

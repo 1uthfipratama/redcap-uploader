@@ -5,19 +5,36 @@ from __future__ import annotations
 import tempfile
 from pathlib import Path
 
-from PySide6.QtWidgets import QComboBox, QFileDialog, QFormLayout, QHBoxLayout, QPushButton, QWidget
+from PySide6.QtCore import QStandardPaths
+from PySide6.QtWidgets import (
+    QComboBox,
+    QFileDialog,
+    QFormLayout,
+    QHBoxLayout,
+    QMessageBox,
+    QPushButton,
+    QWidget,
+)
 
 from app import workers
 from app.pages.base import StepPage
 from app.widgets import DropZone, label
-from core.dictionary import build_dictionary, missing_fields
+from core.dictionary import build_dictionary, field_conflicts, missing_fields
 from core.export_csv import write_dictionary_csv
 from core.grid import SUPPORTED_SUFFIXES
 from core.mapping import read_metadata
 from core.pipeline import detect, prepare
+from core.project_setup import add_missing_fields
 from synthetic.generate import DEFAULT_ROWS, write_set
 
 FORM_ORDER = ["tbc03_so", "tbc03_ro", "generic"]
+BACKUP_FOLDER = ("REDCap Uploader", "Dictionary backups")  # under the user's Documents folder
+
+
+def backup_folder() -> Path:
+    """Where a project's data dictionary is saved before the app adds fields to it."""
+    documents = QStandardPaths.writableLocation(QStandardPaths.DocumentsLocation) or str(Path.home())
+    return Path(documents).joinpath(*BACKUP_FOLDER)
 
 
 class ChoosePage(StepPage):
@@ -58,10 +75,23 @@ class ChoosePage(StepPage):
         self.summary.hide()
         self.body.addWidget(self.summary)
 
+        # Shown when the REDCap project lacks fields this form needs.
+        self.dictionary_row = QWidget()
+        buttons = QHBoxLayout(self.dictionary_row)
+        buttons.setContentsMargins(0, 0, 0, 0)
+        self.add_fields = QPushButton()
+        self.add_fields.setObjectName("Primary")
+        self.add_fields.clicked.connect(self._add_fields)
         self.save_dictionary = QPushButton()
         self.save_dictionary.clicked.connect(self._save_dictionary)
-        self.save_dictionary.hide()
-        self.body.addWidget(self.save_dictionary)
+        buttons.addWidget(self.add_fields)
+        buttons.addWidget(self.save_dictionary)
+        buttons.addStretch(1)
+        self.dictionary_row.hide()
+        self.body.addWidget(self.dictionary_row)
+        self.note = label("Success")
+        self.note.hide()
+        self.body.addWidget(self.note)
         self._samples_dir: Path | None = None
 
     def translate(self) -> None:
@@ -72,6 +102,7 @@ class ChoosePage(StepPage):
         self.sample_clean.setText(tr("ui.choose.sample_clean"))
         self.sample_messy.setText(tr("ui.choose.sample_messy"))
         self.save_dictionary.setText(tr("ui.choose.save_dictionary"))
+        self.add_fields.setText(tr("ui.choose.add_fields"))
         for k, w in self.names.items():
             w.setText(tr(f"ui.choose.{k}"))
         self._fill_forms()
@@ -105,7 +136,7 @@ class ChoosePage(StepPage):
 
     def load(self, path: Path) -> None:
         self.clear_error()
-        self.save_dictionary.hide()
+        self._hide_dictionary_help()
         self.state.forget_file()
         self.state.file = path
         profiles = self.state.profiles
@@ -142,7 +173,7 @@ class ChoosePage(StepPage):
         self.state.prepared = None
         self._show_summary()
         self.clear_error()
-        self.save_dictionary.hide()
+        self._hide_dictionary_help()
 
     def _show_summary(self) -> None:
         d = self.state.detected
@@ -178,7 +209,7 @@ class ChoosePage(StepPage):
         state = self.state
         profile = state.profile
         self.clear_error()
-        self.save_dictionary.hide()
+        self._hide_dictionary_help()
         if not profile.is_generic and state.mode == "real" and state.key is None:
             self.show_error("ui.error.key_missing")
             return
@@ -188,6 +219,10 @@ class ChoosePage(StepPage):
                 state.mock.project.dictionary = build_dictionary(profile)
                 state.mock.project.records.clear()
             state.project = state.client.connect()
+            if not profile.is_generic:
+                conflicts = field_conflicts(state.project.dictionary, build_dictionary(profile))
+                if conflicts:
+                    return ("conflicts", conflicts)
             missing = [] if profile.is_generic else missing_fields(profile, state.project.fields)
             if missing:
                 return ("missing", missing)
@@ -198,9 +233,14 @@ class ChoosePage(StepPage):
         def done(result):
             self.ctx.set_busy(False)
             kind, value = result
+            if kind == "conflicts":
+                tr = self.tr
+                fields = ", ".join(tr("ui.choose.conflict", field=c.field, aspect=tr(f"ui.choose.aspect_{c.aspect}"))
+                                   for c in value[:6])
+                self.show_error("ui.choose.field_conflicts", {"count": len(value), "fields": fields})
+                return
             if kind == "missing":
-                self.show_error("ui.choose.missing_fields", {"count": len(value), "fields": ", ".join(value[:6])})
-                self.save_dictionary.show()
+                self._show_missing(value)
                 return
             state.prepared = value
             if value.blocked:
@@ -208,6 +248,52 @@ class ChoosePage(StepPage):
                                 {"problems": "\n".join(self.tr.describe(i) for i in value.errors[:8])})
                 return
             proceed()
+
+        self.ctx.set_busy(True)
+        workers.run(work, done, self._failed)
+
+    def _hide_dictionary_help(self) -> None:
+        self.dictionary_row.hide()
+        self.note.hide()
+
+    def _show_missing(self, missing: list[str]) -> None:
+        """Explain which fields the project lacks, and offer to add them when the project allows it."""
+        project, params = self.state.project, {"count": len(missing), "fields": ", ".join(missing[:6])}
+        if project.in_production:
+            self.show_error("ui.choose.missing_fields_production", params)
+        elif project.record_id_field != self.state.target.record_id_field:
+            self.show_error("ui.choose.missing_fields_record_id", {**params, "record_id": project.record_id_field})
+        else:
+            self.show_error("ui.choose.missing_fields", params)
+        self.add_fields.setVisible(not project.in_production
+                                   and project.record_id_field == self.state.target.record_id_field)
+        self.dictionary_row.show()
+
+    def confirm_add(self, count: int, project: str, folder: Path) -> bool:
+        answer = QMessageBox.question(self, self.tr("ui.choose.add_fields"),
+                                      self.tr("ui.choose.add_fields_confirm", count=count, project=project,
+                                              folder=str(folder)))
+        return answer == QMessageBox.Yes
+
+    def _add_fields(self) -> None:
+        state, profile, folder = self.state, self.state.profile, backup_folder()
+        missing = missing_fields(profile, state.project.fields)
+        if not self.confirm_add(len(missing), state.project.title, folder):
+            return
+
+        def work():
+            added = add_missing_fields(state.client, profile, folder)
+            state.project = state.client.connect()
+            return added
+
+        def done(result):
+            self.ctx.set_busy(False)
+            self.clear_error()
+            self.dictionary_row.hide()
+            self.note.setText(self.tr("ui.choose.fields_added", count=len(result.added),
+                                      path=str(result.backup or folder)))
+            self.note.show()
+            self.ctx.refresh_nav()
 
         self.ctx.set_busy(True)
         workers.run(work, done, self._failed)

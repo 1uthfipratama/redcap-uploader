@@ -164,3 +164,87 @@ def test_explore_opens_from_the_check_step_only_when_ready(qtbot, window):
     page.explore.click()
     assert w.explore_window is not None and w.explore_window.isVisible()
     assert w.explore_window.pages[0].numbers["rows"].text() == "500"
+
+
+def test_missing_fields_are_added_to_a_development_project(qtbot, window, so_file, tmp_path, monkeypatch):
+    from app.pages import choose
+    from mock_redcap.runner import MockRedcap
+
+    w = window
+    first = {"field_name": "record_id", "form_name": "form_1", "field_type": "text", "field_label": "Record ID"}
+    with MockRedcap([first]) as mock:
+        page = w.pages[0]
+        page.real.setChecked(True)
+        page.url.setText(mock.url)
+        page.token.setText(mock.token)
+        next_step(qtbot, w)  # connect
+        w.state.key = b"k" * 32
+        next_step(qtbot, w)  # to Choose file
+        w.pages[1].load(so_file)
+        idle(qtbot, w)
+        w._next()
+        idle(qtbot, w)
+        choose_page = w.pages[1]
+        assert w.stack.currentIndex() == 1
+        assert choose_page.dictionary_row.isVisible() and choose_page.add_fields.isVisible()
+        assert choose_page.message.text().startswith("The REDCap project is missing")
+
+        monkeypatch.setattr(choose, "backup_folder", lambda: tmp_path)
+        monkeypatch.setattr(choose_page, "confirm_add", lambda count, project, folder: True)
+        choose_page.add_fields.click()
+        idle(qtbot, w)
+        assert choose_page.note.isVisible() and not choose_page.message.isVisible()
+        assert set(w.state.profile.redcap_fields()) <= set(w.state.project.fields)
+        assert len(list(tmp_path.glob("*.csv"))) == 1
+        next_step(qtbot, w)  # now the file is read and checked
+        assert w.stack.currentIndex() == 2
+
+
+def test_production_project_only_offers_the_dictionary_file(qtbot, window, so_file):
+    from mock_redcap.runner import MockRedcap
+
+    w = window
+    first = {"field_name": "record_id", "form_name": "form_1", "field_type": "text", "field_label": "Record ID"}
+    with MockRedcap([first]) as mock:
+        mock.project.in_production = True
+        page = w.pages[0]
+        page.real.setChecked(True)
+        page.url.setText(mock.url)
+        page.token.setText(mock.token)
+        next_step(qtbot, w)
+        w.state.key = b"k" * 32
+        next_step(qtbot, w)
+        w.pages[1].load(so_file)
+        idle(qtbot, w)
+        w._next()
+        idle(qtbot, w)
+        choose_page = w.pages[1]
+        assert choose_page.save_dictionary.isVisible() and not choose_page.add_fields.isVisible()
+        assert choose_page.message.text() == w.tr("ui.choose.missing_fields_production", count=len(
+            w.state.profile.redcap_fields()) - 1, fields=", ".join(w.state.profile.redcap_fields()[1:7]))
+
+
+def test_a_project_set_up_for_another_form_is_refused(qtbot, window, tmp_path):
+    from core.dictionary import build_dictionary
+    from mock_redcap.runner import MockRedcap
+    from synthetic.generate import write_set
+
+    w = window
+    ro_file = write_set(w.state.profiles["tbc03_ro"], tmp_path, 20, seed=3, formats=("xls",))["clean_xls"]
+    with MockRedcap(build_dictionary(w.state.profiles["tbc03_so"])) as mock:
+        page = w.pages[0]
+        page.real.setChecked(True)
+        page.url.setText(mock.url)
+        page.token.setText(mock.token)
+        next_step(qtbot, w)
+        w.state.key = b"k" * 32
+        next_step(qtbot, w)
+        w.pages[1].load(ro_file)
+        idle(qtbot, w)
+        assert w.state.form_code == "tbc03_ro"
+        w._next()
+        idle(qtbot, w)
+        choose_page = w.pages[1]
+        assert w.stack.currentIndex() == 1
+        assert "regimen_cat" in choose_page.message.text() and "dm_screen" in choose_page.message.text()
+        assert not choose_page.dictionary_row.isVisible()

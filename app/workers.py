@@ -13,8 +13,10 @@ from typing import Callable
 from PySide6.QtCore import QObject, QRunnable, QThreadPool, Signal
 
 from core.client import ApiError, ConnectionFailed, InvalidSettings
+from core.dictionary import RecordIdDiffers
 from core.grid import UnsupportedFile
 from core.identifiers import PseudonymKeyInvalid, PseudonymKeyMissing
+from core.project_setup import FieldsConflict, ProjectInProduction
 
 log = logging.getLogger("redcap_uploader.app")
 
@@ -33,6 +35,12 @@ def error_key(exc: BaseException) -> tuple[str, dict]:
         return "ui.error.key_invalid", {}
     if isinstance(exc, UnsupportedFile):
         return "ui.error.file_type", {}
+    if isinstance(exc, ProjectInProduction):
+        return "ui.error.project_in_production", {}
+    if isinstance(exc, FieldsConflict):
+        return "ui.error.fields_conflict", {"fields": ", ".join(c.field for c in exc.conflicts[:6])}
+    if isinstance(exc, RecordIdDiffers):
+        return "ui.error.record_id_differs", {"field": exc.field_name}
     if isinstance(exc, (OSError, ValueError)):
         return "ui.error.file_read", {}
     return "ui.error.unexpected", {}

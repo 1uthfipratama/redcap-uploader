@@ -120,3 +120,10 @@ def test_bad_token_is_refused(target):
     with pytest.raises(ApiError) as caught:
         wrong.connect()
     assert "permission" in str(caught.value).casefold() and "<" not in str(caught.value)
+
+
+def test_dictionary_import_keeps_the_project(client):
+    """A18: importing the project's own dictionary back changes nothing and answers with the field count."""
+    before = client.connect()
+    assert client.import_dictionary(before.dictionary) == len(before.dictionary)
+    assert client.connect().fields == before.fields
