@@ -60,4 +60,5 @@ def test_licence_and_notices_are_present():
     assert licence.startswith("MIT License") and "Luthfi Izza Pratama" in licence
     notices = (REPO / "THIRD_PARTY_NOTICES.md").read_text(encoding="utf-8")
     assert "PySide6" in notices and "LGPL" in notices
-    assert (REPO / "licenses" / "GPL-3.0.txt").exists()
+    for text in ("GPL-3.0.txt", "LGPL-3.0.txt"):
+        assert (REPO / "licenses" / text).exists(), text
