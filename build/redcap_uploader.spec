@@ -23,6 +23,9 @@ datas = [
     (str(ROOT / "docs" / "forms"), "docs/forms"),  # structure-only inventories, used for sample files
     (str(ROOT / "synthetic" / "distributions.yaml"), "synthetic"),
 ]
+datas += [(str(ROOT / "LICENSE"), "."), (str(ROOT / "THIRD_PARTY_NOTICES.md"), ".")]
+if (ROOT / "build" / "out" / "licenses").is_dir():  # filled by: python -m tools.third_party_notices --collect build/out/licenses
+    datas.append((str(ROOT / "build" / "out" / "licenses"), "licenses"))
 if (ROOT / "app" / "assets").is_dir():
     datas.append((str(ROOT / "app" / "assets"), "app/assets"))
 
@@ -86,5 +89,6 @@ if sys.platform == "darwin":
             "CFBundleVersion": VERSION,
             "NSHighResolutionCapable": True,
             "LSMinimumSystemVersion": "12.0",
+            "NSHumanReadableCopyright": "Copyright (c) 2026 Luthfi Izza Pratama (Yayasan RPRI). MIT License.",
         },
     )

@@ -44,6 +44,8 @@ jobs:
         env:
           QT_QPA_PLATFORM: offscreen
         run: python -m pytest -q
+      - name: Collect licences
+        run: python -m tools.third_party_notices --collect build/out/licenses
       - name: Build the app
         run: python -m PyInstaller build/redcap_uploader.spec --noconfirm --workpath build/out/work --distpath dist
       - name: Smoke-test the built app
@@ -116,6 +118,8 @@ jobs:
         env:
           QT_QPA_PLATFORM: offscreen
         run: python -m pytest -q
+      - name: Collect licences
+        run: python -m tools.third_party_notices --collect build/out/licenses
       - name: Build the app
         run: python -m PyInstaller build/redcap_uploader.spec --noconfirm --workpath build/out/work --distpath dist
       - name: Smoke-test the built app

@@ -34,6 +34,8 @@ SolidCompression=yes
 WizardStyle=modern
 UninstallDisplayIcon={app}\{#AppExe}
 UninstallDisplayName={#AppName}
+AppCopyright=Copyright (c) 2026 Luthfi Izza Pratama (Yayasan RPRI)
+LicenseFile=..\..\LICENSE
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"

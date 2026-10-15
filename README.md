@@ -91,3 +91,9 @@ python -m venv .venv
 | `docs/` | PRD, decisions, REDCap assumptions, install guide, structure-only column inventories of the real forms |
 
 Rules for changing the code (privacy first) are in `CONTRIBUTING.md`, and the reasons behind each design choice are in [docs/DECISIONS.md](docs/DECISIONS.md).
+
+## License
+
+MIT. Copyright (c) 2026 Luthfi Izza Pratama (Yayasan RPRI); see [LICENSE](LICENSE). You may use, change and share this tool, including in other projects, as long as the copyright notice stays with it.
+
+The installers include third-party libraries under their own licences, listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Qt and PySide6 are used under the GNU LGPL v3.

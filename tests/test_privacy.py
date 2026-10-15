@@ -53,3 +53,11 @@ def test_no_secrets_are_tracked():
                 if pattern.search(text):
                     hits.append(f"{path.name}: {pattern.pattern[:30]}")
     assert hits == [], hits
+
+
+def test_licence_and_notices_are_present():
+    licence = (REPO / "LICENSE").read_text(encoding="utf-8")
+    assert licence.startswith("MIT License") and "Luthfi Izza Pratama" in licence
+    notices = (REPO / "THIRD_PARTY_NOTICES.md").read_text(encoding="utf-8")
+    assert "PySide6" in notices and "LGPL" in notices
+    assert (REPO / "licenses" / "GPL-3.0.txt").exists()
