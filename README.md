@@ -33,10 +33,10 @@ Along the way:
 
 | File | Status | How it is read |
 |---|---|---|
-| **SITB TBC.03 SO** (drug-sensitive TB register) | ✅ Ready | Its own profile: all 84 columns understood, with value maps and rules |
-| **SITB TBC.03 RO** (drug-resistant TB register) | ✅ Ready | Its own profile: all 114 numbered columns (144 sheet columns) |
-| **Other SITB forms** (for example TB.01 or TB.06) | ⏳ Not yet | Each needs its own profile: a settings file, not new code. A sample export of the form is needed to write it. |
-| **Any other spreadsheet** with one header row (.csv, .xlsx, .xls) | ⚠️ Basic | Generic mode: columns matched to REDCap fields by name, and look-alike identifier columns (names, NIK, phone, address) dropped. Answers must already be REDCap codes, and dates are sent as written. |
+| **SITB TBC.03 SO** (drug-sensitive TB register) | Ready | Its own profile: all 84 columns understood, with value maps and rules |
+| **SITB TBC.03 RO** (drug-resistant TB register) | Ready | Its own profile: all 114 numbered columns (144 sheet columns) |
+| **Other SITB forms** (for example TB.01 or TB.06) | Not yet | Each needs its own profile: a settings file, not new code. A sample export of the form is needed to write it. |
+| **Any other spreadsheet** with one header row (.csv, .xlsx, .xls) | Basic | Generic mode: columns matched to REDCap fields by name, and look-alike identifier columns (names, NIK, phone, address) dropped. Answers must already be REDCap codes, and dates are sent as written. |
 
 The TBC.03 profiles came from one facility's exports, but nothing is tied to that site. Exports from any facility, district or province work, and spellings the profile does not know yet are reported so they can be added.
 
