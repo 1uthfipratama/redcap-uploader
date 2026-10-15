@@ -60,14 +60,14 @@ def test_gate_fixture_uploads_and_exports_back(so_file, so, so_rows, mock, caplo
 
 def test_rejected_batch_stops_upload_and_keeps_earlier_batches(so_file, so, mock):
     records, rows = _prepared(so_file, so)
-    records[2]["age"] = "212"  # bypasses validation on purpose, to exercise REDCap's own check
+    records[2]["sex"] = "9"  # bypasses validation on purpose, to exercise REDCap's own check
     client = RedcapClient(mock.url, mock.token)
     result = upload(client, records, record_id_field="record_id", batch_size=2, rows_by_record=rows)
     assert [b.status for b in result.batches] == ["imported", "rejected", "not_sent"]
     assert result.imported == 2 and result.not_sent == 1 and not result.complete
     rejected = result.rejected_batch
     problem = rejected.problems[0]
-    assert (problem.record, problem.field, problem.value) == (records[2]["record_id"], "age", "212")
+    assert (problem.record, problem.field, problem.value) == (records[2]["record_id"], "sex", "9")
     assert rejected.rows[problem.record] == 20  # spreadsheet row of the third data row
     # A06: the good record in the rejected batch was not saved either.
     assert client.export_records(fields=["record_id"], records=[records[3]["record_id"]]) == []
@@ -93,11 +93,12 @@ def test_bad_settings_never_echo_the_token(url, token, what):
     assert token not in str(caught.value) and token not in repr(caught.value)
 
 
-@pytest.mark.parametrize("message, kind", [
+@pytest.mark.parametrize("message, kind", [  # REDCap 15.6.0's own wording
     ("The value is not a valid category for sex", "category"),
-    ("The value is not a valid date (YYYY-MM-DD)", "date"),
-    ("The value is outside the allowed range (0 to 120)", "range"),
-    ("This field has a validation type of integer, but the value is not an integer", "number"),
+    ("Invalid date format. (NOTE: Dates must be imported here only in Y-M-D format, regardless of the specific "
+     "date format designated for this field.)", "date"),
+    ("The value you provided could not be validated because it does not follow the expected format. "
+     "Please try again.", "number"),
     ("The following fields were not found in the project as real data fields: x", "unknown_field"),
     ("The record ID is missing", "record_id"),
     ("You do not have permissions to use the API", "permission"),
@@ -107,3 +108,12 @@ def test_redcap_problems_are_classified_for_plain_fixes(message, kind):
     from core.client import classify_problem
 
     assert classify_problem(message) == kind
+
+
+def test_wrong_token_error_is_read_from_xml(mock):
+    """REDCap answers a wrong token in XML (A17); the user sees only its message."""
+    from core.client import ApiError
+
+    with pytest.raises(ApiError) as caught:
+        RedcapClient(mock.url, "0" * 32).connect()
+    assert str(caught.value) == "You do not have permissions to use the API"

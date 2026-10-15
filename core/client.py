@@ -13,6 +13,7 @@ from __future__ import annotations
 import csv
 import io
 import json
+import re
 import time
 from dataclasses import dataclass, field
 
@@ -123,7 +124,10 @@ def _error_text(exc: Exception) -> str:
     arg = exc.args[0] if exc.args else ""
     if isinstance(arg, dict) and "error" in arg:
         return str(arg["error"])
-    return str(arg) if arg else type(exc).__name__
+    text = str(arg) if arg else type(exc).__name__
+    # Some errors (a wrong token) come back as XML whatever format was asked for (A17).
+    found = re.search(r"<error>(.*?)</error>", text, re.DOTALL)
+    return found.group(1).strip() if found else text
 
 
 def parse_error_lines(message: str) -> list[ImportProblem]:
@@ -145,15 +149,12 @@ PROBLEM_PATTERNS: list[tuple[str, str]] = [
     ("record_id", r"record id"),
     ("category", r"categor|choice"),
     ("date", r"\bdate\b"),
-    ("range", r"range|minimum|maximum"),
-    ("number", r"integer|number"),
+    ("number", r"integer|number|expected format|could not be validated"),
 ]
 
 
 def classify_problem(message: str) -> str:
-    """The kind of an import problem ("category", "date", "range", ...), or "other"."""
-    import re
-
+    """The kind of an import problem ("category", "date", "number", ...), or "other"."""
     text = message.casefold()
     return next((kind for kind, pattern in PROBLEM_PATTERNS if re.search(pattern, text)), "other")
 

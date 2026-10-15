@@ -156,9 +156,13 @@ The four exports from one hospital (TBC.03 SO 2020–2024 and 2025, RO 2020–20
 - **Rare spellings:** these are shown in the app's Check step on the approved machine, so a team member can add them to the profile.
 - **Blocked uploads:** a single bad row currently stops the whole file at Check. For real use, an option to set rows with errors aside (listed in a report, never silently) and upload the rest may be needed. Open question 7.
 
-## Phase 7: real REDCap check (started 2026-10-15)
+## Phase 7: real REDCap check (2026-10-15)
 
-On a new project in Development status, with API Export, API Import/Update, Data Import Tool and Project Design rights, and an API token:
+**Result:** the contract tests pass against a REDCap 15.6.0 test project (19 of 19). Fifteen assumptions are verified, one is different (A14: REDCap saves out-of-range numbers), and three new ones were added (A18 to A20). The mock and the fix texts now follow the real server. Details in `docs/REDCAP_ASSUMPTIONS.md` and `docs/DECISIONS.md`.
+
+**Still to check on the real server:** the dictionary CSV on the Data Dictionary page (A15; the first upload did not reach the project), and an import through the Data Import Tool (A16). Then a full upload of a synthetic file through the app in Real mode.
+
+**How to repeat it.** On a project in Development status, with API Export, API Import/Update, Data Import Tool and Project Design rights, and an API token:
 
 1. `python -m tools.export_dictionary tbc03_so out/tbc03_so_dictionary.csv`, then upload that file on the test project's Data Dictionary page.
 2. Run `python -m tools.contract_check` in your own terminal. It asks for the API URL and the token (not shown) and runs `tests/contract`; the token stays in that process only.

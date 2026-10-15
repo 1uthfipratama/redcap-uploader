@@ -69,7 +69,10 @@ def create_app(project: MockProject) -> Flask:
     def api():
         form = request.form
         if form.get("token") != project.token:
-            return _error("You do not have permissions to use the API", 403)
+            # Real REDCap answers a wrong token in XML, whatever format was asked for (A17).
+            body = ('<?xml version="1.0" encoding="UTF-8" ?><hash><error>You do not have permissions to use '
+                    "the API</error></hash>")
+            return Response(body, 403, mimetype="text/xml")
         content = form.get("content", "")
         handler = HANDLERS.get(content)
         if handler is None:
@@ -195,32 +198,31 @@ def _check_value(row: dict[str, str], value: str, date_format: str) -> str | Non
         if value not in allowed:
             return f"The value is not a valid category for {row['field_name']}"
         return None
+    # Min and max are not checked: REDCap saves out-of-range numbers on import (A14), and
+    # it does not check dates in the future either (A20). The app's own check catches both.
     validation = row.get("text_validation_type_or_show_slider_number", "")
-    if validation == "integer":
-        if not re.fullmatch(r"-?\d+", value):
-            return "This field has a validation type of integer, but the value is not an integer"
-        return _range(row, int(value))
+    if validation == "integer" and not re.fullmatch(r"-?\d+", value):
+        return WRONG_FORMAT
     if validation == "number":
         try:
-            number = float(value)
+            float(value)
         except ValueError:
-            return "This field has a validation type of number, but the value is not a number"
-        return _range(row, number)
+            return WRONG_FORMAT
     if validation.startswith("date_"):
         if date_format != "YMD":
             return None  # the mock only checks the format the app sends (A08)
         try:
             dt.datetime.strptime(value, "%Y-%m-%d")
         except ValueError:
-            return "The value is not a valid date (YYYY-MM-DD)"
+            return BAD_DATE
     return None
 
 
-def _range(row: dict[str, str], number: float) -> str | None:
-    low, high = row.get("text_validation_min", ""), row.get("text_validation_max", "")
-    if (low and number < float(low)) or (high and number > float(high)):
-        return f"The value is outside the allowed range ({low or '-'} to {high or '-'})"
-    return None
+# REDCap's own wording, as seen on REDCap 15.6.0 (A08, A19).
+WRONG_FORMAT = ("The value you provided could not be validated because it does not follow the expected format. "
+                "Please try again.")
+BAD_DATE = ("Invalid date format. (NOTE: Dates must be imported here only in Y-M-D format, regardless of the "
+            "specific date format designated for this field.)")
 
 
 def _parse_records(data: str, fmt: str) -> list[dict]:

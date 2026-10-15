@@ -118,3 +118,14 @@ Each entry says what was decided, why, and when to revisit it. Newest at the bot
 **Signing waits for certificates.** Both workflows sign and notarise only when the secrets exist, and skip cleanly otherwise. Until then, docs/INSTALL.md explains the SmartScreen "Run anyway" and the macOS "Open Anyway" steps. A Windows code-signing certificate and an Apple Developer account (99 USD a year) are needed before wider rollout.
 
 **Apple silicon only on macOS for now** (the macos-14 runner). An Intel build needs a second runner or a universal build. That is still the open decision about Intel Macs.
+
+## 2026-10-15 · Phase 7 (real REDCap check)
+
+**Checked on a real server.** The contract tests ran against a REDCap 15.6.0 test project (classic, Development status, the TBC.03 SO dictionary). 19 of 19 pass after the changes below. See `docs/REDCAP_ASSUMPTIONS.md`.
+
+**REDCap does not enforce min and max on import (A14, different).** An age of 212 or -1 is saved. The same holds for dates in the future (A20). So the app's own checks are the only gate: out-of-range values and future dates stay errors that block the upload at the Check step. The mock no longer rejects them, so it behaves like the real server, and the "outside the range" fix text was removed because REDCap never sends it.
+
+**The mock uses REDCap's own wording** for wrong formats, bad dates and a wrong token, so the fix texts the app shows are tested against real messages. A wrong token is answered in XML whatever format was asked for (A17); the client reads the message out of it instead of showing the XML.
+
+**Dictionary upload through the API works in Development (A18).** The first upload of the dictionary on the Data Dictionary page did not reach the project, so it was imported through the API instead (67 fields). That is the mechanism for the planned "add the missing fields to the project" feature. The import replaces the whole dictionary, so the feature must merge with what the project already has and never remove fields.
+

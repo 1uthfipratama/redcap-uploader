@@ -43,7 +43,7 @@ def test_bad_batch_imports_nothing(client, new_id):
     """A06"""
     good, bad = new_id(), new_id()
     with pytest.raises(ApiError):
-        client.import_records([{"record_id": good, "age": "30"}, {"record_id": bad, "age": "212"}])
+        client.import_records([{"record_id": good, "age": "30"}, {"record_id": bad, "sex": "9"}])
     assert client.export_records(fields=["record_id"], records=[good, bad]) == []
 
 
@@ -51,10 +51,10 @@ def test_error_names_record_field_value(client, new_id):
     """A07"""
     rid = new_id()
     with pytest.raises(ApiError) as caught:
-        client.import_records([{"record_id": rid, "age": "212"}])
-    problem = caught.value.problems[0]
-    assert (problem.record, problem.field, problem.value) == (rid, "age", "212")
-    assert problem.message
+        client.import_records([{"record_id": rid, "sex": "9", "age": "abc"}])
+    problems = {(p.record, p.field, p.value) for p in caught.value.problems}
+    assert problems == {(rid, "sex", "9"), (rid, "age", "abc")}
+    assert all(p.message for p in caught.value.problems)
 
 
 def test_date_must_be_ymd(client, new_id):
@@ -92,14 +92,31 @@ def test_unknown_field_is_rejected(client, new_id):
         client.import_records([{"record_id": new_id(), "no_such_field": "1"}])
 
 
-def test_out_of_range_is_rejected(client, new_id):
-    """A14"""
-    with pytest.raises(ApiError):
-        client.import_records([{"record_id": new_id(), "age": "-1"}])
+def test_out_of_range_is_saved(client, new_id):
+    """A14: REDCap does not enforce min and max on import, so the app's own check must."""
+    rid = new_id()
+    client.import_records([{"record_id": rid, "age": "212"}])
+    assert client.export_records(fields=["record_id", "age"], records=[rid]) == [{"record_id": rid, "age": "212"}]
+
+
+def test_wrong_format_is_rejected(client, new_id):
+    """A19"""
+    for value in ("abc", "3.5"):
+        with pytest.raises(ApiError):
+            client.import_records([{"record_id": new_id(), "age": value}])
+
+
+def test_future_date_is_saved(client, new_id):
+    """A20: REDCap does not check dates in the future, so the app's own check must."""
+    rid = new_id()
+    client.import_records([{"record_id": rid, "tx_start_date": "2099-01-01"}])
+    rows = client.export_records(fields=["record_id", "tx_start_date"], records=[rid])
+    assert rows == [{"record_id": rid, "tx_start_date": "2099-01-01"}]
 
 
 def test_bad_token_is_refused(target):
     """A17"""
     wrong = RedcapClient(target["url"], "0" * 32)
-    with pytest.raises(ApiError):
+    with pytest.raises(ApiError) as caught:
         wrong.connect()
+    assert "permission" in str(caught.value).casefold() and "<" not in str(caught.value)

@@ -9,7 +9,7 @@ Read this fully before writing or changing code. If a request conflicts with thi
 - Form-agnostic: every source form is a form profile (YAML). TBC.03 SO and TBC.03 RO from the Indonesian TB register (SITB) ship first; a Generic profile reads any single-header sheet. A new form must need a new profile, never new code.
 - After cleaning, an Explore screen shows descriptive statistics and charts.
 - A teaching tool: every step has a "What's happening?" panel showing the real API call, token masked.
-- Stage 1 (now): prototype on synthetic data against an embedded mock REDCap. There is no REDCap account yet, so every assumption about real REDCap is written down and checked later (section 8). Stage 2 (later): production use on real SITB extracts by any team, each after its own ethics approval, data-governance sign-off and REDCap project. The TBestie LTFU study is the first user.
+- Stage 1 (now): prototype on synthetic data against an embedded mock REDCap. Every assumption about real REDCap is written down and checked against a real test project (section 8); phase 7 did this on REDCap 15.6.0. Stage 2 (later): production use on real SITB extracts by any team, each after its own ethics approval, data-governance sign-off and REDCap project. The TBestie LTFU study is the first user.
 - UI languages: Bahasa Indonesia and English from the first release.
 
 ## 2. Hard rules
@@ -69,12 +69,12 @@ Explore opens from step 4 once validation passes, and from step 6.
 - Speaks the same HTTP API PyCap uses (POST with a content parameter) on 127.0.0.1 and a random free port.
 - Observe which calls PyCap makes on connect, import and export, and implement exactly those; do not guess. Cover version, project info, data dictionary (metadata), field names, record import and record export.
 - Imports are all-or-nothing per request, as REDCap does: one invalid record rejects the whole batch, with an error naming record, field and value.
-- Validates against the data dictionary: choice codes, dates as YYYY-MM-DD, number ranges, unknown fields.
+- Validates against the data dictionary as real REDCap does: choice codes, integer and number formats, dates as YYYY-MM-DD, unknown fields. Like REDCap, it does not enforce min and max or reject future dates (A14, A20); the app's Check step does.
 - Behaviour follows docs/REDCAP_ASSUMPTIONS.md; when the two disagree, fix one and log it.
 
-## 8. REDCap assumptions (no account yet)
+## 8. REDCap assumptions
 - docs/REDCAP_ASSUMPTIONS.md lists every behaviour of real REDCap the app depends on, with its source (API docs, PyCap source) and status: unverified, verified or different. Add a line whenever code relies on a new one.
-- tests/contract/ checks each assumption. It runs against the mock by default and against a real test project when REDCAP_TEST_URL and REDCAP_TEST_TOKEN are set in the environment.
+- tests/contract/ checks each assumption. It runs against the mock by default and against a real test project with python -m tools.contract_check (or when REDCAP_TEST_URL and REDCAP_TEST_TOKEN are set in the environment).
 - Target settings live in config/redcap_target.yaml with best-case defaults: classic project (not longitudinal), no repeating instruments, no DAGs, record ID field record_id, dates sent as YYYY-MM-DD, overwriteBehavior normal, batch size 100.
 
 ## 9. Explore screen
