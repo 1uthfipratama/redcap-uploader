@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1000" width="900" height="1000" font-family="Segoe UI, -apple-system, Helvetica, Arial, sans-serif" role="img" aria-labelledby="title desc">
+  <title id="title">How REDCap Uploader turns a spreadsheet into REDCap records</title>
+  <desc id="desc">A spreadsheet is read, its form recognised, identifiers removed or replaced by pseudonyms, columns and answers mapped to REDCap codes, and every row checked, all on the user's computer. Problems go back to the user to fix. Only then are cleaned, coded, pseudonymised records uploaded in batches to the REDCap project, or saved as files for REDCap's Data Import Tool. Explore shows summaries; the result lists what was imported or rejected.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1E6BBD"/>
+    </marker>
+    <marker id="arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8A94A3"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="900" height="1000" fill="#FFFFFF"/>
+
+  <!-- zone: on your computer -->
+  <rect x="20" y="14" width="860" height="826" rx="16" fill="#F4F7FB" stroke="#DDE3EB"/>
+  <text x="40" y="38" font-size="12" font-weight="600" fill="#5B6573" letter-spacing="1">ON YOUR COMPUTER · NOTHING IS SENT UNTIL UPLOAD</text>
+
+  <!-- zone: REDCap -->
+  <rect x="20" y="858" width="530" height="128" rx="16" fill="#E8F0FA" stroke="#C9D9EE"/>
+  <text x="40" y="880" font-size="12" font-weight="600" fill="#1E6BBD" letter-spacing="1">YOUR REDCAP SERVER</text>
+
+  <!-- input -->
+  <rect x="50" y="50" width="470" height="80" rx="12" fill="#FFFFFF" stroke="#DDE3EB"/>
+  <text x="70" y="77" font-size="15" font-weight="700" fill="#002157">Your spreadsheet</text>
+  <text x="70" y="99" font-size="12.5" fill="#5B6573">.xls, .xlsx or .csv: a SITB TBC.03 export,</text>
+  <text x="70" y="117" font-size="12.5" fill="#5B6573">or any sheet with one header row</text>
+  <line x1="285" y1="130" x2="285" y2="152" stroke="#1E6BBD" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 1 read -->
+  <rect x="50" y="154" width="470" height="74" rx="12" fill="#FFFFFF" stroke="#DDE3EB"/>
+  <circle cx="76" cy="176" r="13" fill="#1E6BBD"/>
+  <text x="76" y="181" font-size="13" font-weight="700" fill="#FFFFFF" text-anchor="middle">1</text>
+  <text x="98" y="181" font-size="15" font-weight="700" fill="#002157">Read the layout</text>
+  <text x="70" y="203" font-size="12.5" fill="#5B6573">Finds the title block, header rows and official column</text>
+  <text x="70" y="220" font-size="12.5" fill="#5B6573">numbers (1) (2) (3)…; skips blank and summary rows.</text>
+  <line x1="285" y1="228" x2="285" y2="250" stroke="#1E6BBD" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 2 recognise -->
+  <rect x="50" y="252" width="470" height="74" rx="12" fill="#FFFFFF" stroke="#DDE3EB"/>
+  <circle cx="76" cy="274" r="13" fill="#1E6BBD"/>
+  <text x="76" y="279" font-size="13" font-weight="700" fill="#FFFFFF" text-anchor="middle">2</text>
+  <text x="98" y="279" font-size="15" font-weight="700" fill="#002157">Recognise the form</text>
+  <text x="70" y="301" font-size="12.5" fill="#5B6573">TBC.03 SO or RO → that form's profile (a settings file).</text>
+  <text x="70" y="318" font-size="12.5" fill="#5B6573">Anything else → Generic: columns matched by name.</text>
+  <line x1="285" y1="326" x2="285" y2="348" stroke="#1E6BBD" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 3 identifiers -->
+  <rect x="50" y="350" width="470" height="92" rx="12" fill="#FFFFFF" stroke="#DDE3EB"/>
+  <circle cx="76" cy="372" r="13" fill="#1E6BBD"/>
+  <text x="76" y="377" font-size="13" font-weight="700" fill="#FFFFFF" text-anchor="middle">3</text>
+  <text x="98" y="377" font-size="15" font-weight="700" fill="#002157">Remove identifiers</text>
+  <text x="70" y="399" font-size="12.5" fill="#5B6573">Drops name, address, BPJS and medical record numbers.</text>
+  <text x="70" y="416" font-size="12.5" fill="#5B6573">NIK → patient_pid, register no. → record_id: codes made</text>
+  <text x="70" y="433" font-size="12.5" fill="#5B6573">with your team's secret key (HMAC-SHA256).</text>
+  <line x1="285" y1="442" x2="285" y2="464" stroke="#1E6BBD" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 4 map -->
+  <rect x="50" y="466" width="470" height="74" rx="12" fill="#FFFFFF" stroke="#DDE3EB"/>
+  <circle cx="76" cy="488" r="13" fill="#1E6BBD"/>
+  <text x="76" y="493" font-size="13" font-weight="700" fill="#FFFFFF" text-anchor="middle">4</text>
+  <text x="98" y="493" font-size="15" font-weight="700" fill="#002157">Map and clean</text>
+  <text x="70" y="515" font-size="12.5" fill="#5B6573">Columns → REDCap fields; answers → codes ("L" → 1,</text>
+  <text x="70" y="532" font-size="12.5" fill="#5B6573">"NEG" → 0); dates → YYYY-MM-DD.</text>
+  <line x1="285" y1="540" x2="285" y2="562" stroke="#1E6BBD" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 5 check -->
+  <rect x="50" y="564" width="470" height="74" rx="12" fill="#FFFFFF" stroke="#DDE3EB"/>
+  <circle cx="76" cy="586" r="13" fill="#1E6BBD"/>
+  <text x="76" y="591" font-size="13" font-weight="700" fill="#FFFFFF" text-anchor="middle">5</text>
+  <text x="98" y="591" font-size="15" font-weight="700" fill="#002157">Check (dry run)</text>
+  <text x="70" y="613" font-size="12.5" fill="#5B6573">Required fields, allowed answers, ranges, dates and</text>
+  <text x="70" y="630" font-size="12.5" fill="#5B6573">duplicates. Nothing has been sent yet.</text>
+  <line x1="285" y1="638" x2="285" y2="674" stroke="#1E6BBD" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="296" y="661" font-size="11.5" fill="#5B6573">no problems</text>
+
+  <!-- 6 upload -->
+  <rect x="50" y="676" width="470" height="92" rx="12" fill="#FFFFFF" stroke="#1E6BBD" stroke-width="1.5"/>
+  <circle cx="76" cy="698" r="13" fill="#1E6BBD"/>
+  <text x="76" y="703" font-size="13" font-weight="700" fill="#FFFFFF" text-anchor="middle">6</text>
+  <text x="98" y="703" font-size="15" font-weight="700" fill="#002157">Upload</text>
+  <text x="70" y="725" font-size="12.5" fill="#5B6573">Asks REDCap which records exist, then sends batches</text>
+  <text x="70" y="742" font-size="12.5" fill="#5B6573">of 100. A bad record stops its whole batch; an empty</text>
+  <text x="70" y="759" font-size="12.5" fill="#5B6573">cell never erases a value already stored.</text>
+
+  <!-- upload crosses to REDCap -->
+  <line x1="285" y1="768" x2="285" y2="888" stroke="#1E6BBD" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="298" y="812" font-size="12" fill="#002157" font-weight="600">Only cleaned, coded, pseudonymised records</text>
+  <text x="298" y="829" font-size="12" fill="#002157" font-weight="600">leave your computer.</text>
+
+  <!-- REDCap project -->
+  <rect x="50" y="890" width="470" height="74" rx="12" fill="#002157"/>
+  <text x="70" y="920" font-size="15" font-weight="700" fill="#FFFFFF">Your REDCap project</text>
+  <text x="70" y="943" font-size="12.5" fill="#D6E2F3">One record per episode, ready for analysis.</text>
+
+  <!-- side: explore -->
+  <rect x="575" y="458" width="270" height="92" rx="12" fill="#FFFFFF" stroke="#DDE3EB" stroke-dasharray="5 4"/>
+  <text x="595" y="484" font-size="15" font-weight="700" fill="#002157">Explore</text>
+  <text x="595" y="506" font-size="12.5" fill="#5B6573">Summaries and charts of the</text>
+  <text x="595" y="523" font-size="12.5" fill="#5B6573">cleaned data; descriptive only,</text>
+  <text x="595" y="540" font-size="12.5" fill="#5B6573">nothing is sent.</text>
+  <path d="M520,578 H547 V504 H573" fill="none" stroke="#8A94A3" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow-muted)"/>
+
+  <!-- side: problems, loops back to the file -->
+  <rect x="575" y="564" width="270" height="92" rx="12" fill="#FFFFFF" stroke="#B42318" stroke-opacity="0.45"/>
+  <text x="595" y="590" font-size="15" font-weight="700" fill="#B42318">Problems found</text>
+  <text x="595" y="612" font-size="12.5" fill="#5B6573">Each listed by row, with how to</text>
+  <text x="595" y="629" font-size="12.5" fill="#5B6573">fix it. Correct the file and</text>
+  <text x="595" y="646" font-size="12.5" fill="#5B6573">load it again.</text>
+  <line x1="520" y1="610" x2="573" y2="610" stroke="#8A94A3" stroke-width="1.5" marker-end="url(#arrow-muted)"/>
+  <path d="M845,610 H862 V90 H522" fill="none" stroke="#8A94A3" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow-muted)"/>
+
+  <!-- side: save import files instead -->
+  <rect x="575" y="676" width="270" height="92" rx="12" fill="#FFFFFF" stroke="#DDE3EB" stroke-dasharray="5 4"/>
+  <text x="595" y="702" font-size="15" font-weight="700" fill="#002157">Or: save import files</text>
+  <text x="595" y="724" font-size="12.5" fill="#5B6573">CSV + data dictionary for</text>
+  <text x="595" y="741" font-size="12.5" fill="#5B6573">REDCap's Data Import Tool</text>
+  <text x="595" y="758" font-size="12.5" fill="#5B6573">(no API access needed).</text>
+  <line x1="520" y1="722" x2="573" y2="722" stroke="#8A94A3" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow-muted)"/>
+
+  <!-- side: result -->
+  <rect x="575" y="890" width="270" height="74" rx="12" fill="#FFFFFF" stroke="#DDE3EB"/>
+  <text x="595" y="916" font-size="15" font-weight="700" fill="#002157">Result and log</text>
+  <text x="595" y="938" font-size="12.5" fill="#5B6573">Shown in the app: imported,</text>
+  <text x="595" y="955" font-size="12.5" fill="#5B6573">rejected and not sent, by row.</text>
+  <line x1="520" y1="927" x2="573" y2="927" stroke="#1E6BBD" stroke-width="2" marker-end="url(#arrow)"/>
+</svg>
