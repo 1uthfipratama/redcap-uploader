@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+*.egg-info/
+dist/
+build/out/
+
+# Real data never lives in this repo. These patterns are a second line of defence.
+*.xls
+!tests/fixtures/*.xls
+real_data/
+exports/
+*.key
+.env
+
+# Local output
+out/
+logs/
+
+# Secrets never live in this repo
+*.pem
+*.p12
+*.pfx
+*.cer
+*.keychain
+.env.*
+secrets.*

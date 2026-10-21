@@ -1,0 +1,12 @@
+# Generic profile: any sheet whose first non-blank row is the header.
+# Columns are matched to the REDCap project's fields by name, and the user confirms the match.
+identity:
+  form_code: generic
+  name: Generic (one header row)
+  recognition: []
+layout:
+  kind: single_header
+  date_format: "%d/%m/%Y"
+instrument: generic
+columns: []
+explore_defaults: []

@@ -1,0 +1,43 @@
+# Plausible, made-up distributions for synthetic registers. Not taken from any real file.
+# Choice weights are keyed by REDCap field name, then by choice code. Codes a form does not
+# have are ignored. Fields not listed here follow the order of spellings in the structure
+# inventory (more common first), or are spread evenly.
+
+choice_weights:
+  sex: {"1": 0.6, "2": 0.4}
+  tb_site: {"1": 0.85, "2": 0.15}
+  dx_type: {"1": 0.55, "2": 0.45}
+  hiv: {"0": 0.78, "1": 0.04, "99": 0.18}
+  hiv_test_result: {"0": 0.9, "1": 0.05, "99": 0.05}
+  dm: {"0": 0.7, "1": 0.15, "99": 0.15}
+  pregnant: {"0": 0.9, "1": 0.03, "99": 0.07}
+  tx_history: {"1": 0.8, "2": 0.1, "6": 0.04, "99": 0.03, "7": 0.03}
+  outcome: {"1": 0.35, "2": 0.38, "3": 0.01, "4": 0.06, "5": 0.13, "6": 0.06, "7": 0.01}
+  treat_standard: {"1": 0.99, "0": 0.01}
+  moved_to_ro: {"1": 1.0}
+
+# Text fields with no spellings in the inventory.
+text_values:
+  occupation: ["Tidak Diketahui", "Wiraswasta", "IRT", "Pelajar/ Mahasiswa", "Buruh", "Tidak Bekerja", "PNS"]
+  referred_by: ["Datang sendiri", "Puskesmas Sintetis", "RS Sintetis", "Klinik Sintetis", "Dokter Praktik Sintetis"]
+  regimen_detail: ["2RHZE/4RH", "2RHZE/4R3H3", "2RHZE/7RH", "Paduan sintetis"]
+  dx_test_result: ["Rif Sen", "Neg", "MTB Pos, Rif Sen (RND), INH Sen (RND)", "Rif Res"]
+  prior_tx_detail: ["Pasien TB kasus kambuh", "Pasien TB yang kembali setelah putus berobat", "Riwayat sintetis"]
+  cxr_findings: ["Konsolidasi", "Kavitas", "Fibrosis", "Efusi Pleura"]
+  satellite_facility: ["Puskesmas Sintetis 1", "Puskesmas Sintetis 2"]
+
+# Ages: share of each band; a uniform draw inside the band.
+age_bands:
+  - [0, 14, 0.08]
+  - [15, 34, 0.32]
+  - [35, 54, 0.34]
+  - [55, 85, 0.26]
+
+# Days from treatment start to other dates (low, high). Negative = before start.
+date_offsets:
+  before_start: [-30, 0]
+  outcome_so: [170, 280]
+  outcome_ro: [270, 720]
+
+# Share of patients with a second episode (same NIK and SITB number, new register number).
+repeat_patient_share: 0.03

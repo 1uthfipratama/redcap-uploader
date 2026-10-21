@@ -1,0 +1,30 @@
+# Generic mode: how file headers are matched to REDCap field names.
+# Headers are compared after lower-casing and replacing non-letters with "_".
+
+# A header matching any of these patterns is treated as a likely identifier:
+# it is not uploaded unless the user maps it explicitly.
+identifier_patterns:
+  - "(^|_)nik($|_)"
+  - "nomor_identitas|identitas_kependudukan|no_ktp|ktp"
+  - "(^|_)nama($|_)|(^|_)name($|_)|full_name"
+  - "alamat|address"
+  - "bpjs"
+  - "telp|telepon|phone|(^|_)hp($|_)|whatsapp|(^|_)wa($|_)"
+  - "e_?mail"
+  - "rekam_medis|(^|_)mrn($|_)|no_rm"
+  - "tanggal_lahir|tgl_lahir|date_of_birth|(^|_)dob($|_)"
+
+# Common Indonesian headers and the field names they usually mean.
+synonyms:
+  umur: age
+  usia: age
+  jenis_kelamin: sex
+  kelamin: sex
+  status_hiv: hiv
+  riwayat_dm: dm
+  diabetes: dm
+  tanggal_mulai_pengobatan: tx_start_date
+  tgl_mulai_pengobatan: tx_start_date
+  hasil_akhir_pengobatan: outcome
+  foto_toraks: cxr
+  lokasi_anatomi: tb_site
