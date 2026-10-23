@@ -24,6 +24,7 @@ radius:
   panel: 12
 # Optional files; the app uses text instead when they are missing.
 logo: app/assets/brand/logo.png
+icon: app/assets/brand/icon.png   # window and taskbar icon; python -m tools.make_icons SOURCE.png writes all three icon files
 fonts_dir: app/assets/fonts
 # Chart colours: series 1 is the brand blue; 2-4 follow the validated reference order
 # (checked with the colour-blindness validator: all adjacent pairs pass). Grey is for

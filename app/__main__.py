@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 
 from PySide6.QtCore import QStandardPaths, Qt
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication
 
 from app import paths
@@ -34,12 +35,25 @@ def build(lang: str | None = None) -> tuple[QApplication, MainWindow]:
     brand = load_brand()
     app.setApplicationName(brand.product_name)
     app.setOrganizationName(brand.name)
+    if brand.icon:
+        app.setWindowIcon(QIcon(str(brand.icon)))
     # The brand is light only: a dark system theme must not reach dialogs and table headers.
     app.styleHints().setColorScheme(Qt.ColorScheme.Light)
     app.setStyleSheet(style_sheet(brand))
     state = AppState(profiles=load_all_profiles(PROFILES_DIR, paths.profiles_folder()), target=load_target())
     window = MainWindow(state, brand, Translator(lang))
     return app, window
+
+
+def _own_taskbar_entry() -> None:
+    """On Windows, show the app's own icon in the taskbar instead of Python's when it runs from source."""
+    if sys.platform == "win32":
+        try:
+            import ctypes
+
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("REDCapUploader")
+        except (AttributeError, OSError):
+            pass
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -54,6 +68,7 @@ def main(argv: list[str] | None = None) -> int:
         from app.smoke import start_and_quit
 
         return start_and_quit()
+    _own_taskbar_entry()
     app, window = build()
     setup_logging()
     window.show()

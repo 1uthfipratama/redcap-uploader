@@ -32,6 +32,7 @@ OutputBaseFilename=REDCap-Uploader-{#AppVersion}-Windows-Setup
 Compression=lzma2/max
 SolidCompression=yes
 WizardStyle=modern
+SetupIconFile=..\..\app\assets\brand\icon.ico
 UninstallDisplayIcon={app}\{#AppExe}
 UninstallDisplayName={#AppName}
 AppCopyright=Copyright (c) 2026 Luthfi Izza Pratama (Yayasan RPRI)

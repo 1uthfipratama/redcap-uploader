@@ -23,6 +23,7 @@ class Brand:
     panel_radius: int
     logo: Path | None
     chart: dict
+    icon: Path | None = None
 
 
 def load_brand(path: Path = BRAND_FILE) -> Brand:
@@ -36,6 +37,7 @@ def load_brand(path: Path = BRAND_FILE) -> Brand:
         return next((f for f in [name, *fallback] if f in families), QFont().defaultFamily())
 
     logo = REPO / data["logo"] if data.get("logo") else None
+    icon = REPO / data["icon"] if data.get("icon") else None
     return Brand(
         name=data["name"],
         product_name=data["product_name"],
@@ -46,6 +48,7 @@ def load_brand(path: Path = BRAND_FILE) -> Brand:
         panel_radius=int(data["radius"]["panel"]),
         logo=logo if logo and logo.exists() else None,
         chart=data["chart"],
+        icon=icon if icon and icon.exists() else None,
     )
 
 
