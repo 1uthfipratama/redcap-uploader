@@ -221,3 +221,13 @@ Each entry says what was decided, why, and when to revisit it. Newest at the bot
 **Where the tests live now.** Only on the maintainer's computer, in the same folders, ignored by git (`.git/info/exclude`), so changes can still be checked before they are pushed.
 
 **What is lost for anyone else.** The automated guard against committing identifiers, spreadsheets, keys or tokens; the check that the two language files have the same keys; the check that `docs/*.svg` match the generator; and the contract tests that verify REDCap's behaviour. Review every diff by hand before pushing. The history before 2026-10-21, tests included, was replaced by a single commit the same day; a full copy is kept outside the repository.
+
+## 2026-10-23 · Drafting a data dictionary: numbers, dates and answers
+
+**Decimal commas count as numbers.** The reader already turned `72,5` into 72.5, but the draft did not see it as a number and typed such columns as text. Both now agree. A thousands separator (`1,234`) is still read as a decimal, as before.
+
+**Month-first dates are offered, day-first wins ties.** The draft tries the configured formats and keeps the one most cells fit; on a tie the earlier one wins, and day-first formats come first, so `03/04/2025` stays 3 April unless the person picks month-first in the review window. Picking a format drafts the sheet again; only columns whose type changes take the new draft, so other edits survive.
+
+**Numeric codes are offered, not assumed.** A whole-number column whose values repeat like answers keeps the type whole number, because counts (children, visits) look the same; the review window lets the person switch it to an answer list.
+
+**Edited answers keep what the file wrote.** Each drafted answer now carries the file's own spelling, and an edited answer keeps it, so codes and labels can change freely. Matching a cell to an answer now tries labels and spellings before codes; otherwise swapping codes 1 and 2 would have sent the file's 2s to the answer that took code 2. Codes must be digits, letters and underscores (or a negative number), and codes and labels must be unique.

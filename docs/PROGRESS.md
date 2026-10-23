@@ -187,6 +187,13 @@ The four exports from one hospital (TBC.03 SO 2020–2024 and 2025, RO 2020–20
 - **Readiness check.** After Connect a table says Development or Production, the record ID field, events, repeating instruments and the record count, with what to do about any problem. `core/readiness.py`; the mock can now play a Production, longitudinal or repeating project. Tests: 11 for the core and the table. A new assumption, A21, is unverified on a real server.
 - The tutorial has a "Check the project" step and its Result step shows both buttons; screenshots were made again.
 
+## Data dictionary drafting (2026-10-23)
+
+- **Decimal commas.** `72,5` counts as a number when the draft decides a column's type, as the reader already did.
+- **Month-first dates.** `mm/dd/yyyy`, `mm-dd-yyyy` and `mm/dd/yy` are tried after the day-first formats, so an ambiguous file still reads day-first. The review window has a "Dates are written as" choice that reads the sheet again; columns whose type does not change keep the person's edits.
+- **Numeric codes.** A whole-number column whose values repeat like answers (1 and 2, or 0, 1 and 9) can be switched to an answer list. The numbers are the codes, and the labels until the person names them.
+- **Answer editor.** Edit… on an answer list changes codes and labels and their order, with "Number 1, 2, 3 in this order". What the file wrote stays a spelling of its answer, so the file still reads after codes are changed or swapped.
+
 ## Open questions
 
 1. **Culture result "TKM".** It appears at least 5 times in RO follow-up cultures. What does it mean? It is kept as its own code, labelled as written.

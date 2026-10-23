@@ -24,7 +24,7 @@ A desktop app for Windows and macOS, in English and Bahasa Indonesia.
 
 | By hand | The app |
 |---|---|
-| Write one row per field in REDCap's 18-column file: name, type, validation, answers | **Create a data dictionary** drafts it from your spreadsheet: one field per column with a valid name, a type (date, whole number, decimal, text) and answer lists with standard codes (yes/no/unknown, sex, positive/negative) |
+| Write one row per field in REDCap's 18-column file: name, type, validation, answers | **Create a data dictionary** drafts it from your spreadsheet: one field per column with a valid name, a type (date, whole number, decimal, text) and answer lists with standard codes (yes/no/unknown, sex, positive/negative). It reads decimal commas and day- or month-first dates, lets whole-number codes (1/2, 0/1/9) become answer lists, and lets you edit, rename and reorder every answer's code |
 | Decide which columns are identifiers | Flags them by their header and by how the values look (16-digit IDs, phone numbers, e-mail, names, long free text), and leaves them out or pseudonymises them. You review every column |
 | Upload it and merge it with the fields already there | **Add them to the project** (Development status) merges new fields in, never removes one, saves a backup first, and stops if a field with the same name means something different |
 | In Production, send it to the administrator | Saves the dictionary as REDCap's own CSV for them to approve |
