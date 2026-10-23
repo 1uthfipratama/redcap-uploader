@@ -44,7 +44,7 @@ NIK_RE = re.compile(r"^\d{16}$")
 PHONE_RE = re.compile(r"^(\+?62|0)8\d{7,12}$")
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 NAME_RE = re.compile(r"^[A-Za-z.'`-]+( [A-Za-z.'`-]+){1,4}$")
-NUMBER_RE = re.compile(r"^-?\d+(\.\d+)?$")
+NUMBER_RE = re.compile(r"^-?\d+([.,]\d+)?$")  # a decimal comma (72,5) is read as a decimal point, as the reader does
 MAX_FORM_CODE = 20
 
 
@@ -144,8 +144,12 @@ def _infer_type(filled: list[object], texts: list[str], date_format: str, settin
         return "text"  # leading zeros: codes, IDs or phone numbers, not quantities
     numbers = [t for t in texts if NUMBER_RE.match(t)]
     if numbers and len(numbers) >= need:
-        return "integer" if all(float(t).is_integer() for t in numbers) else "number"
+        return "integer" if all(_number(t).is_integer() for t in numbers) else "number"
     return "text"
+
+
+def _number(text: str) -> float:
+    return float(text.replace(",", "."))
 
 
 def _answers(texts: list[str], settings: dict) -> list[Choice]:
@@ -201,7 +205,7 @@ def _role(header: str, texts: list[str], kind: str, settings: dict, generic: dic
 def _is_row_counter(texts: list[str]) -> bool:
     """1, 2, 3, ... in row order: a row number, which changes from one export to the next."""
     try:
-        return [int(float(t)) for t in texts] == list(range(1, len(texts) + 1))
+        return [int(_number(t)) for t in texts] == list(range(1, len(texts) + 1))
     except ValueError:
         return False
 
