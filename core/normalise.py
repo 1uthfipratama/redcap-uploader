@@ -50,10 +50,14 @@ def spelling_key(text: str) -> str:
 
 
 def lookup_table(choices: list[Choice]) -> dict[str, Choice]:
+    """What a file may write, to the answer it means. Labels and spellings come first and codes last, so
+    when codes were changed (1 and 2 swapped) the values the file wrote still find their own answer."""
     table: dict[str, Choice] = {}
     for choice in choices:
-        for spelling in (choice.code, choice.label_id, *choice.spellings):
+        for spelling in (choice.label_id, *choice.spellings):
             table.setdefault(spelling_key(spelling), choice)
+    for choice in choices:
+        table.setdefault(spelling_key(choice.code), choice)
     return table
 
 

@@ -177,8 +177,8 @@ def _answers(texts: list[str], settings: dict) -> list[Choice]:
     if known:
         return known
     ordered = sorted(groups.values(), key=lambda c: (-sum(c.values()), c.most_common(1)[0][0]))
-    return [Choice(code=str(i), label_id=c.most_common(1)[0][0], label_en=c.most_common(1)[0][0])
-            for i, c in enumerate(ordered, start=1)]
+    return [Choice(code=str(i), label_id=c.most_common(1)[0][0], label_en=c.most_common(1)[0][0],
+                   spellings=[c.most_common(1)[0][0]]) for i, c in enumerate(ordered, start=1)]
 
 
 def _numeric_answers(texts: list[str], settings: dict) -> list[Choice]:
@@ -188,6 +188,43 @@ def _numeric_answers(texts: list[str], settings: dict) -> list[Choice]:
     if len(texts) < settings["choice_min_rows"] or len(values) > settings["choice_max"] or len(values) > len(texts) / 2:
         return []
     return [Choice(code=str(v), label_id=str(v), label_en=str(v), spellings=[str(v)]) for v in values]
+
+
+CODE_RE = re.compile(r"^(-?\d+|[A-Za-z0-9_]+)$")  # what REDCap accepts as an answer's code
+
+
+class AnswerProblem(ValueError):
+    """An edited answer list that cannot be used; `code` names the problem for a plain message."""
+
+    def __init__(self, code: str, params: dict | None = None):
+        super().__init__(code)
+        self.code, self.params = code, params or {}
+
+
+def revise_answers(original: list[Choice], rows: list[tuple[int, str, str]]) -> list[Choice]:
+    """The answers in a new order with new codes and labels. Each row is (index into `original`, code, label).
+    What the file wrote stays a spelling of its answer, so the same file still reads after any change."""
+    out: list[Choice] = []
+    codes: set[str] = set()
+    labels: set[str] = set()
+    for index, code, text in rows:
+        code, text = code.strip(), text.strip()
+        if not code:
+            raise AnswerProblem("code_blank")
+        if not CODE_RE.match(code):
+            raise AnswerProblem("code_invalid", {"code": code})
+        if code in codes:
+            raise AnswerProblem("code_twice", {"code": code})
+        if not text:
+            raise AnswerProblem("label_blank")
+        if spelling_key(text) in labels:
+            raise AnswerProblem("label_twice", {"label": text})
+        codes.add(code)
+        labels.add(spelling_key(text))
+        old = original[index]
+        spellings = list(dict.fromkeys([*old.spellings, old.label_id]))
+        out.append(Choice(code=code, label_id=text, label_en=text, spellings=spellings))
+    return out
 
 
 def _known_answers(seen: set[str], settings: dict) -> list[Choice]:

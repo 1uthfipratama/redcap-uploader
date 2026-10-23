@@ -8,6 +8,8 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QBrush, QPalette
 from PySide6.QtWidgets import (
     QAbstractItemView,
+    QSizePolicy,
+    QWidget,
     QComboBox,
     QDialog,
     QFileDialog,
@@ -21,6 +23,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
 )
 
+from app.answers_dialog import AnswersDialog
 from app.widgets import label
 from core.dictionary import build_dictionary
 from core.export_csv import write_dictionary_csv
@@ -167,10 +170,37 @@ class DraftDialog(QDialog):
 
     def _show_answers(self, row: int, col) -> None:
         answers = " · ".join(f"{c.code} = {c.label_id}" for c in col.choices) if col.type == "choice" else ""
-        item = QTableWidgetItem(answers or "—")
+        item = QTableWidgetItem("" if answers else "—")  # an answer list is shown by the cell's own widget
         item.setFlags(item.flags() & ~Qt.ItemIsEditable)
         item.setToolTip(answers)
         self.table.setItem(row, 4, item)
+        if not answers:
+            self.table.removeCellWidget(row, 4)
+            return
+        cell = QWidget()
+        line = QHBoxLayout(cell)
+        line.setContentsMargins(6, 0, 4, 0)
+        text = label("", answers, wrap=False)
+        text.setMinimumWidth(10)
+        text.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)  # long answer lists are cut, not widened
+        text.setToolTip(answers)
+        edit = QPushButton(self.tr("ui.draft.edit_answers"))
+        edit.setObjectName("CellButton")
+        edit.clicked.connect(lambda _=False, c=col: self._edit_answers(c))
+        line.addWidget(text, 1)
+        line.addWidget(edit)
+        self.table.setCellWidget(row, 4, cell)
+
+    def _edit_answers(self, col) -> None:
+        dialog = AnswersDialog(self.tr, col.header, col.choices, self)
+        if self.open_answers(dialog) and dialog.choices is not None:
+            col.choices = dialog.choices
+            self.table.blockSignals(True)
+            self._show_answers(self.draft.columns.index(col), col)
+            self.table.blockSignals(False)
+
+    def open_answers(self, dialog: AnswersDialog) -> bool:
+        return dialog.exec() == QDialog.DialogCode.Accepted
 
     def _type_changed(self, col, box: QComboBox) -> None:
         col.type = box.currentData()

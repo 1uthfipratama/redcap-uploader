@@ -108,6 +108,7 @@ def style_sheet(b: Brand) -> str:
     QTableView, QTableWidget {{ background: {c['surface']}; border: 1px solid {c['border']}; border-radius: 8px;
                                 gridline-color: {c['border']}; selection-background-color: {c['primary_soft']};
                                 selection-color: {c['text']}; }}
+    QPushButton#CellButton {{ padding: 2px 10px; min-height: 0; }}
     QComboBox#Cell {{ border: none; border-radius: 0; background: transparent; padding: 0 6px; min-height: 0; }}
     QComboBox#Cell:hover {{ background: {c['primary_soft']}; }}
     QComboBox#Cell:disabled {{ color: {c['muted']}; }}
