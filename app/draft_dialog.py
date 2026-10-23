@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Callable
+
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QBrush, QPalette
 from PySide6.QtWidgets import (
@@ -22,7 +24,8 @@ from PySide6.QtWidgets import (
 from app.widgets import label
 from core.dictionary import build_dictionary
 from core.export_csv import write_dictionary_csv
-from core.infer import Draft, draft_problems, form_code_for, profile_from_draft
+from core.infer import Draft, date_formats, draft_problems, form_code_for, profile_from_draft
+from core.parse import human_format
 from core.profile import PATIENT_ID_FIELD, RECORD_ID_FIELD, Profile, Role
 
 # Handling choices on the review screen, and the role each one gives a column.
@@ -41,9 +44,11 @@ def handling_of(role: Role) -> str:
 
 
 class DraftDialog(QDialog):
-    def __init__(self, tr, draft: Draft, default_name: str, taken_codes: set[str], parent=None):
+    def __init__(self, tr, draft: Draft, default_name: str, taken_codes: set[str], parent=None,
+                 redraft: Callable[[str], Draft] | None = None):
+        """`redraft(date_format)` drafts the same sheet again with another date format."""
         super().__init__(parent)
-        self.tr, self.draft, self.taken = tr, draft, taken_codes
+        self.tr, self.draft, self.taken, self.redraft = tr, draft, taken_codes, redraft
         self.profile: Profile | None = None
         self.setWindowTitle(tr("ui.draft.title"))
         self.resize(1040, 660)
@@ -55,6 +60,13 @@ class DraftDialog(QDialog):
         form = QFormLayout()
         self.name = QLineEdit(default_name)
         form.addRow(label("Muted", tr("ui.draft.name"), wrap=False), self.name)
+        self.date_box = QComboBox()
+        for fmt in date_formats():
+            self.date_box.addItem(human_format(fmt), fmt)
+        self.date_box.setCurrentIndex(max(self.date_box.findData(draft.date_format), 0))
+        self.date_box.currentIndexChanged.connect(self._date_format_changed)
+        if redraft is not None:
+            form.addRow(label("Muted", tr("ui.draft.date_format"), wrap=False), self.date_box)
         layout.addLayout(form)
         self.summary = label()
         layout.addWidget(self.summary)
@@ -90,12 +102,34 @@ class DraftDialog(QDialog):
 
         self.type_boxes: list[QComboBox] = []
         self.handling_boxes: list[QComboBox] = []
-        for row, col in enumerate(draft.columns):
-            self._fill_row(row, col)
+        self._fill_table()
         self.table.itemChanged.connect(self._field_edited)
         self._refresh()
 
     # ---- table ---------------------------------------------------------------------
+    def _fill_table(self) -> None:
+        self.table.blockSignals(True)
+        self.type_boxes.clear()
+        self.handling_boxes.clear()
+        for row, col in enumerate(self.draft.columns):
+            self._fill_row(row, col)
+        self.table.blockSignals(False)
+
+    def _date_format_changed(self) -> None:
+        """Read the sheet's dates again. A column whose type changes gets the new draft; the others keep
+        what the person already chose for them."""
+        fmt = self.date_box.currentData()
+        if self.redraft is None or fmt == self.draft.date_format:
+            return
+        fresh = self.redraft(fmt)
+        for i, (old, new) in enumerate(zip(self.draft.columns, fresh.columns)):
+            if new.type != old.type:
+                new.field = old.field
+                self.draft.columns[i] = new
+        self.draft.date_format = fmt
+        self._fill_table()
+        self._refresh()
+
     def _fill_row(self, row: int, col) -> None:
         tr = self.tr
         name = QTableWidgetItem(col.header)

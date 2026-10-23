@@ -264,7 +264,8 @@ class ChoosePage(StepPage):
         def done(draft):
             self.ctx.set_busy(False)
             name = self.state.file.stem if self.state.file else ""
-            dialog = DraftDialog(self.tr, draft, name, set(self.state.profiles), self)
+            dialog = DraftDialog(self.tr, draft, name, set(self.state.profiles), self,
+                                 redraft=lambda fmt: draft_columns(detected.grid, detected.layout, date_format=fmt))
             if self.open_dialog(dialog):
                 self._use_profile(dialog.profile)
 

@@ -8,8 +8,9 @@ choice_max_length: 40      # longer values make a column free text
 content_share: 0.8         # share of values that must look like a NIK, phone number, e-mail or name
 free_text_drop_length: 30  # free text longer than this on average is left out: it may hold names
 
-# Text dates are read with the format that fits the most cells. Excel date cells need none.
-date_formats: ["%d/%m/%Y", "%d-%m-%Y", "%Y-%m-%d", "%d.%m.%Y", "%d/%m/%y"]
+# Text dates are read with the format that fits the most cells; on a tie the earlier one wins, so day-first
+# comes before month-first. The person can pick another on the review screen. Excel date cells need none.
+date_formats: ["%d/%m/%Y", "%d-%m-%Y", "%Y-%m-%d", "%d.%m.%Y", "%d/%m/%y", "%m/%d/%Y", "%m-%d-%Y", "%m/%d/%y"]
 
 # Headers that suggest a column identifies each row (it becomes the pseudonymised record ID).
 record_id_headers: "(^|_)(id|no|nomor|kode|code|register|registrasi|reg|mrn|rm)($|_)"

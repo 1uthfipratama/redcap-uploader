@@ -113,4 +113,4 @@ def _to_number(raw: object, integer: bool, row: int, label: str, issues: list[Is
 
 
 def human_format(date_format: str) -> str:
-    return date_format.replace("%d", "dd").replace("%m", "mm").replace("%Y", "yyyy")
+    return date_format.replace("%d", "dd").replace("%m", "mm").replace("%Y", "yyyy").replace("%y", "yy")

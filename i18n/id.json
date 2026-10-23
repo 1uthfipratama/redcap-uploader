@@ -523,5 +523,6 @@
   "ui.tut.connected.body": "Aplikasi memeriksa pengaturan proyek dan menyebutkan apa yang perlu dilakukan bila ada masalah.",
   "ui.tut.connected.m1": "Terhubung, dengan nama proyek dan versi REDCap.",
   "ui.tut.connected.m2": "Development atau Production, field ID data, event, instrumen berulang, dan data.",
-  "ui.tut.connected.m3": "Klik Lanjut."
+  "ui.tut.connected.m3": "Klik Lanjut.",
+  "ui.draft.date_format": "Tanggal ditulis sebagai"
 }

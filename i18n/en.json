@@ -523,5 +523,6 @@
   "ui.tut.connected.body": "The app checks the project's settings and says what to do about any problem.",
   "ui.tut.connected.m1": "Connected, with the project name and REDCap version.",
   "ui.tut.connected.m2": "Development or Production, the record ID field, events, repeating instruments and records.",
-  "ui.tut.connected.m3": "Click Next."
+  "ui.tut.connected.m3": "Click Next.",
+  "ui.draft.date_format": "Dates are written as"
 }

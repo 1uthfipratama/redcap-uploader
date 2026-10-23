@@ -81,18 +81,24 @@ class Draft:
 
 # ---- drafting ------------------------------------------------------------------------
 
-def draft_columns(grid: Grid, layout: Layout, settings: dict | None = None) -> Draft:
-    """A draft for every column of a single-header layout."""
+def draft_columns(grid: Grid, layout: Layout, settings: dict | None = None, date_format: str | None = None) -> Draft:
+    """A draft for every column of a single-header layout. Text dates are read with `date_format` when it
+    is given, else with the format that fits the most cells."""
     settings = settings or load_settings()
     generic = load_generic_config()
     values = {c.key: [grid.value(r, c.sheet_col) for r in layout.data_rows] for c in layout.columns}
-    date_format = _best_date_format([v for vs in values.values() for v in vs], settings["date_formats"])
+    date_format = date_format or _best_date_format([v for vs in values.values() for v in vs], settings["date_formats"])
     columns = [_draft_column(c.key, c.label, values[c.key], date_format, settings, generic)
                for c in layout.columns]
     _choose_record_id(columns, settings)
     _choose_patient_link(columns)
     _name_fields(columns)
     return Draft(columns, date_format, len(layout.data_rows))
+
+
+def date_formats(settings: dict | None = None) -> list[str]:
+    """The text date formats the review screen offers, in the order they are tried."""
+    return list((settings or load_settings())["date_formats"])
 
 
 def _text(value: object) -> str:
