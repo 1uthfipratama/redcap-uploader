@@ -65,11 +65,16 @@ class ColumnDraft:
     #                   "free_text", "row_number", "unique_id", "empty", or "" for plain data
     filled: int = 0
     unique: bool = False  # every row filled and no value repeated
+    inferred: str = ""  # the type the draft found; the person may switch away from it and back
+    code_choices: list[Choice] = dc_field(default_factory=list)  # answers, if these whole numbers are codes
 
     def allowed_types(self) -> list[str]:
         """The types the person may switch this column to."""
+        kind = self.inferred or self.type
+        if kind == "integer" and self.code_choices:
+            return ["integer", "choice", "number", "text"]  # 1/2 or 0/1/9 may be answers, not quantities
         return {"choice": ["choice", "text"], "integer": ["integer", "number", "text"],
-                "number": ["number", "text"], "date": ["date", "text"]}.get(self.type, ["text"])
+                "number": ["number", "text"], "date": ["date", "text"]}.get(kind, ["text"])
 
 
 @dataclass
@@ -133,11 +138,13 @@ def _draft_column(key: str, header: str, values: list[object], date_format: str,
     choices = _answers(texts, settings) if kind == "text" else []
     if choices:
         kind = "choice"
+    codes = _numeric_answers(texts, settings) if kind == "integer" else []
     unique = len(filled) == len(values) and len({clean_register_number(v) for v in filled}) == len(filled)
     role, reason = _role(header, texts, kind, settings, generic)
     if role != Role.data:
-        choices = []  # identifier columns never keep their values
-    return ColumnDraft(key, header, kind, role, choices=choices, reason=reason, filled=len(filled), unique=unique)
+        choices = codes = []  # identifier columns never keep their values
+    return ColumnDraft(key, header, kind, role, choices=choices, reason=reason, filled=len(filled), unique=unique,
+                       inferred=kind, code_choices=codes)
 
 
 def _infer_type(filled: list[object], texts: list[str], date_format: str, settings: dict) -> str:
@@ -172,6 +179,15 @@ def _answers(texts: list[str], settings: dict) -> list[Choice]:
     ordered = sorted(groups.values(), key=lambda c: (-sum(c.values()), c.most_common(1)[0][0]))
     return [Choice(code=str(i), label_id=c.most_common(1)[0][0], label_en=c.most_common(1)[0][0])
             for i, c in enumerate(ordered, start=1)]
+
+
+def _numeric_answers(texts: list[str], settings: dict) -> list[Choice]:
+    """Whole numbers that repeat like answers (1 and 2, or 0, 1 and 9) as an answer list, in numeric order.
+    The number is the code and, until the person names it, the label; the value in the file stays a spelling."""
+    values = sorted({int(_number(t)) for t in texts})
+    if len(texts) < settings["choice_min_rows"] or len(values) > settings["choice_max"] or len(values) > len(texts) / 2:
+        return []
+    return [Choice(code=str(v), label_id=str(v), label_en=str(v), spellings=[str(v)]) for v in values]
 
 
 def _known_answers(seen: set[str], settings: dict) -> list[Choice]:

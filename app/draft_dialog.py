@@ -163,14 +163,22 @@ class DraftDialog(QDialog):
         self.table.setCellWidget(row, 3, handling)
         self.handling_boxes.append(handling)
 
-        answers = " · ".join(f"{c.code} = {c.label_id}" for c in col.choices) or "—"
-        item = QTableWidgetItem(answers)
+        self._show_answers(row, col)
+
+    def _show_answers(self, row: int, col) -> None:
+        answers = " · ".join(f"{c.code} = {c.label_id}" for c in col.choices) if col.type == "choice" else ""
+        item = QTableWidgetItem(answers or "—")
         item.setFlags(item.flags() & ~Qt.ItemIsEditable)
         item.setToolTip(answers)
         self.table.setItem(row, 4, item)
 
     def _type_changed(self, col, box: QComboBox) -> None:
         col.type = box.currentData()
+        if col.type == "choice" and not col.choices:
+            col.choices = [c.model_copy() for c in col.code_choices]  # whole numbers used as codes
+        self.table.blockSignals(True)
+        self._show_answers(self.draft.columns.index(col), col)
+        self.table.blockSignals(False)
         self._refresh()
 
     def _handling_changed(self, col, box: QComboBox) -> None:
